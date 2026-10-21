@@ -2,7 +2,7 @@
 
 El código de este repositorio se publica con licencia MIT (`LICENSE`). Esa licencia no se aplica a los datos: cada archivo de `raw/` y `data/` conserva las condiciones de su fuente original, que se resumen aquí.
 
-Condiciones comprobadas el 21 y el 22 de octubre de 2026. Lo que no se ha podido confirmar en una página oficial se marca como **pendiente de verificar**.
+Condiciones comprobadas el 21 y el 22 de octubre de 2026 (EurEau, IGN y origen de las geometrías de la v1 revisados en la auditoría del 22 de octubre). Lo que no se ha podido confirmar en una página oficial se marca como **pendiente de verificar**.
 
 ## Por fuente
 
@@ -11,12 +11,12 @@ Condiciones comprobadas el 21 y el 22 de octubre de 2026. Lo que no se ha podido
 | ACA (Agència Catalana de l'Aigua): registro de auditorías, anexo III de la *Avaluació comparativa* y Power BI de municipios obligados | **Llicència oberta d'ús d'informació - Catalunya**, del aviso legal de la Generalitat, que se aplica a aca.gencat.cat. Obliga a citar la fuente y la fecha de actualización de la información, y a no desnaturalizar su sentido. No permite usar logos ni marcas de la Generalitat. | "Generalitat de Catalunya. Agència Catalana de l'Aigua", con la fecha de actualización de cada archivo (tabla de abajo) | https://tramits.gencat.cat/ca/ajuda/avis_legal/ |
 | INE: tabla 53447 (ESSA) y nota de prensa ESSA 2024 | **CC BY 4.0**, salvo indicación en contra. Condiciones: no desnaturalizar la información, indicar la fecha de actualización y no sugerir que el INE respalda el uso. | "Elaboración propia con datos extraídos del sitio web del INE: www.ine.es" | https://ine.es/dyngs/AYU/es/index.htm?cid=125 |
 | Idescat: padrón municipal 2025 y EMEX | Sin licencia Creative Commons declarada. Permite reutilizar con condiciones: no alterar el contenido ni su sentido, indicar la fecha de actualización y no sugerir respaldo. Las condiciones de la API prohíben modificar datos, metadatos y enlaces. | "Font: elaboració pròpia a partir de dades de l'Idescat" | https://www.idescat.cat/institut/web/ · https://www.idescat.cat/dev/api/?lang=ca |
-| EurEau, *Europe's Water in Figures* | **Pendiente de verificar.** Ni las publicaciones (ediciones 2021 y 2026) ni la web tienen licencia o condiciones de reutilización; solo "Copyright EurEau". Se citan cifras puntuales con su fuente. | "EurEau, Europe's Water in Figures" | https://www.eureau.org |
-| es-atlas 0.6.0 (geometría de municipios y comunidades) | Código del paquete: **MIT**. Geometría: Instituto Geográfico Nacional (CNIG), **CC BY 4.0** según el README del paquete; los códigos y nombres de municipio proceden del INE. Texto exacto de atribución que pide el IGN: **pendiente de verificar**. | "© Instituto Geográfico Nacional" | https://github.com/martgnz/es-atlas · http://www.ign.es/resources/licencia/Condiciones_licenciaUso_IGN.pdf |
+| EurEau, *Europe's Water in Figures* | Sin licencia ni condiciones de reutilización publicadas. Comprobado el 22 de octubre de 2026: la página del informe en eureau.org y el pie de la web solo dicen "Copyright EurEau 2026" y no existe página de aviso legal. Se citan cifras puntuales con su fuente, como datos de hecho, sin reproducir el informe. | "EurEau, Europe's Water in Figures 2026" | https://eureau.org/publications/ (categoría Reports & Annual Reports, 23 de junio de 2026) |
+| es-atlas 0.6.0 (geometría de municipios y comunidades) | Código del paquete: **MIT**. Geometría: el script de generación del paquete descarga las *Líneas límite municipales* del Centro de Descargas del CNIG (descarga 9000029, licencia 15), producto del Instituto Geográfico Nacional bajo **CC BY 4.0** (Orden FOM/2807/2015). La licencia del IGN exige, para obras derivadas, la fórmula "Obra derivada de <producto> <fecha> CC-BY 4.0 <productores>", visible a pie de mapa o en los créditos; admite la forma abreviada "CC-BY 4.0 <productores> <fecha>". Los códigos y nombres de municipio proceden del INE. | "Obra derivada de las Líneas límite municipales CC-BY 4.0 ign.es" (versión 0.6.0 del paquete, publicada el 10 de febrero de 2024; el IGN no fecha el producto en el paquete) | https://github.com/martgnz/es-atlas · https://www.ign.es/resources/licencia/Condiciones_licenciaUso_IGN.pdf |
 | OpenStreetMap: límite de Sant Hipòlit de Voltregà (08215), relación 343447 | **ODbL 1.0**: atribución y compartir igual. Los archivos con esta geometría son una base de datos derivada y se distribuyen bajo ODbL. La página generada es una obra producida y muestra la atribución. | "© OpenStreetMap contributors", con enlace a https://www.openstreetmap.org/copyright | https://www.openstreetmap.org/copyright · https://osmfoundation.org/wiki/Licence/Attribution_Guidelines |
 | SSB (Statistics Norway) | CC BY 4.0 | "Statistics Norway" | https://www.ssb.no/en/diverse/lisens |
 | Statistics Iceland | CC BY 4.0 | "Statistics Iceland" | https://statice.is/publications/open-data-access |
-| Auditorías 2024 de cada operador (enlazadas desde el registro de la ACA) | Documentos publicados por obligación legal (disposició addicional 26a del Decret Legislatiu 3/2003). Se transcriben solo los indicadores, con la URL de origen. Condiciones de reutilización de cada operador: **pendiente de verificar**. | URL de origen por municipio en `raw/aca2024_extract.psv` | Registro de la ACA (ver `data/sources.md`) |
+| Auditorías 2024 de cada operador (enlazadas desde el registro de la ACA) | Documentos publicados por obligación legal (disposició addicional 26a del Decret Legislatiu 3/2003, en la redacción que obliga a publicar la auditoría en la web de la entidad). Se transcriben solo los indicadores numéricos, que son datos de hecho, con la URL de origen; no se reproduce ningún texto ni gráfico. Condiciones de reutilización de cada operador: **pendiente de verificar** (76 documentos; el aviso legal de cada web no se ha revisado uno a uno). | URL de origen por municipio en `raw/aca2024_extract.psv` | Registro de la ACA (ver `data/sources.md`) |
 | Webs de operadores (`data/operators.json`) | Solo se citan nombres y enlaces; no se reproduce contenido. | No aplica | No aplica |
 
 ## Por archivo
@@ -39,9 +39,9 @@ Condiciones comprobadas el 21 y el 22 de octubre de 2026. Lo que no se ha podido
 | `data/esp.json` | es-atlas (IGN) | CC BY 4.0 | |
 | `data/operators.json` | Webs de operadores | No aplica | |
 | `src/geometry/cat.json` | es-atlas (IGN) | CC BY 4.0 | |
-| `src/geometry/geo.json` | Geometría de países de la v1. Origen: pendiente de verificar | Pendiente de verificar | |
-| `src/geometry/ctx_path.txt` | Geometría de contexto de la v1. Origen: pendiente de verificar | Pendiente de verificar | |
-| Constantes `D`, `M` y `ESM` en `src/app.js` | EurEau, INE, SSB y Statistics Iceland | La de cada fuente. EurEau: pendiente de verificar | |
+| `src/geometry/geo.json` | Geometría de países de la v1, ya proyectada (ETRS89-LAEA) y sin metadatos. Origen: **pendiente de verificar**; la auditoría del 22 de octubre de 2026 no ha podido determinarlo a partir del archivo | Pendiente de verificar | |
+| `src/geometry/ctx_path.txt` | Geometría de contexto de la v1, ya proyectada y sin metadatos. Origen: **pendiente de verificar** (misma situación que `geo.json`) | Pendiente de verificar | |
+| Constantes `D`, `M` y `ESM` en `src/app.js` | EurEau, INE, SSB y Statistics Iceland | La de cada fuente. EurEau: sin licencia publicada, solo "Copyright EurEau 2026" (ver arriba) | |
 
 ## Archivos bajo ODbL
 
