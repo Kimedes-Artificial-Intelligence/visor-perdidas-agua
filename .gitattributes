@@ -1,0 +1,9 @@
+# Tablas de fuentes: casi siempre se añaden líneas al final. La fusión por unión conserva las líneas
+# de ambas ramas en vez de crear un conflicto; los duplicados los detecta tests/unit/raw.test.js.
+raw/*.psv merge=union
+raw/*.txt merge=union
+
+# Archivos generados por npm run build: GitHub los muestra plegados en los pull requests
+data/*.json linguist-generated=true
+data/m08215.txt linguist-generated=true
+reference/*.html linguist-generated=true

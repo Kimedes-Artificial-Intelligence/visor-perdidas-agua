@@ -1,0 +1,176 @@
+name: Regenerar datos
+
+# Permite contribuir desde la web de GitHub sin generar nada en local, en pull requests que solo cambian raw/.
+# - Rama del propio repositorio (equipo "visor"): incorpora main, regenera data/ y la referencia y los sube
+#   a la misma rama. Se lanza al abrir o actualizar el pull request y al poner la etiqueta "regenerar".
+# - Fork: cuando alguien con permiso de escritura pone la etiqueta "regenerar", copia los cambios de raw/
+#   a una rama del repositorio, regenera y abre un pull request nuevo que sustituye al del fork.
+# Nunca se ejecuta código del fork: solo se copian archivos de raw/, que se leen como datos.
+# Si el pull request cambia código o diseño, no hace nada: hay que regenerar en local (ver CONTRIBUTING.md).
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+    paths: ['raw/**']
+  pull_request_target:
+    types: [labeled]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: regenerar-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  rama-propia:
+    name: Regenerar en la rama del pull request
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      (github.event.action != 'labeled' || github.event.label.name == 'regenerar')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PR: ${{ github.event.pull_request.number }}
+      RAMA: ${{ github.head_ref }}
+      BASE: ${{ github.base_ref }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Comprobar que solo cambian datos
+        id: alcance
+        run: |
+          otros=$(git diff --name-only "origin/$BASE...HEAD" | grep -vE '^(raw|data|reference)/' || true)
+          if [ -n "$otros" ]; then
+            echo "::notice::El pull request cambia archivos fuera de raw/: no se regenera automáticamente."
+            echo "$otros"
+            echo "solo_datos=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "solo_datos=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Incorporar los últimos cambios de main
+        if: steps.alcance.outputs.solo_datos == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git merge --no-edit "origin/$BASE"; then
+            otros=$(git diff --name-only --diff-filter=U | grep -vE '^(data|reference)/' || true)
+            if [ -n "$otros" ]; then
+              git merge --abort
+              echo "::error::Conflicto con main en $otros. Resuélvelo en la web con Resolve conflicts y vuelve a poner la etiqueta regenerar."
+              exit 1
+            fi
+            # data/ y reference/ se generan: se toman los de main y se regeneran en el paso siguiente
+            git checkout "origin/$BASE" -- data reference
+            git commit --no-edit
+          fi
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        if: steps.alcance.outputs.solo_datos == 'true'
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Regenerar
+        if: steps.alcance.outputs.solo_datos == 'true'
+        run: |
+          npm ci
+          npm run build
+          npm run reference:update
+
+      - name: Subir los cambios y lanzar la CI
+        if: steps.alcance.outputs.solo_datos == 'true'
+        run: |
+          if [ -n "$(git status --porcelain -- data reference)" ]; then
+            git add data reference
+            git commit -m "Regenerar data/ y referencia desde raw/"
+          fi
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse "origin/$RAMA")" ]; then
+            git push origin "HEAD:$RAMA"
+            # Un push hecho con este token no lanza la CI por sí solo
+            gh workflow run ci.yml --ref "$RAMA"
+          else
+            echo "Nada que regenerar."
+          fi
+          gh pr edit "$PR" --remove-label regenerar || true
+
+  fork:
+    name: Regenerar un pull request de fork
+    if: >-
+      github.event_name == 'pull_request_target' &&
+      github.event.label.name == 'regenerar' &&
+      github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PR: ${{ github.event.pull_request.number }}
+      PR_SHA: ${{ github.event.pull_request.head.sha }}
+      AUTOR: ${{ github.event.pull_request.user.login }}
+      AUTOR_ID: ${{ github.event.pull_request.user.id }}
+      BASE: ${{ github.event.pull_request.base.ref }}
+      RAMA: contrib/pr-${{ github.event.pull_request.number }}
+    steps:
+      # Código del repositorio, nunca el del fork
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+          fetch-depth: 0
+
+      - name: Traer los cambios de raw/ del fork
+        run: |
+          git fetch origin "pull/$PR/head:fork"
+          base=$(git merge-base HEAD fork)
+          otros=$(git diff --name-only "$base" fork | grep -vE '^(raw|data|reference)/' || true)
+          if [ -n "$otros" ]; then
+            echo "::error::El pull request cambia archivos fuera de raw/. Solo se regeneran automáticamente cambios de datos."
+            echo "$otros"
+            exit 1
+          fi
+          git checkout -b "$RAMA"
+          # --3way aplica la fusión por unión de .gitattributes cuando main también ha añadido líneas
+          if ! git diff "$base" fork -- raw/ | git apply --3way --index; then
+            echo "::error::Los cambios de raw/ del fork chocan con main. Hay que resolverlos a mano."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Regenerar
+        run: |
+          npm ci
+          npm run build
+          npm run reference:update
+
+      - name: Abrir el pull request sustituto y lanzar la CI
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add raw data reference
+          git commit --author="$AUTOR <$AUTOR_ID+$AUTOR@users.noreply.github.com>" \
+            -m "Cambios de datos del pull request #$PR" -m "Copiados de $PR_SHA (fork de @$AUTOR); data/ y referencia regenerados desde raw/."
+          git push --force origin "HEAD:refs/heads/$RAMA"
+          if ! gh pr view "$RAMA" --json number >/dev/null 2>&1; then
+            gh pr create --base "$BASE" --head "$RAMA" \
+              --title "Datos del pull request #$PR" \
+              --body "Sustituye a #$PR de @$AUTOR, con data/ y la referencia regenerados. Revisa aquí los cambios; el pull request original se puede cerrar."
+          fi
+          gh pr comment "$PR" --body "Los cambios de raw/ se han copiado a la rama $RAMA con data/ regenerado. La revisión continúa en el pull request que la usa."
+          gh pr edit "$PR" --remove-label regenerar || true
+          gh workflow run ci.yml --ref "$RAMA"

@@ -1,0 +1,26 @@
+name: Corrección
+description: Señala un dato, un texto o un comportamiento del visor que no es correcto.
+title: "Corrección: "
+labels: ["corrección"]
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: Qué está mal
+      description: Vista (Europa, España o Catalunya), elemento y valor que aparece.
+    validations:
+      required: true
+  - type: textarea
+    id: evidencia
+    attributes:
+      label: Evidencia
+      description: Valor correcto según la fuente, con la página o el apartado donde aparece. Puedes adjuntar capturas.
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: URL de la fuente
+      placeholder: https://
+    validations:
+      required: true

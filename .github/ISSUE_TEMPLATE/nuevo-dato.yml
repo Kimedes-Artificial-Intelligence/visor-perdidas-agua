@@ -1,0 +1,70 @@
+name: Nuevo dato o fuente
+description: Propón un dato publicado que el visor todavía no muestra.
+title: "Nuevo dato: "
+labels: ["nuevo dato"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Solo se incorporan datos publicados por una fuente oficial o por el operador, con su año y su URL. No se estiman valores.
+  - type: input
+    id: municipio
+    attributes:
+      label: Municipio
+      placeholder: Balaguer
+    validations:
+      required: true
+  - type: input
+    id: ine
+    attributes:
+      label: Código INE (5 dígitos)
+      description: Los municipios se unen solo por este código.
+      placeholder: "25040"
+    validations:
+      required: true
+  - type: dropdown
+    id: indicador
+    attributes:
+      label: Indicador
+      options:
+        - Agua no registrada (F9, %)
+        - Pérdidas reales (% del volumen de entrada)
+        - Pérdidas aparentes (% del volumen de entrada)
+        - Otro (explícalo en la descripción)
+    validations:
+      required: true
+  - type: input
+    id: valor
+    attributes:
+      label: Valor
+      description: Tal como aparece en la fuente.
+      placeholder: "22,8"
+    validations:
+      required: true
+  - type: input
+    id: anio
+    attributes:
+      label: Año del dato
+      placeholder: "2024"
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: URL de la fuente
+      placeholder: https://
+    validations:
+      required: true
+  - type: input
+    id: pagina
+    attributes:
+      label: Página o apartado
+      description: Dónde está el valor dentro del documento.
+      placeholder: "p. 3, tabla de indicadores"
+    validations:
+      required: true
+  - type: textarea
+    id: notas
+    attributes:
+      label: Notas
+      description: Cualquier detalle útil, por ejemplo si el PDF es una imagen o si el año no está claro.

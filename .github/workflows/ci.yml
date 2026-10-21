@@ -4,6 +4,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  # La lanza regenerar.yml tras subir data/ regenerado a la rama del pull request
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -44,8 +46,8 @@ jobs:
         run: npm run test:unit
 
       - name: Procedencia de los datos
-        if: github.event_name == 'pull_request'
-        run: npm run check:provenance -- "origin/${{ github.base_ref }}"
+        if: github.ref != 'refs/heads/main'
+        run: npm run check:provenance -- "origin/${{ github.base_ref || 'main' }}"
 
       - name: Instalar Chromium
         run: npx playwright install --with-deps chromium
@@ -62,7 +64,7 @@ jobs:
           retention-days: 14
 
       - name: Guardar la página generada
-        if: github.event_name == 'pull_request'
+        if: always() && github.ref != 'refs/heads/main'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: vista-previa
