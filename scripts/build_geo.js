@@ -7,7 +7,7 @@ topo=ts.presimplify(topo);const minW=ts.quantile(topo,0.30);topo=ts.simplify(top
 const fc=tc.feature(topo,topo.objects.autonomous_regions);
 const out={ccaa:{},cent:{},names:{}};
 const pen=fc.features.filter(f=>!['05','20'].includes(f.id));
-const path2=R(P,3);
+const path2=R(P,2);
 for(const f of pen){out.ccaa[f.id]=path2(f);out.cent[f.id]=path2.centroid(f).map(v=>+v.toFixed(2));out.names[f.id]=f.properties.name;}
 // window: peninsula + Baleares bounds
 const b=path2.bounds({type:'FeatureCollection',features:pen.filter(f=>!['18','19'].includes(f.id))});
