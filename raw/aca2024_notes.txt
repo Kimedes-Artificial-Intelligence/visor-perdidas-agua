@@ -1,0 +1,22 @@
+#manual-visual: 08121 (PDF imagen, leído en pantalla)
+08009 Argentona: año 2024 confirmado en Caracterització del servei (01/01/2024-31/12/2024)
+08001 Abrera: solo balance 2024 publicado; indicadores publicados = 2022 (idénticos al anexo ACA). Se mantiene 2022.
+17110 Mont-ras: CAPSA 2024 publica solo Palamós; Mont-ras sin documento 2024 -> se mantiene unidad 2022.
+08088 La Garriga, 08124 Mollet: PDF 2024 escaneado (sin texto) -> pendiente lectura visual
+08279 Terrassa: valores 2024 sin etiquetas F1-F8 en el PDF; asignados por orden de la plantilla ACA (F1,F2,F3,F4,F5,F6,F7,F8). F9 etiquetado. Terrassa ya publica 2025 (no usado, PDF imagen).
+43148 Tarragona: año 2024 por texto del enlace ('Consulta l'auditoria de l'any 2024').
+43123 Reus: página sin contenido accesible -> 2022.
+Validación regex: Manresa 2022 PDF F9=20,9 = anexo ACA 20,9 (ok).
+08169 El Prat: valores en la página web (año 2024 explícito; ANR baja 1,8 pp vs 2022, coherente con anexo 11,2).
+08252 Barberà: informe 2024 p.8 (valores sin código F; F9 bajo 'AIGUA NO REGISTRADA' = 7,2 %). Pérdidas reales 1,2 % del VE (margen ±693 %): de aquí salía el 1,2 % de la v1.
+17023 Blanes: año 2024 por nombre de archivo y texto de enlace 'Resultats_Auditoria_2024'.
+08033 Caldes de Montbui: PDF escaneado, leído en pantalla (p.3).
+08088 La Garriga, 08124 Mollet: export xlsm escaneado, leído en pantalla (p.5). Año 2024 por el portal (el informe 2022 está aparte); F1/F4 de La Garriga ilegibles, omitidos.
+43092 Mont-roig: enlace 'Any 2024' (archivo nombrado 2025); se toma el año del enlace.
+17066 Figueres: lectura visual (p.3); F9 22,8 % con una marca de cursor sobre la coma en el propio PDF.
+08136 Montornès: solo publicada auditoría 2022 en la web del operador -> 2022.
+08219 Vilassar de Mar: página 'Auditoria Any 2024'; PR del balanç 2024 (4,9 %).
+43155 Tortosa: informe 'per l'any 2024' (juny 2025), indicadores en imagen p.15, leídos en pantalla.
+PENDIENTES 2024 (se muestra 2022): Lleida, Lloret, Molins de Rei, Sant Andreu de la Barca, Sant Feliu de Guíxols, Santa Cristina d'Aro, Tordera, Castelló d'Empúries, Castell-Platja d'Aro, l'Ametlla de Mar (Aqualia: enlaces del registro ACA dan 404); Reus (página sin contenido accesible); Begur, Deltebre, la Ràpita, Malgrat (CGAC: documentos tras tarjetas JS); Altafulla; Castellbisbal (enlace 2024 no resuelto); Sant Quirze del Vallès (página JS); Banyoles (5), Olesa, Ripoll, Torelló, Sant Andreu de Llavaneres, Sant Sadurní d'Anoia, Torroella de Montgrí, Vallirana, Bisbal d'Empordà, el Masnou, la Llagosta, Cardedeu, Llinars, Pallejà (no revisados por tiempo).
+08252 Barberà: pérdidas reales 2024 (1,2 %, margen ±693 %) no se muestran en el visor por su incertidumbre.
+43171/43905 Salou y Vila-seca: el portal de Agbar sirve el mismo documento 'salou' para ambos: unidad SGAB Salou i Vila-seca también en 2024.

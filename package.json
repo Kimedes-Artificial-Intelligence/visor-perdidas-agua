@@ -1,0 +1,25 @@
+{
+  "name": "visor-perdidas-agua",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Visor de pérdidas de agua en Europa, España y Catalunya",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "test": "npm run test:unit && npm run test:browser",
+    "test:unit": "node --test \"tests/unit/*.test.js\"",
+    "test:browser": "playwright test",
+    "check:provenance": "node scripts/check_provenance.js",
+    "reference:update": "node scripts/update_reference.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "d3-geo": "3.1.1",
+    "es-atlas": "0.6.0",
+    "topojson-client": "3.1.0",
+    "topojson-simplify": "3.0.3"
+  }
+}

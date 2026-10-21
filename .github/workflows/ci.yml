@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    name: Generación y verificaciones
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Generar la página
+        run: npm run build
+
+      - name: Los datos de data/ coinciden con los generados desde raw/
+        run: |
+          if ! git diff --exit-code -- data/; then
+            echo "::error::data/ no coincide con lo que genera npm run build desde raw/. Ejecuta npm run build y sube el resultado; si editaste data/ a mano, el cambio debe hacerse en raw/."
+            exit 1
+          fi
+
+      - name: Verificaciones de datos
+        run: npm run test:unit
+
+      - name: Procedencia de los datos
+        if: github.event_name == 'pull_request'
+        run: npm run check:provenance -- "origin/${{ github.base_ref }}"
+
+      - name: Instalar Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Verificaciones en el navegador
+        run: npm run test:browser
+
+      - name: Guardar resultados y capturas
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: resultados-pruebas
+          path: test-results/
+          retention-days: 14
+
+      - name: Guardar la página generada
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: vista-previa
+          path: dist/index.html
+          retention-days: 14

@@ -1,0 +1,85 @@
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Kimedes · Inteligencia de mercado · Agua</div>
+      <h1>Pérdidas de agua: de Europa al municipio</h1>
+      <p class="lede" id="lede">Tres niveles de lectura con fuentes públicas, oficiales y sectoriales: países (EurEau 2026), comunidades autónomas (INE 2024) y municipios de Catalunya (auditorías de los operadores y de la ACA). Pasa el ratón o toca el mapa para ver cada dato con su año y su fuente; haz clic para fijarlo en el panel.</p>
+    </div>
+    <div class="controls">
+      <div class="lvl" role="group" aria-label="Nivel">
+        <button data-l="eu" aria-pressed="true">Europa</button>
+        <button data-l="es" aria-pressed="false">España</button>
+        <button data-l="cat" aria-pressed="false">Catalunya</button>
+      </div>
+      <div class="seg" id="segEU" role="group" aria-label="Indicador">
+        <button data-m="nrw" aria-pressed="true">Agua no registrada</button>
+        <button data-m="rl" aria-pressed="false">Pérdidas reales</button>
+        <button data-m="lin" aria-pressed="false">m³/km de red</button>
+      </div>
+      <div class="seg" id="segES" role="group" aria-label="Indicador" hidden>
+        <button data-m="anr" aria-pressed="true">Agua no registrada</button>
+        <button data-m="pr" aria-pressed="false">Pérdidas reales</button>
+      </div>
+      <label class="yearsel" id="yearsel" hidden>Año <select id="year" aria-label="Año del dato INE"></select></label>
+      <div class="avg" id="avg"></div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="mapbox" id="mapbox">
+      <div class="mapbar">
+        <nav class="crumbs" id="crumbs" aria-label="Nivel del mapa"></nav>
+        <span class="maphead" id="maphead"></span>
+      </div>
+      <svg id="map" viewBox="0 0 760 700" role="img" aria-label="Mapa de pérdidas de agua">
+        <defs>
+          <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <rect class="hatch-bg" width="6" height="6"></rect><line class="hatch-ln" x1="0" y1="0" x2="0" y2="6"></line>
+          </pattern>
+          <pattern id="hatchS" width="1.2" height="1.2" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <rect class="hatch-bg" width="1.2" height="1.2"></rect><line class="hatch-ln" x1="0" y1="0" x2="0" y2="1.2" style="stroke-width:.25"></line>
+          </pattern>
+        </defs>
+        __CTX__
+        <g id="countries"></g>
+        <g id="dots"></g>
+        <g id="espLayer" hidden opacity="0"></g>
+        <g id="catLayer" hidden opacity="0"></g>
+      </svg>
+      <div class="tip" id="tip" hidden></div>
+      <div class="legend" id="legend"></div>
+      <div class="hint" id="hint"></div>
+    </div>
+
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </div>
+
+  <section class="rankwrap">
+    <div class="rankhead"><h2 id="rankTitle">Ranking</h2><span class="avg" id="rankNote"></span></div>
+    <div class="rankctl" id="rankCtl" hidden>
+      <label><input type="checkbox" id="onlyData" checked> Solo municipios con dato</label>
+      <span id="rankCount"></span>
+    </div>
+    <div class="rank" id="rank"></div>
+    <div class="rankmore" id="rankMore" hidden><button class="cta" id="moreBtn" type="button">Ver todos</button></div>
+  </section>
+
+  <section class="closing" aria-labelledby="closingTitle">
+    <div>
+      <h2 id="closingTitle">Lo que este visor no ve</h2>
+      <ol>
+        <li>Son datos macro, declarados por operadores y estadísticas oficiales, con dos a cuatro años de retraso y márgenes de incertidumbre amplios.</li>
+        <li>Un porcentaje municipal dice cuánta agua se pierde, no dónde. La fuga sigue enterrada hasta que alguien la busca tramo a tramo.</li>
+        <li>Kimedes señala con radar satelital (SAR) e IA los tramos de red candidatos a fuga, sin instalar hardware en campo, para que el operador los verifique. Ese nivel se ve en Syracusa, no aquí.</li>
+      </ol>
+    </div>
+    <div class="sig">KIMEDES · SYRACUSA<br>Deep tech for a blue planet.</div>
+  </section>
+
+  <footer id="footer">
+    <div><b>Europa.</b> EurEau, <a href="https://www.svensktvatten.se/contentassets/1f3e568a52284548ae674d5b485d9f14/europes-water-in-figures-report-2026.pdf" target="_blank" rel="noopener">Europe's Water in Figures 2026</a>, anexo de datos (datos mayoritariamente 2022-2024). Medias EUR* ponderadas por población conectada. EurEau advierte que la comparación directa entre países puede inducir a error. España: agua no registrada del INE 2024 (EurEau no la publica). Población: Eurostat 1/1/2025 (UE), FSO 31/12/2024 (Suiza), ONS mid-2024 (Reino Unido), <a href="https://www.ssb.no/en/befolkning/folketall/statistikk/befolkning" target="_blank" rel="noopener">SSB</a> 1/1/2025 (Noruega), <a href="https://old.statice.is/publications/news-archive/inhabitants/the-population-on-1-january-2025/" target="_blank" rel="noopener">Statistics Iceland</a> 1/1/2025. Operadores: dos o tres por país, verificados en la web oficial de cada operador o administración (octubre 2026); no es una lista exhaustiva.</div>
+    <div><b>España por comunidades.</b> INE, <a href="https://ine.es/dyngs/Prensa/es/ESSA2024.htm" target="_blank" rel="noopener">Estadística sobre el Suministro y Saneamiento del Agua 2024</a> (2 jul 2026), <a href="https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/53447" target="_blank" rel="noopener">tabla 53447</a>, serie 2008-2024 (bienal desde 2014). Porcentajes calculados sobre el volumen suministrado a la red. Ceuta y Melilla se publican agregadas. La Rioja 2022: el INE publica pérdidas reales mayores que el agua no registrada; ese dato se omite. Consumo de hogares 2024: nota de prensa del INE (España y las seis comunidades que cita).</div>
+    <div><b>Catalunya por municipios.</b> Agua no registrada (indicador F9 de la ACA: % del volumen de entrada no medido). Dato 2024: auditorías de eficiencia hidráulica publicadas por cada operador (junio 2025 en adelante), enlazadas desde el <a href="https://aca.gencat.cat/ca/laigua/infraestructures/xarxes-abastament/xarxes-municipals-auditories-deficiencia-hidraulica/" target="_blank" rel="noopener">registro de la ACA</a>. Dato 2022: ACA, <i>Avaluació comparativa de les auditories</i>, annex III (mayo 2025). Las unidades de gestión de varios municipios (Aigües de Barcelona, 23; Aigües de Banyoles, 5; Cicle de l'Aigua del Ter, 3; Salou y Vila-seca; Palamós y Mont-ras en 2022) comparten valor. Población: Idescat, padrón 1/1/2025. Nombres y comarcas: Idescat. Geometría: es-atlas (INE), unida por código INE de 5 dígitos; Sant Hipòlit de Voltregà, © OpenStreetMap contributors. En gris, municipios sin auditoría publicada: no se estima ningún valor.</div>
+    <div><b>Definiciones.</b> Agua no registrada (ANR): agua que entra en la red y no se mide en ningún contador; incluye fugas, consumos no medidos y errores de medida. Pérdidas reales: solo fugas y roturas. Índice estructural de fugas (ILI, F4): pérdidas reales frente a las inevitables para esa red. Kimedes, octubre 2026.</div>
+  </footer>
+</div>
