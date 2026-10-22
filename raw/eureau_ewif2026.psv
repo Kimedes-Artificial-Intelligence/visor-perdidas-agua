@@ -1,0 +1,38 @@
+#EurEau, Europe's Water in Figures, edición 2026 (publicada el 23 de junio de 2026). Anexo de datos por país, pp. 46-48 del PDF (numeración impresa 46-48; páginas 47-49 del archivo).
+#URL oficial: https://eureau.org/wp-content/uploads/2026/06/FINAL_Europes-Water-in-Figures-Report-2026.pdf (SHA-256 f12331f77d343855dec4bbb2c45b1e6195927308e7eae324cf39faf849c9ff8d, 5.767.455 bytes). Copia idéntica: https://www.svensktvatten.se/contentassets/1f3e568a52284548ae674d5b485d9f14/europes-water-in-figures-report-2026.pdf
+#Transcripción literal del 22 de octubre de 2026: N/A tal como lo publica EurEau; valores sin redondear. Los campos vacíos no existen en la tabla.
+#Figuras: 15 producción (millones de m3/año), 17 consumo residencial (L/hab/día), 18 red (miles de km), 19 telelectura (% contadores), 20 pérdidas reales (%) y agua no registrada (%), 21 agua no registrada (m3/km/año), 22 renovación de red de agua potable (%/año), 13 tarifa residencial media (EUR/m3).
+#Notas de EurEau: IE, la ANR no aplica porque el agua doméstica no se factura. LU publica 0,0 % de pérdidas reales. UK publica 0,0 en renovación. IT, NO y PT publican la renovación como fracción (0.008, 0.006, 0.005), transcrita tal cual.
+#iso|produccion_hm3|consumo_L_hab_dia|red_miles_km|telelectura_pct|perdidas_reales_pct|anr_pct|anr_m3_km_ano|renovacion_pct_ano|tarifa_eur_m3
+AT|686|135.9|81.0|N/A|12.5|18.5|1564|N/A|3.20
+BE|684|81.8|108.5|14.5|27.0|27.0|1277|1.10|5.76
+BG|1100|110.0|77.5|0.0|38.0|45.0|6233|0.20|2.66
+CH|925|142.0|95.4|N/A|11.7|19.0|1140|1.20|4.50
+CY|68|141.0|5.8|2.9|23.0|24.0|3268.55|0.50|3.16
+CZ|575|81.9|81.4|18.0|14.8|17.0|1045|0.60|4.50
+DE|5222|122.0|640.0|N/A|6.0|12.0|732.97|N/A|2.42
+DK|358|101.0|53.4|75.0|6.5|7.3|493|0.70|10.36
+EE|48|88.0|8.1|6.0|14.0|N/A|N/A|N/A|4.25
+EL|1288|181.7|81.0|12.8|N/A|35.0|N/A|2.00|1.60
+ES|4233|N/A|248.2|27.0|14.0|N/A|N/A|0.50|1.96
+FI|380|150.6|113.7|10.0|N/A|18.0|615.6|0.10|5.45
+FR|5361|179.0|910.0|N/A|19.0|21.0|1095.75|0.70|4.52
+HR|N/A|N/A|N/A|N/A|N/A|N/A|N/A|N/A|N/A
+HU|655|101.2|70.1|3.9|21.0|28.0|2061.14|0.20|1.99
+IE|650|122.1|65.3|N/A|36.0|N/A|N/A|0.30|0.00
+IS|51|245.9|3.8|0.0|13.0|49.0|N/A|0.90|N/A
+IT|8000|N/A|403.8|16.7|42.0|49.0|6533.5|0.008|2.10
+LT|122|100.7|18.3|14.6|21.0|20.0|1491|0.30|3.00
+LU|44|180.0|2.5|N/A|0.0|10.0|N/A|N/A|N/A
+LV|87|81.0|7.1|13.6|N/A|21.0|1219|N/A|3.76
+MT|39|93.7|2.6|91.6|8.7|25.7|3874|4.00|2.90
+NL|1158|119.2|122.3|0.2|5.5|6.5|659.14|0.80|6.09
+NO|700|146.7|52.6|56.7|29.0|40.0|3650|0.006|4.63
+PL|2091|94.7|341.1|74.0|13.0|18.0|2180|0.40|3.41
+PT|608|130.1|121.7|N/A|N/A|N/A|N/A|0.005|2.31
+RO|1263|79.0|101.5|N/A|44.7|44.5|4905.2|1.50|1.41
+SE|844|132.7|84.5|44.5|19.0|22.0|1569|0.50|4.25
+SI|183|105.4|44.8|N/A|32.0|32.0|1299.72|N/A|2.52
+SK|398|83.0|31.7|N/A|N/A|N/A|N/A|N/A|3.00
+UK|5409|141.4|427.6|35.7|17.1|18.1|3055.73|0.0|3.10
+#medias|perdidas_reales_pct EUR* 21.96 (mediana 18.03), EU27 22.9 (mediana 19)|anr_pct EUR* 27.07 (mediana 21), EU27 28.59 (mediana 21)|anr_m3_km_ano EUR* 2416.6, EU27 2309.74|renovacion EUR* 0.76 (mediana 0.6), EU27 0.74 (mediana 0.58)

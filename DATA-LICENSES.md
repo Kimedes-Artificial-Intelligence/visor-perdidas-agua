@@ -28,6 +28,7 @@ Condiciones comprobadas el 21 y el 22 de octubre de 2026 (EurEau, IGN y origen d
 | `raw/aca_powerbi_2024_obligats.psv` | ACA, registro de auditorías | Llicència oberta d'ús d'informació - Catalunya | Consultado el 19 de octubre de 2026 |
 | `raw/aca2024_extract.psv` | Auditorías 2024 de los operadores | Pendiente de verificar | Una URL por municipio |
 | `raw/aca2024_notes.txt` | Notas propias sobre las auditorías 2024 | MIT | |
+| `raw/eureau_ewif2026.psv` | EurEau, Europe's Water in Figures 2026, anexo de datos | Pendiente de verificar (solo "Copyright EurEau 2026") | 23 de junio de 2026 |
 | `raw/ine53447_2008_2024.txt` | INE | CC BY 4.0 | Consultado el 19 de octubre de 2026 |
 | `raw/ine_hogares_2024.txt` | INE, nota de prensa | CC BY 4.0 | 2 de julio de 2026 |
 | `raw/idescat_pop2025.txt` | Idescat | Condiciones de reutilización de Idescat | Padrón a 1 de enero de 2025 |

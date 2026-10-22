@@ -12,8 +12,10 @@ Validación regex: Manresa 2022 PDF F9=20,9 = anexo ACA 20,9 (ok).
 17023 Blanes: año 2024 por nombre de archivo y texto de enlace 'Resultats_Auditoria_2024'.
 08033 Caldes de Montbui: PDF escaneado, leído en pantalla (p.3).
 08088 La Garriga, 08124 Mollet: export xlsm escaneado, leído en pantalla (p.5). Año 2024 por el portal (el informe 2022 está aparte); F1/F4 de La Garriga ilegibles, omitidos.
+08088 La Garriga: auditoría 22/10/2026, F1 136,8 y F4 2,93 legibles en el PDF renderizado a 130 ppp (p.5); período 1/1/2024 a 31/12/2024 en la p.2.
 43092 Mont-roig: enlace 'Any 2024' (archivo nombrado 2025); se toma el año del enlace.
 17066 Figueres: lectura visual (p.3); F9 22,8 % con una marca de cursor sobre la coma en el propio PDF.
+17066 Figueres: auditoría 22/10/2026, F1 corregido de 166,5 a 168,5 (p.3; coherente con los límites -13,2 y 350,3 del propio PDF).
 08136 Montornès: solo publicada auditoría 2022 en la web del operador -> 2022.
 08219 Vilassar de Mar: página 'Auditoria Any 2024'; PR del balanç 2024 (4,9 %).
 43155 Tortosa: informe 'per l'any 2024' (juny 2025), indicadores en imagen p.15, leídos en pantalla.
