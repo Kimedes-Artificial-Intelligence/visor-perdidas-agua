@@ -6,11 +6,11 @@ Consulta: 19 oct 2026. Todo dato del visor lleva año y fuente. Ningún valor es
 
 | Capa | Fuente | Año | Cobertura | Verificación |
 |---|---|---|---|---|
-| Países | EurEau 2026 (heredado de la v1) + INE 2024 para la ANR de España | 2022-2024 | 31 países | Heredado de la v1; España actualizada a INE 2024 (23,1 %) |
+| Países | EurEau 2026 (heredado de la v1) + INE 2024 para la ANR de España | 2022-2024 | 31 países | Contrastado el 22 oct 2026 con el anexo de datos del PDF oficial (transcripción en `raw/eureau_ewif2026.psv`): 0 diferencias en pérdidas reales, ANR, m³/km/año, producción, consumo, red, telelectura, renovación, tarifa y medias EUR*/EU27. España actualizada a INE 2024 (23,1 %) |
 | España por CCAA | INE ESSA, tabla 53447 | 2008-2024 | 18 filas + España | Descarga completa de la API; checksum de la transcripción idéntico al de la API |
-| Catalunya, dato 2024 | Auditorías 2024 publicadas por cada operador (enlazadas desde el registro de la ACA) | 2024 | **110 municipios, 6,17 M hab.** | Auditoría del 22 oct 2026: los 76 documentos originales descargados y contrastados (texto con PyMuPDF; 6 PDF imagen leídos en pantalla); 1 corrección (Figueres F1) y 2 valores añadidos (la Garriga F1 y F4). 10 municipios incorporados el 22 oct 2026 (Reus, Torroella, Torelló, Banyoles, Olesa, Castellbisbal, Begur, Deltebre, la Ràpita, Malgrat), con balance e indicadores leídos en el documento del operador |
-| Catalunya, dato 2022 | ACA, anexo III de la *Avaluació comparativa* (mayo 2025) | 2022 | 26 municipios más (0,49 M hab.) | Checksum de la transcripción idéntico al xlsx; códigos INE 108/108 iguales a los de la ACA; 103/103 unidades idénticas a la transcripción del PDF |
-| **Total Catalunya con dato** | | | **136 de 947 municipios, 6,66 M hab. (82 %)** | |
+| Catalunya, dato 2024 | Auditorías 2024 publicadas por cada operador (enlazadas desde el registro de la ACA) | 2024 | **100 municipios, 5,92 M hab.** | Texto del PDF extraído con pdf.js en el navegador; 6 casos leídos en pantalla (PDF imagen: Mataró, Caldes, la Garriga, Mollet, Figueres, Tortosa); 6 re-verificados contra el PDF original |
+| Catalunya, dato 2022 | ACA, anexo III de la *Avaluació comparativa* (mayo 2025) | 2022 | 35 municipios más (0,73 M hab.) | Checksum de la transcripción idéntico al xlsx; códigos INE 108/108 iguales a los de la ACA |
+| **Total Catalunya con dato** | | | **135 de 947 municipios, 6,65 M hab. (82 %)** | |
 | Población municipal | Idescat, padrón 1/1/2025 | 2025 | 947/947 | Suma 8.146.265 = total Idescat |
 | Nombres y comarcas | Idescat EMEX | 2026 | 947, 43 comarcas | SHA-256 de la transcripción idéntico al de la API |
 | Geometría | es-atlas 0.6.0 (INE, MIT). 08215 Sant Hipòlit de Voltregà: OpenStreetMap, relación 343447 | | 947 municipios, 19 CCAA | Proyección de la v1 reconstruida: error medio 0,02 unidades sobre 873 municipios |
@@ -21,7 +21,7 @@ Consulta: 19 oct 2026. Todo dato del visor lleva año y fuente. Ningún valor es
 ## Decisiones aplicadas (19 oct 2026)
 
 1. Indicador municipal: agua no registrada (F9 de la ACA), con el dato más reciente: 2024, si no 2022 (anexo ACA). Las pérdidas reales en % del volumen de entrada aparecen solo donde la auditoría 2024 las publica en el balance.
-2. Ronda 2024 extraída para 110 municipios (100 el 19 oct 2026 y 10 más el 22 oct 2026). Quedan 20 con auditoría 2024 obligatoria y no incorporada (ver abajo); muestran 2022 si lo tienen.
+2. Ronda 2024 extraída para 100 municipios. Quedan 30 con auditoría 2024 publicada y no incorporada (ver abajo); muestran 2022.
 3. Tramo < 10 % de la escala municipal: #9fd3c0.
 
 ## Discrepancias y tratamiento
@@ -35,12 +35,12 @@ Consulta: 19 oct 2026. Todo dato del visor lleva año y fuente. Ningún valor es
 
 ## Pendientes
 
-- 20 municipios obligados sin dato 2024 incorporado (revisados el 22 oct 2026): Lleida, Lloret, Molins de Rei, Sant Andreu de la Barca, Sant Feliu de Guíxols, Santa Cristina d'Aro, Tordera, Castelló d'Empúries, Castell-Platja d'Aro, l'Ametlla de Mar (Aqualia: www.aqualia.com responde con un CAPTCHA de Incapsula; las webs municipales no publican el documento); Vallirana (publica dos auditorías 2024, una por red, FCC y AVALLSA; falta decidir cuál muestra el visor, como en 2022 con VLR1); Abrera (solo balance 2024: PR 26,3 %, PA 4,3 %; indicadores publicados siguen siendo 2022); Sant Quirze del Vallès (página de auditoría vacía); Montornès (solo 2022); el Masnou (ahora SUMEM, sin auditoría publicada); Ripoll, Sant Andreu de Llavaneres, Sant Sadurní d'Anoia, Altafulla, la Bisbal d'Empordà (sin documento localizable en la web del operador ni del ayuntamiento). Lleida: la presentación de Aqualia a la comisión de seguimiento (feb 2026, paeria.cat, p. 18) cita F9 2024 = 15,5 %, igual que el anexo 2022; no se usa hasta tener la auditoría. Pallejà está dentro de la unidad de Aigües de Barcelona. La Llagosta, Cardedeu y Llinars no son obligados.
+- 30 municipios con auditoría 2024 publicada y no extraída: Lleida, Reus, Lloret, Molins de Rei, Sant Andreu de la Barca, Sant Feliu de Guíxols, Santa Cristina d'Aro, Tordera, Castelló d'Empúries, Castell-Platja d'Aro, l'Ametlla de Mar (Aqualia: enlaces del registro dan 404); Begur, Deltebre, la Ràpita, Malgrat (Aigües de Catalunya: documentos tras tarjetas JS); Banyoles, Olesa, Ripoll, Torelló, Llavaneres, Sant Sadurní, Torroella, Vallirana, Castellbisbal, Altafulla, Sant Quirze, Abrera (solo balance 2024), Montornès (solo 2022 en la web), la Bisbal, el Masnou.
 - Sin dato: Balaguer, la Seu d'Urgell, Vielha e Mijaran (obligados sin auditoría publicada) y 797 municipios no obligados.
-- Capa países: valores EurEau heredados de la v1 sin transcripción propia en `raw/`.
 
 ## URLs principales
 
+- EurEau, Europe's Water in Figures 2026 (23 jun 2026): https://eureau.org/wp-content/uploads/2026/06/FINAL_Europes-Water-in-Figures-Report-2026.pdf (SHA-256 f12331f77d343855dec4bbb2c45b1e6195927308e7eae324cf39faf849c9ff8d; la copia enlazada en la página, en svensktvatten.se, es idéntica). Anexo de datos en las pp. 46-48 impresas.
 - INE tabla 53447: https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/53447 · nota: https://ine.es/dyngs/Prensa/es/ESSA2024.htm
 - ACA registro y anexo III: https://aca.gencat.cat/ca/laigua/infraestructures/xarxes-abastament/xarxes-municipals-auditories-deficiencia-hidraulica/ (cita la disposició addicional 26a del Decret Legislatiu 3/2003)
 - Auditorías 2024: una URL por municipio en `raw/aca2024_extract.psv`; notas por caso en `raw/aca2024_notes.txt`
