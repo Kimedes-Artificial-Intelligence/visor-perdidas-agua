@@ -62,3 +62,63 @@ Consulta: 19 oct 2026. Todo dato del visor lleva año y fuente. Ningún valor es
 - 15 municipios que solo tenían ese dato pasan a "sin dato publicado": Cànoves i Samalús, Granera, Monistrol de Montserrat, Sant Antoni de Vilamajor, Sant Pere de Vilamajor, la Palma de Cervelló, Santa Pau, Àger, Maials, Sant Guim de Freixenet, Seròs, Móra la Nova, la Pobla de Massaluca, Vilalba dels Arcs y Camarles (35.713 hab.).
 - En 25 municipios con dato 2022 del anexo de la ACA desaparece del panel la fila "Fugas 2022 (ACA vía 3Cat)".
 - Cobertura de Catalunya tras la retirada: 135 de 947 municipios, 6,65 M hab. (82 %). Con las auditorías 2024 incorporadas el mismo día (Deltebre pasa a tener dato), 136 de 947 municipios, 6,66 M hab. (82 %).
+
+## Añadido el 22 oct 2026: España por municipio e Illes Balears (FWG-1826)
+
+Vista nueva `#municipios` con los 8.131 municipios de España. Coloreados donde hay dato municipal publicado y redistribuible; en gris, con el motivo de su comunidad, donde no lo hay. No se estima ni se interpola ningún municipio y ninguno se tiñe con el valor de su comunidad.
+
+| Capa | Fuente | Año | Cobertura | Verificación |
+|---|---|---|---|---|
+| Catalunya | Los mismos datos de la vista Catalunya (`muLatest`), sin cambiar ningún valor | 2024 o 2022 | 136 de 947 municipios, 6,66 M hab. | Constante `MU` idéntica a la de `main` |
+| Illes Balears | Govern de les Illes Balears, Servei de Planificació (Portal de l'Aigua), *Resum anual de dades d'abastiment urbà d'aigua, anys 2000 a 2024* | 2000-2024 (se muestra 2024) | 67 de 67 municipios, 1,24 M hab. | 67 valores de 2024 iguales a la tabla de control del ticket (`tests/fixtures/caib_control_2024.psv`, tolerancia 0,01) |
+| Población | INE, Revisión del Padrón municipal a 1/1/2025 (`pobmun25.xlsx` de https://www.ine.es/pob_xls/pobmun.zip) | 2025 | 8.132 municipios, 49.114.494 hab. | Catalunya: 947 cifras iguales a las de Idescat |
+| Geometría | es-atlas 0.6.0, `es/municipalities.json` | | 8.131 municipios y 64 de los 81 territorios compartidos (53xxx) | Ningún municipio desaparece (prueba en `tests/unit/espmun.test.js`) |
+| **Total con dato** | | | **203 de 8.131 municipios, 7,90 M hab. (16,1 % de España)** | Calculado en la página con el padrón |
+
+### Illes Balears: fuente y extracción
+
+- Página: https://www.caib.es/sites/aigua/ca/proveament_distribucia_potabilitzacia/ (consulta 22/10/2026). Origen declarado: "Estimacions del Servei de Planificació a partir de la informació rebuda dels gestors de l'abastiment i ABAQUA".
+- Indicador: `% d'aigua no comptabilitzada` = (total subministrat − consum) / total subministrat. Equivale conceptualmente al agua no registrada, pero es una estimación, no una auditoría. En la página se llama "Agua no contabilizada, estimación del Govern IB".
+- Originales en `raw/caib/` (descarga del 22/10/2026; el servidor exige la cookie de sesión de la página y la cabecera Referer):
+
+| Isla | Archivo | Parámetro `archivopub.do?ctrl=` | Formato real | SHA-256 |
+|---|---|---|---|---|
+| Mallorca | `mallorca_2026-10-22.xlsx` | `MCRST259ZI474988&id=474988` | XLSX (la web lo enlaza como ODS) | 791e41a82979a3a3b2f4c6b404be97d317630a5e2493e53aeca258870c2f136f |
+| Menorca | `menorca_2026-10-22.ods` | `MCRST259ZI474963&id=474963` | ODS | b4928267a827fc8e6dcf00aabb6efb7eec10f574e033540cc580ae2059c840b7 |
+| Eivissa | `eivissa_2026-10-22.ods` | `MCRST259ZI474986&id=474986` | ODS | ed234beedc6975a5a2dc3916109637a6ea671d2ce0e818f61b8cb178abf60018 |
+| Formentera | `formentera_2026-10-22.ods` | `MCRST259ZI474987&id=474987` | ODS | aff9c95f6acfbca6515d79156d146b42d486ef42c4b5154d048d38e478c4d677 |
+
+- PDF de cada isla en la misma página (ids 392375, 392376, 392372 y 392373) para revisión humana; no se guardan en el repositorio.
+- Transcripción: `raw/caib_abastiment_2000_2024.psv`, generada por `node scripts/extract_caib.js` (lector propio de XLSX y ODS en `scripts/lib/sheet.js`, sin dependencias). La prueba unitaria vuelve a extraer los originales y exige el mismo archivo. Unión por código INE con `raw/caib_cruce_ine.psv` (67 de 67 contra es-atlas 0.6.0), nunca por nombre aproximado.
+- Trampas de parseo tratadas: formato detectado por contenido; cabecera localizada por la celda exactamente igual a `TERME MUNICIPAL`; columnas buscadas por nombre en cada archivo; nombres partidos en dos filas ("SANT ANTONI" / "DE PORTMANY", "VILAFRANCA" / "DE BONANY", "SANTA EULÀRIA" / "DES RIU") unidos en bloques de 25 años que empiezan en 2000; coma decimal de Formentera pasada a punto; valores de 2019 con muchos decimales conservados en bruto y redondeados a 2 al mostrar; notas al pie excluidas.
+- `% dades reals` vacío de 2000 a 2015 en todos los municipios y en Sa Pobla 2024.
+- Nota al pie de Mallorca: "A partir de 2023 s'ha estimat el % d'aigua subministrada a la xarxa en alta d'Abaqua segons origen, de manera que s'han llevat les dades d'Indiferenciada". Afecta al desglose por origen, no al % de agua no contabilizada.
+- Regla de calidad: si `% dades reals` es menor que 50 o está vacío, el municipio se pinta con un rayado encima y el panel dice "Valor estimado por el Govern, con poca o ninguna medición real". En 2024: Bunyola, Campanet, Escorca, Fornalutx, Lloseta, Petra, Puigpunyent, Valldemossa y Ferreries (0), Artà (5), Es Migjorn Gran (31) y Sa Pobla (vacío).
+- Comparabilidad: Catalunya (auditorías, F9) y Baleares (estimaciones) no son el mismo indicador. Se pintan con la misma escala `MU_BINS` para leer el orden de magnitud; la página lo dice en la leyenda y en el ranking.
+
+### Geometría nacional
+
+- `scripts/build_geo.js` genera `data/esmun.json`: misma proyección que el resto (`src/geometry/proj.json`), Canarias en el mismo recuadro que la vista por comunidades, simplificación topojson-simplify al cuantil 0,6 y coordenadas en centésimas con órdenes relativas (la capa se dibuja con `transform="scale(.01)"`). Página resultante: unos 1,45 MB sin comprimir, con límite de 2,5 MB comprobado en la CI.
+- 17 recintos pequeños de un solo arco se pierden al simplificar: se dibujan sin simplificar y encima de sus vecinos.
+- 11 municipios tienen área nula en es-atlas 0.6.0 y se dibujan como un punto: Geldo (12067), Castellfollit de la Roca (17046), Castilleja de Guzmán (41028), El Puente del Arzobispo (45138), Benirredrà (46066), Emperador (46117), Llocnou de la Corona (46152), Maleján (50156), Puigdàlber (08174), l'Alqueria d'Asnar (03017) y Rafal (03109). Ceuta y Melilla, como en la vista por comunidades, también son puntos.
+- Sant Hipòlit de Voltregà (08215) tiene área nula en es-atlas: se usa el trazado de OpenStreetMap, como en la vista Catalunya.
+- Cuatro recintos tienen el sentido de giro invertido (03131, 20015 y 53065 en la fuente; 08111 tras simplificar). Se corrigen antes de proyectar; si no, d3 los dibuja como el resto del globo.
+- Territorios compartidos (53xxx): grises, sin interacción, con el texto "territorio compartido entre municipios" al pasar el ratón. 17 de los 81 tienen área nula en es-atlas y no se dibujan. Gibraltar (54006) no se dibuja.
+- Límites de provincia (trazo fino) y de comunidad autónoma (trazo grueso) con `topojson.mesh` sobre la misma topología simplificada.
+- Usansolo (48916) figura en el padrón de 2025 pero no en es-atlas 0.6.0 (segregado de Galdakao): cuenta en la población de España, pero no se dibuja; su superficie aparece dentro de Galdakao.
+
+### Motivo por comunidad (sin dato municipal)
+
+| Comunidad | Texto |
+|---|---|
+| Cataluña | Dato de las auditorías publicadas (ACA). En gris, municipios sin auditoría publicada. |
+| Illes Balears | Govern de les Illes Balears, estimación anual por municipio. |
+| Andalucía, Castilla-La Mancha | MITECO, Informe nacional de fugas 2024 (nov. 2025), p. 29: no hay registro público de pérdidas por municipio. |
+| Ceuta y Melilla | Sin dato municipal publicado. El INE publica las dos ciudades agregadas. |
+| Resto | Sin registro público de pérdidas por municipio a 22/10/2026. Algunos operadores publican su cifra, pero con todos los derechos reservados. |
+
+### Pendientes
+
+- Confirmar con la CAIB la versión de la licencia CC BY-SA de su aviso legal.
+- La estructura (índice por código INE, motivo por comunidad) admite cargar la tabla municipal de la evaluación de fugas 2024 de MITECO (RD 3/2023) si se obtiene por solicitud de acceso.
+- No se usan cifras de operadores con derechos reservados (Canal, EMASESA, EMUASA, Aguas de Alicante, Aguas de Huelva, Hidralia, AMVISA) ni de prensa.

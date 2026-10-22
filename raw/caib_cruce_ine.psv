@@ -1,0 +1,70 @@
+# Tabla de cruce de los municipios de Illes Balears: nombre en los ficheros del Govern IB -> código INE (es-atlas 0.6.0)
+# Verificada el 22/10/2026 contra es-atlas 0.6.0 (67 de 67). FWG-1826.
+# codigo_ine|nombre_es_atlas|nombre_fuente|isla
+07001|Alaró|ALARÓ|Mallorca
+07002|Alaior|ALAIOR|Menorca
+07003|Alcúdia|ALCÚDIA|Mallorca
+07004|Algaida|ALGAIDA|Mallorca
+07005|Andratx|ANDRATX|Mallorca
+07006|Artà|ARTÀ|Mallorca
+07007|Banyalbufar|BANYALBUFAR|Mallorca
+07008|Binissalem|BINISSALEM|Mallorca
+07009|Búger|BÚGER|Mallorca
+07010|Bunyola|BUNYOLA|Mallorca
+07011|Calvià|CALVIÀ|Mallorca
+07012|Campanet|CAMPANET|Mallorca
+07013|Campos|CAMPOS|Mallorca
+07014|Capdepera|CAPDEPERA|Mallorca
+07015|Ciutadella de Menorca|CIUTADELLA|Menorca
+07016|Consell|CONSELL|Mallorca
+07017|Costitx|COSTITX|Mallorca
+07018|Deià|DEIÀ|Mallorca
+07019|Escorca|ESCORCA|Mallorca
+07020|Esporles|ESPORLES|Mallorca
+07021|Estellencs|ESTELLENCS|Mallorca
+07022|Felanitx|FELANITX|Mallorca
+07023|Ferreries|FERRERIES|Menorca
+07024|Formentera|FORMENTERA|Formentera
+07025|Fornalutx|FORNALUTX|Mallorca
+07026|Eivissa|EIVISSA|Eivissa
+07027|Inca|INCA|Mallorca
+07028|Lloret de Vistalegre|LLORET DE VISTA ALEGRE|Mallorca
+07029|Lloseta|LLOSETA|Mallorca
+07030|Llubí|LLUBÍ|Mallorca
+07031|Llucmajor|LLUCMAJOR|Mallorca
+07032|Maó|MAÓ|Menorca
+07033|Manacor|MANACOR|Mallorca
+07034|Mancor de la Vall|MANCOR DE LA VALL|Mallorca
+07035|Maria de la Salut|MARIA DE LA SALUT|Mallorca
+07036|Marratxí|MARRATXÍ|Mallorca
+07037|Es Mercadal|ES MERCADAL|Menorca
+07038|Montuïri|MONTUÏRI|Mallorca
+07039|Muro|MURO|Mallorca
+07040|Palma|PALMA|Mallorca
+07041|Petra|PETRA|Mallorca
+07042|Pollença|POLLENÇA|Mallorca
+07043|Porreres|PORRERES|Mallorca
+07044|Sa Pobla|SA POBLA|Mallorca
+07045|Puigpunyent|PUIGPUNYENT|Mallorca
+07046|Sant Antoni de Portmany|SANT ANTONI DE PORTMANY|Eivissa
+07047|Sencelles|SENCELLES|Mallorca
+07048|Sant Josep de sa Talaia|SANT JOSEP DE SA TALAIA|Eivissa
+07049|Sant Joan|SANT JOAN|Mallorca
+07050|Sant Joan de Labritja|SANT JOAN DE LABRITJA|Eivissa
+07051|Sant Llorenç des Cardassar|SANT LLORENÇ DES CARDASSAR|Mallorca
+07052|Sant Lluís|SANT LLUÍS|Menorca
+07053|Santa Eugènia|SANTA EUGÈNIA|Mallorca
+07054|Santa Eulària des Riu|SANTA EULÀRIA DES RIU|Eivissa
+07055|Santa Margalida|SANTA MARGALIDA|Mallorca
+07056|Santa María del Camí|SANTA MARIA DEL CAMÍ|Mallorca
+07057|Santanyí|SANTANYÍ|Mallorca
+07058|Selva|SELVA|Mallorca
+07059|ses Salines|SES SALINES|Mallorca
+07060|Sineu|SINEU|Mallorca
+07061|Sóller|SÓLLER|Mallorca
+07062|Son Servera|SON SERVERA|Mallorca
+07063|Valldemossa|VALLDEMOSSA|Mallorca
+07064|es Castell|ES CASTELL|Menorca
+07065|Vilafranca de Bonany|VILAFRANCA DE BONANY|Mallorca
+07901|Ariany|ARIANY|Mallorca
+07902|Es Migjorn Gran|ES MIGJORN GRAN|Menorca
