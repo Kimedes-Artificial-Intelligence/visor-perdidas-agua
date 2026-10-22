@@ -7,8 +7,8 @@ const SOURCES={
   MU:ACA_MUNI,COMS:['raw/idescat_comarques_mun.txt'],URLS:['raw/aca2024_extract.psv'],UNITS:['scripts/build_data.js'],
   CC:['raw/ine53447_2008_2024.txt','raw/ine_hogares_2024.txt','scripts/build_embed.js'],
   OPS:['data/operators.json'],
-  // EurEau, INE, SSB y Statistics Iceland, escritos en app.js (sin transcripción en raw/)
-  D:['src/app.js'],M:['src/app.js'],ESM:['src/app.js'],IDX:['src/app.js'],MG:['src/app.js'],MU_BINS:['src/app.js'],FULL:['src/app.js'],
+  // EurEau (transcripción en raw/eureau_ewif2026.psv), INE, SSB y Statistics Iceland, escritos en app.js
+  D:['src/app.js','raw/eureau_ewif2026.psv'],M:['src/app.js','raw/eureau_ewif2026.psv'],ESM:['src/app.js'],IDX:['src/app.js'],MG:['src/app.js'],MU_BINS:['src/app.js'],FULL:['src/app.js'],
   GEO:['src/geometry/geo.json'],
   CAT:['src/geometry/cat.json','raw/osm_08215.json'],
   ESP:['package-lock.json','src/geometry/proj.json'],
