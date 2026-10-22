@@ -39,4 +39,4 @@ El código se publica con licencia MIT (`LICENSE`). Los datos conservan la licen
 
 ## Cómo contribuir
 
-Todo cambio entra por pull request, con las verificaciones en verde y una aprobación. Las correcciones de datos deben cambiar primero el archivo de `raw/` del que proceden.
+Todo cambio entra por pull request y solo se une a `main` con las verificaciones en verde. Las correcciones de datos deben cambiar primero el archivo de `raw/` del que proceden.
