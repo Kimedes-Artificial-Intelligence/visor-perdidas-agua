@@ -138,9 +138,9 @@ Cuando las comprobaciones estén en verde puedes ver cómo queda el visor con tu
 
 ## 8. Revisión y publicación
 
-Una persona responsable del repositorio revisa el pull request. Puede aprobarlo o pedir cambios con un comentario. Si pide cambios, corrígelos en la misma rama, como en el paso 4.
+Una persona responsable del repositorio revisa el pull request y lo une a `main`, o te pide cambios con un comentario. Si pide cambios, corrígelos en la misma rama, como en el paso 4.
 
-Todo cambio necesita las comprobaciones en verde y una aprobación antes de unirse a `main`. No pulses **Merge pull request** aunque el botón aparezca activo: lo hace quien revisa.
+Todo cambio entra por pull request y solo se une a `main` con las comprobaciones en verde; no hace falta una aprobación formal. No pulses **Merge pull request** aunque el botón aparezca activo: lo hace quien revisa.
 
 ## Para quien trabaje en local
 
