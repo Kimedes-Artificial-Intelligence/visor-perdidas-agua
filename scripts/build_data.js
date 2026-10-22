@@ -43,3 +43,21 @@ console.log('munis',muni.length,'with ACA annex',n('aca'),'with 2024',n('a24'),'
 for(const [r,o] of Object.entries(out.regions))if(o.flags.length)console.log('FLAG',r,o.flags);
 console.log('2024 audit published (obligats):',n('audit2024'),'with 2024 values',n('a24'),'pop',muni.filter(m=>m.a24).reduce((a,m)=>a+m.pop,0));
 console.log('ESP 2024',out.regions['España'].anr_pct.at(-1),out.regions['España'].pr_pct.at(-1),'CAT',out.regions['Cataluña'].anr_pct.at(-1),out.regions['Cataluña'].pr_pct.at(-1));
+// España por municipio: población (INE, padrón 1/1/2025), provincias y datos de Illes Balears (Govern IB)
+{
+  const atlas=require('es-atlas/es/municipalities.json');
+  const pad={};let popES=0;
+  for(const l of R('ine_padron2025.psv')){if(l.startsWith('#'))continue;const [c,,p]=l.split('|');pad[c]=+p;popES+=+p;}
+  const pc={};for(const l of R('ine_provincias_ccaa.psv')){if(l.startsWith('#'))continue;const [p,c]=l.split('|');pc[p]=c;}
+  const prov={};for(const g of atlas.objects.provinces.geometries)if(pc[g.id])prov[g.id]=[g.properties.name,pc[g.id]];
+  const catName=Object.fromEntries(muni.map(m=>[m.ine,m.name]));
+  const mun={};
+  for(const g of atlas.objects.municipalities.geometries){if(/^5[34]/.test(g.id))continue;
+    if(pad[g.id]==null)throw 'sin población INE '+g.id;mun[g.id]=[catName[g.id]||g.properties.name,pad[g.id]];}
+  // Govern IB: una serie 2000-2024 por municipio. Valores tal como vienen en la fuente; null si la celda está vacía.
+  const ib={};const v=x=>x===''?null:+x;
+  for(const l of R('caib_abastiment_2000_2024.psv')){if(l.startsWith('#'))continue;const [c,,isla,y,t,co,p,r]=l.split('|');
+    const o=ib[c]??={isla,y0:2000,t:[],c:[],p:[],r:[]};const i=+y-2000;o.t[i]=v(t);o.c[i]=v(co);o.p[i]=v(p);o.r[i]=v(r);}
+  fs.writeFileSync('data/espmun.json',JSON.stringify({meta:{pop:'INE, Revisión del Padrón municipal a 1/1/2025 (pobmun25.xlsx)',ib:'Govern de les Illes Balears, Servei de Planificació. Dades d\'abastiment urbà 2000-2024. Consulta 22/10/2026',pop_es:popES},prov,mun,ib}));
+  console.log('España por municipio:',Object.keys(mun).length,'municipios; Baleares',Object.keys(ib).length,'; población España',popES);
+}

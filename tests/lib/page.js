@@ -6,7 +6,7 @@ const REFERENCE=path.join(ROOT,'reference/perdidas-agua-europa.html');
 const REFERENCE_DOC=path.join(ROOT,'.build/reference.html');
 
 // Constantes de datos embebidas en el <script> de la página
-const DATA_CONSTS=['GEO','CAT','ESP','CC','COMS','URLS','UNITS','MU','OPS','M','D','ESM','IDX','MG','MU_BINS','FULL'];
+const DATA_CONSTS=['GEO','CAT','ESP','MUN','CC','COMS','URLS','UNITS','MU','OPS','PROV','MUD','POP_ES','IB','M','D','ESM','IDX','MG','MU_BINS','FULL'];
 
 function parts(html){
   const css=html.slice(html.lastIndexOf('<style>\n')+8,html.lastIndexOf('</style>'));

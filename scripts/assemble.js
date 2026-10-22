@@ -6,7 +6,7 @@ const DESC='Pérdidas de agua en las redes de abastecimiento de Europa, España 
 const URL='https://kimedes-artificial-intelligence.github.io/visor-perdidas-agua/';
 // Geometría: países y contexto de la v1; municipios de la v1 más 08215 (OSM); CCAA de build_geo.js
 const cat=JSON.parse(R('src/geometry/cat.json'));cat.muni['08215']=R('data/m08215.txt');
-const geo='const GEO='+R('src/geometry/geo.json')+';\n'+'const CAT='+JSON.stringify(cat)+';\n'+'const ESP='+R('data/esp.json')+';\n';
+const geo='const GEO='+R('src/geometry/geo.json')+';\n'+'const CAT='+JSON.stringify(cat)+';\n'+'const ESP='+R('data/esp.json')+';\n'+'const MUN='+R('data/esmun.json')+';\n';
 // Lo que antes ponía el esqueleto del artifact
 const reset=':root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}\nbody{margin:0}\n[hidden]{display:none!important}\nimg{max-width:100%}\n';
 const head=`<!doctype html>

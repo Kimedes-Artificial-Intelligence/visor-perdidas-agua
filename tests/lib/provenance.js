@@ -12,6 +12,12 @@ const SOURCES={
   GEO:['src/geometry/geo.json'],
   CAT:['src/geometry/cat.json','raw/osm_08215.json'],
   ESP:['package-lock.json','src/geometry/proj.json'],
+  // España por municipio: geometría de es-atlas simplificada en build_geo.js; población del INE; Baleares del Govern IB
+  MUN:['package-lock.json','src/geometry/proj.json','scripts/build_geo.js','raw/osm_08215.json'],
+  PROV:['package-lock.json','raw/ine_provincias_ccaa.psv'],
+  MUD:['raw/ine_padron2025.psv','package-lock.json','raw/idescat_comarques_mun.txt'],
+  POP_ES:['raw/ine_padron2025.psv'],
+  IB:['raw/caib_abastiment_2000_2024.psv'],
 };
 
 // Constantes que cambiaron sin que cambiara ninguno de sus archivos de origen

@@ -17,5 +17,9 @@ for(const m of M.muni){const a24=m.a24?[m.a24.anr,m.a24.pr,m.a24.ili,m.a24.f1,m.
   // Posición 5: antes 3Cat/ACN, retirado por su licencia; se mantiene a 0 para no mover el resto
   MU[m.ine]=[m.name,coms.indexOf(m.comarca),m.pop,a24,a22,0,m.audit2024===true?1:m.audit2024===false?2:0];}
 const ops={};for(const [k,v] of Object.entries(O)){if(k==='meta')continue;ops[k]=v.map(x=>x[0]);}
-const out=`const CC=${JSON.stringify(CC)};\nconst COMS=${JSON.stringify(coms)};\nconst URLS=${JSON.stringify(urls)};\nconst UNITS=${JSON.stringify(units)};\nconst MU=${JSON.stringify(MU)};\nconst OPS=${JSON.stringify(ops)};\n`;
+// España por municipio
+const EM=JSON.parse(fs.readFileSync('data/espmun.json'));
+const IB={};for(const [k,o] of Object.entries(EM.ib))IB[k]=[o.isla,o.p,o.r,o.t,o.c];
+const em=`const PROV=${JSON.stringify(EM.prov)};\nconst MUD=${JSON.stringify(EM.mun)};\nconst POP_ES=${EM.meta.pop_es};\nconst IB=${JSON.stringify(IB)};\n`;
+const out=`const CC=${JSON.stringify(CC)};\nconst COMS=${JSON.stringify(coms)};\nconst URLS=${JSON.stringify(urls)};\nconst UNITS=${JSON.stringify(units)};\nconst MU=${JSON.stringify(MU)};\nconst OPS=${JSON.stringify(ops)};\n`+em;
 fs.mkdirSync('.build',{recursive:true});fs.writeFileSync('.build/data.js',out);console.log('data.js',out.length,'urls',urls.length,'units',units);

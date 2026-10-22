@@ -17,6 +17,8 @@ Condiciones comprobadas el 21 y el 22 de octubre de 2026 (EurEau, IGN y origen d
 | SSB (Statistics Norway) | CC BY 4.0 | "Statistics Norway" | https://www.ssb.no/en/diverse/lisens |
 | Statistics Iceland | CC BY 4.0 | "Statistics Iceland" | https://statice.is/publications/open-data-access |
 | Auditorías 2024 de cada operador (enlazadas desde el registro de la ACA) | Documentos publicados por obligación legal (disposició addicional 26a del Decret Legislatiu 3/2003, en la redacción que obliga a publicar la auditoría en la web de la entidad). Se transcriben solo los indicadores numéricos, que son datos de hecho, con la URL de origen; no se reproduce ningún texto ni gráfico. Condiciones de reutilización de cada operador: **pendiente de verificar** (76 documentos; el aviso legal de cada web no se ha revisado uno a uno). | URL de origen por municipio en `raw/aca2024_extract.psv` | Registro de la ACA (ver `data/sources.md`) |
+| Govern de les Illes Balears, Servei de Planificació (Portal de l'Aigua): *Resum anual de dades d'abastiment urbà d'aigua, anys 2000 a 2024* | **Creative Commons Reconeixement-Compartir Igual (by-sa)**, según el aviso legal de la CAIB, que se aplica a caib.es. El aviso no indica la versión: **pendiente de confirmar con la CAIB**; se usará 4.0 solo si la CAIB lo confirma. Compartir igual: los datos de Baleares y sus derivados (`raw/caib_abastiment_2000_2024.psv`, `data/espmun.json` y la constante `IB` de la página) se distribuyen con la misma licencia. | "Font: Govern de les Illes Balears, Servei de Planificació. Dades d'abastiment urbà 2000-2024. Consulta 22/10/2026" | https://www.caib.es/webgoib/aviso-legal · https://www.caib.es/sites/aigua/ca/proveament_distribucia_potabilitzacia/ |
+| INE: cifras oficiales de población, Revisión del Padrón municipal a 1/1/2025 (`pobmun25.xlsx`) | **CC BY 4.0**, como el resto del INE (ver la fila del INE). | "Elaboración propia con datos extraídos del sitio web del INE: www.ine.es" | https://ine.es/dyngs/AYU/es/index.htm?cid=125 |
 | Webs de operadores (`data/operators.json`) | Solo se citan nombres y enlaces; no se reproduce contenido. | No aplica | No aplica |
 
 ## Por archivo
@@ -34,10 +36,18 @@ Condiciones comprobadas el 21 y el 22 de octubre de 2026 (EurEau, IGN y origen d
 | `raw/idescat_pop2025.txt` | Idescat | Condiciones de reutilización de Idescat | Padrón a 1 de enero de 2025 |
 | `raw/idescat_comarques_mun.txt` | Idescat | Condiciones de reutilización de Idescat | Consultado el 19 de octubre de 2026 |
 | `raw/osm_08215.json` | OpenStreetMap | **ODbL 1.0** | |
+| `raw/caib/*.xlsx`, `raw/caib/*.ods` | Govern de les Illes Balears, originales descargados el 22/10/2026 | **CC BY-SA** (versión pendiente de confirmar) | Datos 2000-2024 |
+| `raw/caib_abastiment_2000_2024.psv` | Govern de les Illes Balears, transcripción generada por `scripts/extract_caib.js` | **CC BY-SA** (versión pendiente de confirmar) | Consultado el 22 de octubre de 2026 |
+| `raw/caib_cruce_ine.psv` | Tabla propia: nombres de la fuente CAIB y códigos y nombres de es-atlas (INE) | La de cada fuente | |
+| `raw/ine/pobmun25.xlsx` | INE, padrón municipal | CC BY 4.0 | Padrón a 1 de enero de 2025 (archivo de noviembre de 2025) |
+| `raw/ine_padron2025.psv` | INE, transcripción generada por `scripts/extract_ine_padron.js` | CC BY 4.0 | Padrón a 1 de enero de 2025 |
+| `raw/ine_provincias_ccaa.psv` | INE, relación de provincias y comunidades | CC BY 4.0 | |
 | `data/m08215.txt` | OpenStreetMap, proyectado | **ODbL 1.0** | |
 | `data/muni.json` | ACA, auditorías 2024 e Idescat | La de cada fuente | |
 | `data/ccaa.json` | INE | CC BY 4.0 | |
 | `data/esp.json` | es-atlas (IGN) | CC BY 4.0 | |
+| `data/esmun.json` | es-atlas (IGN) y, para 08215, OpenStreetMap | CC BY 4.0; **ODbL 1.0** por la geometría de 08215 | |
+| `data/espmun.json` | INE (padrón) y Govern de les Illes Balears | CC BY 4.0 y **CC BY-SA** (datos de Baleares) | |
 | `data/operators.json` | Webs de operadores | No aplica | |
 | `src/geometry/cat.json` | es-atlas (IGN) | CC BY 4.0 | |
 | `src/geometry/geo.json` | Geometría de países de la v1, ya proyectada (ETRS89-LAEA) y sin metadatos. Origen: **pendiente de verificar**; la auditoría del 22 de octubre de 2026 no ha podido determinarlo a partir del archivo | Pendiente de verificar | |
@@ -46,7 +56,7 @@ Condiciones comprobadas el 21 y el 22 de octubre de 2026 (EurEau, IGN y origen d
 
 ## Archivos bajo ODbL
 
-`raw/osm_08215.json` y `data/m08215.txt` contienen datos de OpenStreetMap y se distribuyen bajo la Open Database License 1.0 (https://opendatacommons.org/licenses/odbl/1-0/). Cualquier copia o derivado de esos archivos debe mantener la atribución "© OpenStreetMap contributors" y la misma licencia. La página generada en `dist/` incluye esa geometría como obra producida y muestra la atribución.
+`raw/osm_08215.json`, `data/m08215.txt` y `data/esmun.json` (solo el trazado de 08215) contienen datos de OpenStreetMap y se distribuyen bajo la Open Database License 1.0 (https://opendatacommons.org/licenses/odbl/1-0/). Cualquier copia o derivado de esos archivos debe mantener la atribución "© OpenStreetMap contributors" y la misma licencia. La página generada en `dist/` incluye esa geometría como obra producida y muestra la atribución.
 
 ## Fuentes excluidas
 
