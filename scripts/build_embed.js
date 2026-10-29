@@ -22,4 +22,9 @@ const EM=JSON.parse(fs.readFileSync('data/espmun.json'));
 const IB={};for(const [k,o] of Object.entries(EM.ib))IB[k]=[o.isla,o.p,o.r,o.t,o.c];
 const em=`const PROV=${JSON.stringify(EM.prov)};\nconst MUD=${JSON.stringify(EM.mun)};\nconst POP_ES=${EM.meta.pop_es};\nconst IB=${JSON.stringify(IB)};\n`;
 const out=`const CC=${JSON.stringify(CC)};\nconst COMS=${JSON.stringify(coms)};\nconst URLS=${JSON.stringify(urls)};\nconst UNITS=${JSON.stringify(units)};\nconst MU=${JSON.stringify(MU)};\nconst OPS=${JSON.stringify(ops)};\n`+em;
-fs.mkdirSync('.build',{recursive:true});fs.writeFileSync('.build/data.js',out);console.log('data.js',out.length,'urls',urls.length,'units',units);
+// Modelo de gestión del servicio de agua, Catalunya (ESF / Aigua és Vida, Datawrapper F298j v45, uso interno)
+const GL=fs.readFileSync('raw/esf_gestio_aigua_cat_2026-07-10.psv','utf8').trim().split('\n').filter(l=>!l.startsWith('#'));
+const GK={'Pública':'P','Privada':'V','Empresa mixta privada – pública':'M','Cooperativa / associació':'C','':'-'};
+const GES={};for(const l of GL){const a=l.split('|');GES[a[0]]=[GK[a[1]],...a.slice(2)];}
+const out2=`const GES=${JSON.stringify(GES)};\n`;
+fs.mkdirSync('.build',{recursive:true});fs.writeFileSync('.build/data.js',out+out2);console.log('data.js',out.length,'urls',urls.length,'units',units);

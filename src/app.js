@@ -95,6 +95,36 @@ const UM_COUNT=`${grp(UM_HAS.length)} de ${grp(UM_IDS.length)} municipios con da
 const UM_NOTE="Los valores de Catalunya (auditorías) y Baleares (estimaciones) no son el mismo indicador. Se pintan en la misma escala para leer el orden de magnitud, no para comparar municipio a municipio entre comunidades.";
 const fmt2=v=>es(Math.round(v*100)/100,v*100%10===0?1:2);
 
+// ================= Modelo de gestión y fuentes (uso interno) =================
+let colorBy="loss";
+const GCAT={P:["Municipalizado","Gestión pública: ayuntamiento, empresa o ente 100 % público, mancomunidad o consorcio"],
+  M:["Mixta","Empresa mixta público-privada"],V:["Privada (utility)","Concesión a una empresa privada"],
+  C:["Cooperativa","Cooperativa o asociación de usuarios"],N:["Sin dato","Sin modelo de gestión publicado"]};
+const GORD=["P","M","V","C"];
+const gesOf=id=>{const r=GES[id];return r&&GCAT[r[0]]&&r[0]!=="N"?r[0]:null;};
+const gesColor=k=>k?`var(--g-${k.toLowerCase()})`:"";
+const SRC={
+  esf:{n:"Enginyeria Sense Fronteres (ESF) · Aigua és Vida, «La Gestió de l'Aigua a Catalunya per Municipi»",u:"https://datawrapper.dwcdn.net/F298j/45/",d:"Datawrapper F298j v45, publicado 23/06/2026, actualizado 10/07/2026, consulta 29/10/2026. Tipología de la concesión, empresa, grupo, fechas de contrato y remunicipalización. Derechos de sus autores: uso interno con cita"},
+  aca22:{n:"ACA, Avaluació comparativa de les auditories d'eficiència hidràulica, annex III",u:"https://aca.gencat.cat/web/.content/20_Aigua/02_infraestructures/02_xarxes_abastament/xarxes-municipals-auditories-eficiencia-hidraulica/informe-auditories-hidrauliques.pdf",d:"Versión mayo 2025, datos 2022. Agua no registrada (F9), ILI, F1"},
+  acareg:{n:"ACA, registro de auditorías de eficiencia hidráulica",u:"https://aca.gencat.cat/ca/laigua/infraestructures/xarxes-abastament/xarxes-municipals-auditories-deficiencia-hidraulica/",d:"Obligación: DA 26ª del Decreto Legislativo 3/2003"},
+  idescat:{n:"Idescat, Padró municipal d'habitants 1/1/2025",u:"https://api.idescat.cat/taules/v2/pmh/446/477/mun/data?YEAR=2025&SEX=TOTAL",d:"Población municipal"},
+  ine:{n:"INE, Revisión del Padrón municipal 1/1/2025",u:"https://www.ine.es/pob_xls/pobmun.zip",d:"Población municipal"},
+  ine53447:{n:"INE, Estadística sobre el suministro y saneamiento del agua (tabla 53447)",u:"https://ine.es/dyngs/Prensa/es/ESSA2024.htm",d:"Valor de toda la comunidad autónoma, 2024. Solo referencia"},
+  caib:{n:"Govern de les Illes Balears, Servei de Planificació. Dades d'abastiment urbà 2000-2024",u:"https://www.caib.es/sites/aigua/ca/proveament_distribucia_potabilitzacia/",d:"Consulta 22/10/2026. CC BY-SA. Agua no contabilizada estimada"},
+  eiel:{n:"Pendiente: EIEL, Secretaría de Estado de Política Territorial",u:"https://eiel.redsara.es/descargas/",d:"Campos de gestión y de pérdidas por núcleo. Portal en mantenimiento el 29/10/2026; se incorporará cuando vuelva. Cubre municipios de menos de 50.000 hab., sin País Vasco ni Navarra"}
+};
+function srcList(items){return `<div><h3>Fuentes de este municipio</h3><ol class="srcs">${items.filter(Boolean).map(([what,k])=>{const o=typeof k==="string"?SRC[k]:k;
+  return `<li><span class="what">${esc(what)}</span><b>${esc(o.n)}</b>${o.d?". "+esc(o.d)+".":""}${o.u?` <a href="${esc(o.u)}" target="_blank" rel="noopener">Abrir fuente</a>`:""}</li>`;}).join("")}</ol></div>`;}
+function gesBlock(id){const r=GES[id];
+  if(!r)return `<div><h3>Modelo de gestión</h3><p><span class="gtag N">${GCAT.N[0]}</span></p><p class="note">Pendiente de la EIEL (campo de gestión de la red de distribución). No se infiere ningún valor.</p></div>`;
+  const [k,emp,corp,ini,dur,fin,proc,anyR,alta,altaM]=r;const c=GCAT[k]||GCAT.N;
+  return `<div><h3>Modelo de gestión del abastecimiento</h3><p><span class="gtag ${GCAT[k]?k:"N"}">${c[0]}</span></p><p class="note" style="margin-top:6px">${esc(c[1])}.</p><dl>
+   ${row("Operador",esc(emp))}${corp?row("Grupo empresarial",esc(corp)):""}${ini?row("Inicio del contrato",esc(ini)):""}${dur?row("Duración",esc(dur),"años"):""}${fin?row(k==="P"?"Fin de la concesión anterior":"Fin de la concesión",esc(fin)):""}
+   ${anyR?row("Remunicipalizado en",esc(anyR)):""}${proc==="Sí"?row("En proceso de remunicipalización","Sí"):""}${alta?row("Sistema en alta",esc(alta)):""}${altaM?row("Gestión en alta",esc(altaM)):""}</dl></div>`;}
+function gesSummary(ids){const n={P:0,M:0,V:0,C:0,N:0},p={P:0,M:0,V:0,C:0,N:0};let tot=0;
+  for(const id of ids){const k=gesOf(id)||"N";const pop=MU[id]?MU[id][2]:(MUD[id]?MUD[id][1]:0);n[k]++;p[k]+=pop;tot+=pop;}
+  return `<div class="gsum">${[...GORD,"N"].filter(k=>n[k]).map(k=>`<span><i style="display:inline-block;width:10px;height:10px;background:${k==="N"?"var(--nodata)":gesColor(k)};margin-right:6px"></i>${GCAT[k][0]}</span><span class="bar"><span style="width:${(p[k]/tot*100).toFixed(1)}%;background:${k==="N"?"var(--nodata)":gesColor(k)}"></span></span><span class="v">${grp(n[k])} mun.</span><span class="v">${es(p[k]/tot*100,1)} % pob.</span>`).join("")}</div>`;}
+
 // ================= mapa: construcción =================
 const svg=$("#map"),box=$("#mapbox"),tip=$("#tip");
 const g=$("#countries"),dots=$("#dots"),els={};
@@ -165,6 +195,9 @@ function legend(){
   else if(level==="es"){const m=ESM[esMetric];const f=v=>String(v);const dash=a=>a.map(x=>x.replace(/(\d)-(\d)/,'$1–$2'));
     L.innerHTML=`<span class="t">${m.short} (%) · INE ${YRS[yi]}</span>`+dash(binLabels(m.bins,f)).map((l,i)=>`<span><i style="background:var(--c${i+1})"></i>${l}</span>`).join("")+`<span><i style="background:repeating-linear-gradient(45deg,var(--surface) 0 3px,var(--line) 3px 4px)"></i>sin dato</span><span class="srcnote">% sobre el volumen suministrado a la red. Ceuta y Melilla, agregadas (dos ciudades, volumen reducido). Canarias, en recuadro.</span>`;
     $("#hint").textContent="Clic en una comunidad para fijarla. Desde Cataluña se baja a municipios.";}
+  else if((level==="mu"||level==="cat")&&colorBy==="ges"){
+    L.innerHTML=`<span class="t">Modelo de gestión del abastecimiento · ESF / Aigua és Vida 2026</span>`+GORD.map(k=>`<span><i style="background:${gesColor(k)}"></i>${GCAT[k][0]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin dato${level==="mu"?" (fuera de Catalunya: pendiente EIEL)":""}</span><span class="srcnote">Catalunya, 947 municipios. Clic en un municipio para ver operador, contrato y todas las fuentes citadas.</span>`+gesSummary(Object.keys(MU));
+    $("#hint").textContent=level==="mu"?"Rueda, pellizco o doble clic para acercar. Fuera de Catalunya el modelo de gestión está pendiente de la EIEL.":"Clic en un municipio para fijarlo y ver sus fuentes.";}
   else if(level==="mu"){L.innerHTML=`<span class="t">Pérdidas por municipio (%) · último dato</span>`+MU_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin dato municipal publicado</span><span><i style="background:repeating-linear-gradient(45deg,#eba25a 0 3px,var(--fg) 3px 4px)"></i>estimación con poca o ninguna medición real</span><span class="srcnote">Catalunya: agua no registrada de las auditorías (ACA, F9). Illes Balears: agua no contabilizada, estimación del Govern IB 2024. ${UM_NOTE}</span>`;
     $("#hint").textContent="Rueda, pellizco o doble clic para acercar; arrastra para desplazar. En gris: sin dato municipal publicado, no se estima nada.";}
   else{L.innerHTML=`<span class="t">Agua no registrada (%) · último dato</span>`+MU_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin auditoría publicada</span><span class="srcnote">Dato 2024 de las auditorías publicadas por cada operador; si no hay, 2022 del anexo de la ACA. Cada valor lleva su año y fuente en el panel.</span>`;
@@ -172,7 +205,7 @@ function legend(){
 }
 function headerCtl(){
   document.querySelectorAll(".lvl button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.l===level));
-  $("#segEU").hidden=level!=="eu";$("#segES").hidden=level!=="es";$("#yearsel").hidden=level!=="es";$("#ccsel").hidden=level!=="mu";$("#zoomCtl").hidden=level!=="mu";svg.classList.toggle("zoomable",level==="mu");
+  $("#segEU").hidden=level!=="eu";$("#segES").hidden=level!=="es";$("#yearsel").hidden=level!=="es";$("#ccsel").hidden=level!=="mu";$("#segMG").hidden=level!=="mu"&&level!=="cat";document.querySelectorAll("#segMG button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.g===colorBy));$("#zoomCtl").hidden=level!=="mu";svg.classList.toggle("zoomable",level==="mu");
   document.querySelectorAll("#segEU button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===metric));
   document.querySelectorAll("#segES button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===esMetric));
   const A=$("#avg");
@@ -184,7 +217,15 @@ function headerCtl(){
   C.innerHTML=chain.map(l=>[l,T[l]]).map(([l,t],i)=>`${i?'<span class="sep">/</span>':''}<button data-l="${l}" ${l===level?'aria-current="page"':''}>${t}</button>`).join("");
   $("#maphead").textContent=level==="eu"?"ETRS89-LAEA · EurEau 2026":level==="es"?`Comunidades autónomas · INE ${YRS[yi]}`:level==="mu"?UM_COUNT:"947 municipios · auditorías 2022-2024 (ACA y operadores)";
 }
-function paint(){paintEU();paintES();legend();headerCtl();renderRank();renderPanel();marks();}
+function paintMun(){
+  for(const [id,e] of Object.entries(muEls)){let f="";
+    if(colorBy==="ges")f=gesColor(gesOf(id));else{const L=muLatest(id);f=L?muColor(L.v):"";}
+    e.style.fill=f;}
+  for(const [id,e] of Object.entries(umEls)){let f="";
+    if(colorBy==="ges")f=gesColor(gesOf(id));else{const L=umLatest(id);f=L?muColor(L.v):"";}
+    e.style.fill=f;}
+  muLayer.querySelectorAll(".umlow").forEach(e=>e.style.display=colorBy==="ges"?"none":"");}
+function paint(){paintEU();paintES();paintMun();legend();headerCtl();renderRank();renderPanel();marks();}
 
 function marks(){
   for(const c in els)for(const e of els[c]){e.classList.toggle("sel",level==="eu"&&c===pinned.eu);e.classList.toggle("hov",level==="eu"&&c===hovered&&c!==pinned.eu);}
@@ -284,7 +325,7 @@ function panelMU(P,id,chip){const r=MU[id];if(!r){P.innerHTML="";return;}const L
   const head=`<div class="ph"><div><h2>${esc(r[0])}</h2><span class="code">INE ${id} · ${esc(COMS[r[1]])} · ${grp(r[2])} hab. (2025)</span></div>${chip}</div>`;
   if(!L){P.innerHTML=head+`<div class="hero"><span class="lbl">Agua no registrada</span><span class="big" style="font-size:24px;line-height:32px">No consta auditoría publicada en el registro de la ACA</span><span class="src">Sin dato publicado. No se estima ningún valor.</span></div>
     <p class="note">Los servicios con más de 5.000 abonados deben publicar cada dos años una auditoría de eficiencia hidráulica (disposición adicional 26ª del texto refundido de aguas de Cataluña, Decreto Legislativo 3/2003). ${r[6]===2?"La ACA lista este servicio como obligado, sin enlace a la auditoría 2024.":""}</p>
-    <div><h3>Municipio</h3><dl>${row("Población (Idescat 2025)",grp(r[2]))}${row("Comarca",esc(COMS[r[1]]))}</dl></div>`;return;}
+    <div><h3>Municipio</h3><dl>${row("Población (Idescat 2025)",grp(r[2]))}${row("Comarca",esc(COMS[r[1]]))}</dl></div>`+gesBlock(id)+srcList(catSources(id,null));return;}
   const srcTxt=L.url?`${es(L.v,1)} % · ${L.y} · <a href="${esc(L.url)}" target="_blank" rel="noopener">auditoría del operador</a>`:`${es(L.v,1)} % · ${L.src} ${L.y}`;
   const items=[[r[0].length>12?r[0].slice(0,11)+".":r[0],L.v,1],["Cataluña INE",CAT_INE24,0]];
  
@@ -298,7 +339,14 @@ function panelMU(P,id,chip){const r=MU[id];if(!r){P.innerHTML="";return;}const L
   </dl></div>
   ${unit?`<p class="note">Dato de la unidad de gestión ${esc(unit)}: el mismo valor para todos sus municipios.</p>`:""}
   ${a22&&a22[5]?`<p class="note">Dos redes auditadas en Vallirana en 2022 (43,6 % y 43,5 %).</p>`:""}
-  ${!a24&&r[6]===1?`<p class="note">El operador ha publicado la auditoría 2024 (registro de la ACA); aquí se muestra el dato 2022 del anexo de la ACA.</p>`:""}`;}
+  ${!a24&&r[6]===1?`<p class="note">El operador ha publicado la auditoría 2024 (registro de la ACA); aquí se muestra el dato 2022 del anexo de la ACA.</p>`:""}`+gesBlock(id)+srcList(catSources(id,L));}
+function catSources(id,L){const r=MU[id];const out=[];
+  if(L&&L.url)out.push(["Pérdidas 2024",{n:"Auditoría de eficiencia hidráulica 2024 publicada por el operador",u:L.url,d:"Agua no registrada (F9) y pérdidas reales, según la plantilla de la ACA"}]);
+  if(r&&r[4])out.push(["Pérdidas 2022","aca22"]);
+  out.push(["Obligación y registro de auditorías","acareg"]);
+  out.push(["Modelo de gestión y operador","esf"]);
+  out.push(["Población","idescat"]);
+  return out;}
 
 function sparkIB(id){const b=IB[id];const W=320,H=120,L=30,Rr=8,T=10,B=22;const v=b[1];
   const mx=Math.max(...v.filter(x=>x!=null))*1.12;const x=y=>L+(y-2000)/24*(W-L-Rr),yy=t=>T+(1-t/mx)*(H-T-B);
@@ -314,19 +362,26 @@ function panelUM(P,id,chip){const r=MUD[id];if(!r){P.innerHTML="";return;}const 
   const ccShort=c==="18"||c==="19"?"Ceuta y M.":ccName(c).length>12?ccName(c).slice(0,11)+".":ccName(c);
   if(!L){P.innerHTML=head+`<div class="hero"><span class="lbl">Pérdidas de agua del municipio</span><span class="big" style="font-size:24px;line-height:32px">Sin dato municipal publicado</span><span class="src">Sin dato municipal publicado. No se estima ningún valor.</span></div>
     <p class="note">${umReason(c)}</p>
-    <div><h3>Contexto: toda la comunidad</h3><dl>${row(`Agua no registrada, ${esc(c==="18"||c==="19"?"Ceuta y Melilla":ccName(c))} (INE 2024)`,ine==null?null:es(ine,1),"%")}</dl><p class="srcline">Valor de toda la comunidad, no de este municipio. INE ESSA, tabla 53447.</p></div>`+muni;return;}
+    <div><h3>Contexto: toda la comunidad</h3><dl>${row(`Agua no registrada, ${esc(c==="18"||c==="19"?"Ceuta y Melilla":ccName(c))} (INE 2024)`,ine==null?null:es(ine,1),"%")}</dl><p class="srcline">Valor de toda la comunidad, no de este municipio. INE ESSA, tabla 53447.</p></div>`+muni+gesBlock(id)+srcList(umSources(id,null));return;}
   const items=[[r[0].length>12?r[0].slice(0,11)+".":r[0],L.v,1],[ccShort+" INE",ine,0]];
   if(L.kind==="cat"){
     const srcTxt=`${es(L.v,1)} % · ${L.y} · ${L.src}`+(L.url?` · <a href="${esc(L.url)}" target="_blank" rel="noopener">auditoría del operador</a>`:"");
     P.innerHTML=head+`<div class="hero"><span class="lbl">Agua no registrada</span><span class="big">${es(L.v,1)}<small>%</small></span><span class="src">${srcTxt}</span></div>
-    ${cmpBars(items)}<p class="note">${umReason(c)}</p>${muni}<div class="ctas"><button class="cta" data-go="cat">Ver municipios de Catalunya</button></div>`;return;}
+    ${cmpBars(items)}<p class="note">${umReason(c)}</p>${muni}`+gesBlock(id)+srcList(umSources(id,L))+`<div class="ctas"><button class="cta" data-go="cat">Ver municipios de Catalunya</button></div>`;return;}
   const b=IB[id],i=L.i;const hm=x=>x==null?null:es(x,3);
   P.innerHTML=head+`<div class="hero"><span class="lbl">Agua no contabilizada</span><span class="big">${fmt2(L.v)}<small>%</small></span><span class="src">${fmt2(L.v)} % · ${L.y} · ${L.src}</span></div>
   ${cmpBars(items)}
   ${L.low?`<p class="note warn">Valor estimado por el Govern, con poca o ninguna medición real${L.dr==null?" (sin dato de mediciones reales).":` (${es(L.dr,0)} % de datos reales).`}</p>`:""}
   <div><h3>Indicadores ${L.y}</h3><dl>${row("Datos reales",L.dr==null?null:es(L.dr,0),"%")}${row("Total suministrado",hm(b[3][i]),"hm³")}${row("Consumo",hm(b[4][i]),"hm³")}${row("Isla",esc(b[0]))}</dl></div>
   <div><h3>Evolución 2000-2024</h3>${sparkIB(id)}<p class="srcline">Font: Govern de les Illes Balears, Servei de Planificació. Dades d'abastiment urbà 2000-2024. Consulta 22/10/2026. CC BY-SA. % d'aigua no comptabilitzada = (total subministrat − consum) / total subministrat. Datos reales sin publicar de 2000 a 2015.</p></div>
-  <p class="note">La barra de la comunidad es el agua no registrada del INE, otro indicador: sirve de referencia, no de comparación exacta.</p>${muni}`;}
+  <p class="note">La barra de la comunidad es el agua no registrada del INE, otro indicador: sirve de referencia, no de comparación exacta.</p>${muni}`+gesBlock(id)+srcList(umSources(id,L));}
+function umSources(id,L){
+  if(MU[id])return catSources(id,L).map(x=>x[1]==="idescat"?["Población","ine"]:x).concat([["Referencia de la comunidad","ine53447"]]);
+  const out=[];
+  if(L&&L.kind==="ib"){out.push(["Pérdidas (agua no contabilizada)","caib"]);out.push(["Modelo de gestión","eiel"]);}
+  else out.push(["Pérdidas y modelo de gestión","eiel"]);
+  out.push(["Referencia de la comunidad","ine53447"]);out.push(["Población","ine"]);
+  return out;}
 
 // ================= tooltip =================
 function placeTip(x,y){const W=box.clientWidth,w=tip.offsetWidth,h=tip.offsetHeight;let l=Math.min(Math.max(x-w/2,8),W-w-8),tp=y-h-14;if(tp<6)tp=y+18;tip.style.left=l+"px";tip.style.top=tp+"px";}
@@ -338,9 +393,10 @@ function tipFor(k){
   if(level==="es"){const r=CC.r[k],v=ccVal(k);return `<b>${r.n}</b><span>${ESM[esMetric].short}: ${pc(v)} · INE ${YRS[yi]}</span>`;}
   if(level==="mu"){const r=MUD[k],c=umCC(k),L=umLatest(k);
     const pv=PROV[k.slice(0,2)][0];
-    return `<b>${esc(r[0])}</b><span>${esc(pv===ccName(c)?pv:pv+" · "+ccName(c))} · ${grp(r[1])} hab.</span>`+(L?`<span>${L.kind==="cat"?"ANR":"No contabilizada"}: ${L.kind==="cat"?es(L.v,1):fmt2(L.v)} % · ${L.kind==="cat"?(L.y==2024?"auditoría 2024":"ACA "+L.y):"Govern IB "+L.y}</span>`+(L.low?`<span class="tn">Valor estimado por el Govern, con poca o ninguna medición real</span>`:""):`<span>Sin dato municipal publicado</span><span class="tn">${umReason(c)}</span>`);}
+    const gk=gesOf(k),gl=gk?`<span>Gestión: ${GCAT[gk][0]} · ${esc(GES[k][1])}</span>`:"";
+    return `<b>${esc(r[0])}</b><span>${esc(pv===ccName(c)?pv:pv+" · "+ccName(c))} · ${grp(r[1])} hab.</span>${gl}`+(L?`<span>${L.kind==="cat"?"ANR":"No contabilizada"}: ${L.kind==="cat"?es(L.v,1):fmt2(L.v)} % · ${L.kind==="cat"?(L.y==2024?"auditoría 2024":"ACA "+L.y):"Govern IB "+L.y}</span>`+(L.low?`<span class="tn">Valor estimado por el Govern, con poca o ninguna medición real</span>`:""):`<span>Sin dato municipal publicado</span><span class="tn">${umReason(c)}</span>`);}
   const r=MU[k],L=muLatest(k),u=muUnit(k);
-  return `<b>${esc(r[0])}</b><span>${esc(COMS[r[1]])} · ${grp(r[2])} hab.</span>`+(L?`<span>ANR: ${es(L.v,1)} % · ${L.y==2024?"auditoría 2024":L.src+" "+L.y}</span>`+(r[3]&&r[3][1]!=null?`<span>Pérdidas reales: ${es(r[3][1],1)} % · 2024</span>`:""):`<span>Sin dato publicado</span>`)+(u?`<span class="tn">Unidad: ${esc(u)}</span>`:"");}
+  return `<b>${esc(r[0])}</b><span>${esc(COMS[r[1]])} · ${grp(r[2])} hab.</span>`+(L?`<span>ANR: ${es(L.v,1)} % · ${L.y==2024?"auditoría 2024":L.src+" "+L.y}</span>`+(r[3]&&r[3][1]!=null?`<span>Pérdidas reales: ${es(r[3][1],1)} % · 2024</span>`:""):`<span>Sin dato publicado</span>`)+(u?`<span class="tn">Unidad: ${esc(u)}</span>`:"")+(gesOf(k)?`<span>Gestión: ${GCAT[gesOf(k)][0]} · ${esc(GES[k][1])}</span>`:"");}
 
 // ================= zoom y niveles =================
 const FULL=[0,0,760,700];let curVB=FULL.slice(),anim=null;
@@ -425,6 +481,7 @@ $("#onlyData").addEventListener("change",()=>{rankAll=false;renderRank();marks()
 $("#moreBtn").addEventListener("click",()=>{rankAll=!rankAll;renderRank();marks();});
 document.addEventListener("click",e=>{const b=e.target.closest("[data-go],.lvl button,.crumbs button");if(!b)return;const l=b.dataset.go||b.dataset.l;if(l==="mu"&&b.dataset.cc)goMu(b.dataset.cc);else if(l&&l!==level)setLevel(l);});
 document.querySelectorAll("#segEU button").forEach(b=>b.addEventListener("click",()=>{metric=b.dataset.m;store.set("m",metric);paint();}));
+document.querySelectorAll("#segMG button").forEach(b=>b.addEventListener("click",()=>{colorBy=b.dataset.g;paint();}));
 document.querySelectorAll("#segES button").forEach(b=>b.addEventListener("click",()=>{esMetric=b.dataset.m;store.set("em",esMetric);paint();}));
 const ysel=$("#year");ysel.innerHTML=YRS.map((y,i)=>`<option value="${i}" ${i===yi?"selected":""}>${y}</option>`).join("");
 ysel.addEventListener("change",()=>{yi=+ysel.value;paint();});

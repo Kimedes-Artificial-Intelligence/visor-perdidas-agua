@@ -1,7 +1,7 @@
 <div class="wrap">
   <header>
     <div>
-      <div class="eyebrow">Kimedes · Inteligencia de mercado · Agua</div>
+      <div class="eyebrow">Kimedes · Inteligencia de mercado · Agua <span class="internal">Uso interno · no difundir</span></div>
       <h1>Pérdidas de agua: de Europa al municipio</h1>
       <p class="lede" id="lede">Cuatro niveles de lectura con fuentes públicas, oficiales y sectoriales: países (EurEau 2026), comunidades autónomas (INE 2024), los 8.131 municipios de España (con dato donde se publica: Catalunya e Illes Balears) y municipios de Catalunya (auditorías de los operadores y de la ACA). Pasa el ratón o toca el mapa para ver cada dato con su año y su fuente; haz clic para fijarlo en el panel.</p>
     </div>
@@ -20,6 +20,10 @@
       <div class="seg" id="segES" role="group" aria-label="Indicador" hidden>
         <button data-m="anr" aria-pressed="true">Agua no registrada</button>
         <button data-m="pr" aria-pressed="false">Pérdidas reales</button>
+      </div>
+      <div class="seg" id="segMG" role="group" aria-label="Colorear municipios por" hidden>
+        <button data-g="loss" aria-pressed="true">Pérdidas</button>
+        <button data-g="ges" aria-pressed="false">Modelo de gestión</button>
       </div>
       <label class="yearsel" id="yearsel" hidden>Año <select id="year" aria-label="Año del dato INE"></select></label>
       <label class="yearsel" id="ccsel" hidden>Ir a comunidad <select id="ccgo" aria-label="Ir a comunidad autónoma"></select></label>
