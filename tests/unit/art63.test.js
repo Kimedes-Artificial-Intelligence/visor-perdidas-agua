@@ -60,8 +60,10 @@ test('del art. 63.2 solo se pinta el agua no registrada y, si no hay, las pérdi
 });
 test('la columna se_pinta dice "sí" en las ciudades cuyo operador publica ANR o pérdidas reales (Córdoba, Elx) y "no" en el resto (FWG-1871, A.1)',()=>{
   const {cities,mun}=build();const pinta=Object.fromEntries(cities.map(c=>[c[0],c[7]]));
-  assert.equal(pinta['14021'],'sí');assert.equal(pinta['03065'],'sí');assert.equal(pinta['15030'],'no');
-  for(const c of cities)assert.equal(c[7],(mun[c[0]]||[]).some(r=>r.ind==='ANR'||r.ind==='PERDIDAS_REALES')?'sí':'no',c[1]);
+  assert.equal(pinta['14021'],'sí');assert.equal(pinta['03065'],'sí');
+  assert.equal(pinta['15030'],'sistema','A Coruña solo publica el IFE municipal: se pinta con el ANR del sistema de EMALCSA (D2)');
+  for(const c of cities){const own=(mun[c[0]]||[]).some(r=>r.ind==='ANR'||r.ind==='PERDIDAS_REALES');
+    if(own)assert.equal(c[7],'sí',c[1]);else assert.notEqual(c[7],'sí',c[1]);}
   const csv=read('data/ciudades_50k_sin_perdidas.csv').trim().split('\n').slice(1).map(l=>l.split(';'));
   assert.deepEqual(csv.map(r=>[r[0],r[7]]),cities.map(c=>[c[0],c[7]]));
 });

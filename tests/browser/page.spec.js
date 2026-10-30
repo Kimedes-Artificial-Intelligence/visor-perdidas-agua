@@ -112,7 +112,9 @@ test('#municipios carga los 8.131 municipios y el contador de cobertura',async({
   expect(errors).toEqual([]);
   await expect(page.locator('#muLayer [data-u]')).toHaveCount(8131);
   await expect(page.locator('.lvl button[data-l="mu"]')).toHaveAttribute('aria-pressed','true');
-  await expect(page.locator('#maphead')).toHaveText(/^5\.178 de 8\.131 municipios con dato de pérdidas publicado · \d+,\d % de la población de España$/);
+  // El recuento sale de los datos (crece con cada fuente nueva); aquí se comprueba el formato y que cuadra con UM_HAS
+  const n=await page.evaluate(()=>grp(UM_HAS.length));
+  await expect(page.locator('#maphead')).toHaveText(new RegExp(`^${n.replace('.','\\.')} de 8\\.131 municipios con dato de pérdidas publicado · \\d+,\\d % de la población de España$`));
   await expect(page.locator('#legend')).toContainText('son indicadores distintos');
 });
 
@@ -172,20 +174,41 @@ test('un municipio con dato (Artà) muestra valor, año, fuente y aviso de poca 
   await expect(P.locator('.spark')).toBeVisible();
 });
 
-test('un municipio sin dato (Madrid) muestra el motivo y el valor INE de su comunidad como contexto',async({page})=>{
+test('un municipio sin dato (Sevilla) muestra el motivo y el valor INE de su comunidad como contexto',async({page})=>{
   await openMu(page);
-  await page.selectOption('#ccgo','13');await page.waitForTimeout(800);
-  const c=await centerOf(page,'#muLayer [data-u="28079"]');
+  await page.evaluate(()=>{goMu('01');});await page.waitForTimeout(800);
+  const c=await centerOf(page,'#muLayer [data-u="41091"]');
   await page.mouse.move(c.x,c.y);
   await expect(page.locator('#tip')).toContainText('Sin dato municipal publicado');
   await page.mouse.click(c.x,c.y);await settle(page);
   const P=page.locator('#panel');
-  await expect(P.locator('h2')).toHaveText('Madrid');
+  await expect(P.locator('h2')).toHaveText('Sevilla');
   await expect(P).toContainText('Sin dato municipal publicado. No se estima ningún valor.');
-  await expect(P).toContainText('El operador no publica el indicador del art. 63.2 del RD 3/2023 para este municipio a fecha 30/10/2026: solo da la cifra de todo su sistema');
+  await expect(P).toContainText('El operador no publica el indicador del art. 63.2 del RD 3/2023 para este municipio a fecha 30/10/2026: solo da una cifra de todo su sistema, que no se pinta aquí.');
   await expect(P).toContainText('MITECO no publica por municipio la evaluación de fugas estructurales de 2024 (RD 3/2023), solo un resumen; la solicitud de acceso a la tabla municipal está pendiente de presentar.');
-  await expect(P).toContainText('Agua no registrada, Comunidad de Madrid (INE 2024)');
-  await expect(P).toContainText('3.506.730');
+  await expect(P).toContainText('Agua no registrada, Andalucía (INE 2024)');
+});
+
+// ---- Cifras de sistema en los municipios que la fuente lista como servidos (FWG-1871, decisión D2)
+test('Madrid se pinta con el agua no registrada de todo el sistema de Canal de Isabel II, con trama propia y el aviso de que no es municipal',async({page})=>{
+  await openMu(page);
+  expect(await page.locator('#muLayer [data-u="28079"]').evaluate(e=>e.style.fill)).toBe('rgb(241, 217, 138)'); // 13,44 % -> tramo 10-20 %
+  expect(await page.locator('#muLayer .umsys').getAttribute('d')).not.toBe('');
+  await expect(page.locator('#legend')).toContainText('dato de todo el sistema del operador, no municipal');
+  await page.evaluate(()=>pin('28079'));
+  const P=page.locator('#panel');
+  await expect(P.locator('.hero .lbl')).toHaveText('Agua no registrada del sistema');
+  await expect(P.locator('.hero .big')).toHaveText('13,44%');
+  await expect(P.locator('.hero .src')).toContainText(/Dato del sistema Canal de Isabel II \(\d+ municipios\), no municipal · 2024/);
+  await expect(P).toContainText('No es un dato de este municipio');
+  await expect(P.locator('.srcs')).toContainText('Municipios servidos por el sistema');
+  await expect(P.locator('.srcs a[href*="documents/d/site/convenios"]')).toHaveCount(1);
+});
+test('un municipio al que el sistema solo vende en alta o solo factura no se pinta con la cifra del sistema',async({page})=>{
+  await openMu(page);
+  const k=await page.evaluate(()=>({alta:umLatest('15005'),com:umLatest('28061'),srv:A63.sm['28061'][1]}));
+  expect(k.alta===null||k.alta.kind!=='sistema').toBe(true); // Arteixo: EMALCSA solo vende en alta
+  expect(k.srv).toBe('comercial');expect(k.com===null||k.com.kind!=='sistema').toBe(true); // Galapagar: Canal solo factura
 });
 
 // ---- Pérdidas publicadas por el operador (art. 63.2 RD 3/2023, FWG-1870)
@@ -227,7 +250,8 @@ for(const [ine,name,txt] of [['30027','Molina de Segura','su aviso legal prohíb
 
 test('el ranking nacional se filtra por comunidad y fija el municipio al hacer clic',async({page})=>{
   await openMu(page);
-  await expect(page.locator('#rankCount')).toHaveText('5.178 municipios con dato de pérdidas publicado');
+  const n=await page.evaluate(()=>grp(UM_HAS.length));
+  await expect(page.locator('#rankCount')).toHaveText(`${n} municipios con dato de pérdidas publicado`);
   await page.selectOption('#rankCc','04');
   await expect(page.locator('#rankCount')).toHaveText('67 municipios con dato de pérdidas publicado en Illes Balears');
   await page.click('#moreBtn');
@@ -309,11 +333,10 @@ test('Granada: el operador clasificado con fuente (EMASAGRA, mixta) da el modelo
   await expect(P.locator('.srcs a[href="https://www.emasagra.es/informacion-corporativa"]')).toHaveCount(1);
 });
 
-test('Madrid: sin pérdidas, gestión municipalizada por el operador del SINAC (Canal de Isabel II)',async({page})=>{
+test('Madrid: gestión municipalizada por el operador del SINAC (Canal de Isabel II)',async({page})=>{
   await openMu(page);
   await page.evaluate(()=>pin('28079'));
   const P=page.locator('#panel');
-  await expect(P).toContainText('Sin dato municipal publicado. No se estima ningún valor.');
   await expect(P.locator('.gtag')).toHaveText('Municipalizado');
   await expect(P).toContainText('SINAC, operador principal clasificado por su nombre');
   await expect(P).toContainText('CANAL DE ISABEL II, S.A.M.P.');
@@ -321,9 +344,9 @@ test('Madrid: sin pérdidas, gestión municipalizada por el operador del SINAC (
 
 test('Comunidad de Madrid: la red sale de la EIEL de la IDEM (CC BY 4.0) y la ficha explica que no publica pérdidas',async({page})=>{
   await openMu(page);
-  await page.evaluate(()=>pin('28001'));
+  await page.evaluate(()=>pin('28018'));
   const P=page.locator('#panel');
-  await expect(P.locator('h2')).toHaveText('La Acebeda');
+  await expect(P.locator('h2')).toHaveText('Becerril de la Sierra');
   await expect(P).toContainText('La EIEL de la Comunidad de Madrid (fase 2023, IDEM) publica la red de distribución pero no las pérdidas por núcleo');
   await expect(P).toContainText('Red de distribución (EIEL 2023, Comunidad de Madrid)');
   await expect(P.locator('.srcs')).toContainText('CC BY 4.0 Comunidad de Madrid');
@@ -429,7 +452,7 @@ test('capa de prioridad comercial: quintiles, leyenda que dice que es un cálcul
   await expect(page.locator('#legend')).toContainText('No es un dato publicado');
   await expect(page.locator('#rankTitle')).toContainText('Prioridad comercial');
   await expect(page.locator('#rank button').first().locator('.v')).toHaveText(/^Q5 · \d,\d{3}$/);
-  await page.evaluate(()=>pin('28079'));
+  await page.evaluate(()=>pin('41091'));
   await expect(page.locator('#panel')).toContainText('Prioridad comercial (Índice Kimedes)');
   await expect(page.locator('#panel')).toContainText('Pérdidas (sin dato publicado)');
   const [dl]=await Promise.all([page.waitForEvent('download'),page.click('#csvBtn')]);

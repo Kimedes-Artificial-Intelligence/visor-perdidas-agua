@@ -17,8 +17,8 @@ function a63Paint(rows){for(const k of A63_PAINT){const r=(rows||[]).find(x=>x[0
 // Cifra de sistema que se pinta (D2), con el mismo orden: rows en el formato de A63.s, [patrón, operador, ámbito, indicador, valor, ...]
 function sysPaint(rows){for(const k of A63_PAINT){const r=(rows||[]).find(x=>x[3]===k);if(r)return r;}return null;}
 // Servicio que la fuente declara en el municipio: solo se pinta donde el operador distribuye o la fuente no distingue;
-// donde solo vende agua en alta, la cifra del sistema no describe la red del municipio
-const SYS_SERVICIO=["distribucion","alta","sin_especificar"],SYS_PAINT_SERVICIO=["distribucion","sin_especificar"];
+// donde solo vende agua en alta o solo factura (gestión comercial), la cifra del sistema no describe la red del municipio
+const SYS_SERVICIO=["distribucion","alta","comercial","sin_especificar"],SYS_PAINT_SERVICIO=["distribucion","sin_especificar"];
 // Motivo común a todo municipio sin pérdidas: MITECO no publica por municipio la evaluación de fugas 2024 (Parte 5).
 // sol: fecha AAAA-MM-DD de la solicitud de acceso a la información, o vacía mientras no se presente
 function mitecoReason(sol){return "MITECO no publica por municipio la evaluación de fugas estructurales de 2024 (RD 3/2023), solo un resumen"+
