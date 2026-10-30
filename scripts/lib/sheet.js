@@ -31,9 +31,10 @@ function xlsx(files,name){
   const ss=files['xl/sharedStrings.xml']?[...files['xl/sharedStrings.xml']().toString('utf8').matchAll(/<si>([\s\S]*?)<\/si>/g)].map(m=>unxml(m[1].replace(/<rPh[\s\S]*?<\/rPh>/g,''))):[];
   const sheet=xlsxSheetPath(files,name);
   const rows=[];
-  for(const r of files[sheet]().toString('utf8').matchAll(/<row\b([^>]*)>([\s\S]*?)<\/row>/g)){
+  // Una fila vacía puede venir como <row .../>: sin el caso autocerrado, se tragaría la fila siguiente
+  for(const r of files[sheet]().toString('utf8').matchAll(/<row\b([^>]*?)(?:\/>|>([\s\S]*?)<\/row>)/g)){
     const ri=+/r="(\d+)"/.exec(r[1])[1]-1;const row=[];
-    for(const c of r[2].matchAll(/<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g)){
+    for(const c of (r[2]||'').matchAll(/<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g)){
       const ref=/r="([A-Z]+\d+)"/.exec(c[1])[1],t=(/t="(\w+)"/.exec(c[1])||[])[1],body=c[2]||'';
       const v=(/<v>([\s\S]*?)<\/v>/.exec(body)||[])[1];
       row[colIdx(ref)]=t==='s'?ss[+v]:t==='inlineStr'?unxml((/<is>([\s\S]*?)<\/is>/.exec(body)||['',''])[1]):v==null?'':unxml(v);}
@@ -65,4 +66,4 @@ function readSheet(file,name){
   if(files['mimetype']&&files['mimetype']().toString().includes('opendocument.spreadsheet'))return {format:'ods',rows:ods(files)};
   throw new Error(file+': formato no reconocido');
 }
-module.exports={readSheet};
+module.exports={readSheet,xlsx};
