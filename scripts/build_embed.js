@@ -56,7 +56,9 @@ const A63={m:Object.fromEntries(Object.entries(AR.mun).map(([k,R])=>[k,R.map(r=>
   // s: cifras de todo el sistema de un operador, para la ficha de operador: [patrón, operador, ámbito, indicador, valor, unidad, año, URL, página, aviso legal, fecha]
   // mt: tabla de MITECO por municipio (vacía hasta la respuesta a la solicitud) y fecha de la solicitud
   mt:{sol:AR.miteco.sol,m:Object.fromEntries(Object.entries(AR.miteco.mun).map(([k,o])=>[k,[o.anr,o.ife,o.rend,o.tipo,o.y,o.doc,o.rec]]))},
-  s:AR.sys.map(r=>[r.pat,r.op,r.amb,r.ind,r.v,r.unit,r.y,r.url,r.page,r.legal,r.date])};
+  s:AR.sys.map(r=>[r.pat,r.op,r.amb,r.ind,r.v,r.unit,r.y,r.url,r.page,r.legal,r.date]),
+  // sm: municipios que la fuente de cada sistema lista como servidos (D2): {INE: [patrón, servicio, URL de la lista, página, fecha de consulta, nombre en la fuente]}
+  sm:Object.fromEntries(Object.entries(AR.smun).map(([k,o])=>[k,[o.pat,o.srv,o.url,o.page,o.date,o.name]]))};
 // Pesos del índice de prioridad comercial (src/prioridad.js)
 const PRI_W=JSON.parse(fs.readFileSync('data/prioridad_pesos.json'));
 // Capa internacional (scripts/build_int.js): Italia por regiones y comuni capoluogo, y estado de los demás países
