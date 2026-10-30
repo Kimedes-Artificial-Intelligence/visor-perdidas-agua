@@ -26,5 +26,19 @@ const out=`const CC=${JSON.stringify(CC)};\nconst COMS=${JSON.stringify(coms)};\
 const GL=fs.readFileSync('raw/esf_gestio_aigua_cat_2026-07-10.psv','utf8').trim().split('\n').filter(l=>!l.startsWith('#'));
 const GK={'Pública':'P','Privada':'V','Empresa mixta privada – pública':'M','Cooperativa / associació':'C','':'-'};
 const GES={};for(const l of GL){const a=l.split('|');GES[a[0]]=[GK[a[1]],...a.slice(2)];}
-const out2=`const GES=${JSON.stringify(GES)};\n`;
+// España por municipio: EIEL, SINAC y modelo de gestión (scripts/build_es_mun.js). Arrays por posición para que la página pese menos:
+// [pérdidas %, fase, núcleos que informan, núcleos, % población cubierta, % múltiplos de 5, modelo, origen del modelo, grupo EIEL dominante,
+//  tipo del operador SINAC dominante, reparto EIEL [código,%,...], % fibrocemento, % malo, % regular, km de red, fase de la red,
+//  operadores [índice en OPN,%,responsable,...], redes SINAC, población abastecida SINAC, dotación L/hab/día]
+const ES=JSON.parse(fs.readFileSync('data/es_mun.json'));
+const opCount={};for(const o of Object.values(ES.mun))for(const x of o.ops||[])opCount[x[0]]=(opCount[x[0]]||0)+1;
+const OPN=Object.keys(opCount).sort((a,b)=>opCount[b]-opCount[a]||(a<b?-1:1));const opIdx=Object.fromEntries(OPN.map((n,i)=>[n,i]));
+const GS={esf:'f',eiel:'e',sinac:'s'};const n=v=>v??null;
+const ESD={};for(const [k,o] of Object.entries(ES.mun))ESD[k]=[n(o.per),n(o.y),n(o.nrep),n(o.nn),n(o.cov),n(o.rnd),o.gm,GS[o.gs]||'',o.eg||'',o.st||'',
+  o.g?Object.entries(o.g).flat():0,n(o.fc),n(o.em),n(o.er),n(o.km),n(o.ry),o.ops?o.ops.flatMap(x=>[opIdx[x[0]],x[1],x[2]||0]):0,n(o.nred),n(o.spop),n(o.dot)];
+// Tipo de cada operador según data/operadores_clasificacion.csv, una letra por operador ('-' = sin clasificar)
+const {csv,loadClassifier}=require('./build_es_mun.js');const classify=loadClassifier(csv(fs.readFileSync('data/operadores_clasificacion.csv','utf8')));
+const OPT=OPN.map(x=>{const c=classify(x);return c&&c.t!=='X'?c.t:'-';}).join('');
+const EPROV=Object.fromEntries(Object.entries(ES.meta.prov).map(([p,o])=>[p,[o.fase,o.nu_fase]]));
+const out2=`const GES=${JSON.stringify(GES)};\nconst ESD=${JSON.stringify(ESD)};\nconst OPN=${JSON.stringify(OPN)};\nconst OPT=${JSON.stringify(OPT)};\nconst EPROV=${JSON.stringify(EPROV)};\n`;
 fs.mkdirSync('.build',{recursive:true});fs.writeFileSync('.build/data.js',out+out2);console.log('data.js',out.length,'urls',urls.length,'units',units);

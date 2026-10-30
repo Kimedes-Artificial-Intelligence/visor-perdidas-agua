@@ -18,6 +18,13 @@ const SOURCES={
   MUD:['raw/ine_padron2025.psv','package-lock.json','raw/idescat_comarques_mun.txt'],
   POP_ES:['raw/ine_padron2025.psv'],
   IB:['raw/caib_abastiment_2000_2024.psv'],
+  // España por municipio (FWG-1868): EIEL, SINAC y ESF; la clasificación de operadores es una tabla escrita a mano
+  GES:['raw/esf_gestio_aigua_cat_2026-07-10.psv'],
+  ESD:['raw/eiel_nucleos_2026-10-30.csv','raw/eiel_rd_2026-10-30.csv','raw/sinac_redes_2026-10-30.csv','raw/esf_gestio_aigua_cat_2026-07-10.psv','data/operadores_clasificacion.csv'],
+  OPN:['raw/sinac_redes_2026-10-30.csv','data/operadores_clasificacion.csv'],
+  OPT:['data/operadores_clasificacion.csv'],
+  EPROV:['raw/eiel_provincias_2026-10-30.csv'],
+  FC_BINS:['src/app.js'],
 };
 
 // Constantes que cambiaron sin que cambiara ninguno de sus archivos de origen

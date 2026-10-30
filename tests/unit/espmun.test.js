@@ -37,9 +37,10 @@ test('Padrón INE 2025: la transcripción coincide con el original y cubre todos
 });
 
 const dist=dataConsts(read(DIST));
-test('la página no supera 2,5 MB sin comprimir',()=>{
+// 4 MB desde FWG-1868 (datos EIEL y SINAC de 8.000 municipios); antes 2,5 MB
+test('la página no supera 4 MB sin comprimir',()=>{
   const size=fs.statSync(DIST).size;
-  assert.ok(size<=2.5*1024*1024,`dist/index.html ocupa ${size} bytes`);
+  assert.ok(size<=4*1024*1024,`dist/index.html ocupa ${size} bytes`);
 });
 test('ningún municipio desaparece: los 8.131 tienen trazado o punto, y nada más',()=>{
   const drawn=[...Object.keys(dist.MUN.mu),...Object.keys(dist.MUN.dot)].sort();

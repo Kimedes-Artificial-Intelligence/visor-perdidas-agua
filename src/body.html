@@ -1,9 +1,9 @@
 <div class="wrap">
   <header>
     <div>
-      <div class="eyebrow">Kimedes · Inteligencia de mercado · Agua <span class="internal">Uso interno · no difundir</span></div>
+      <div class="eyebrow">Kimedes · Inteligencia de mercado · Agua</div>
       <h1>Pérdidas de agua: de Europa al municipio</h1>
-      <p class="lede" id="lede">Cuatro niveles de lectura con fuentes públicas, oficiales y sectoriales: países (EurEau 2026), comunidades autónomas (INE 2024), los 8.131 municipios de España (con dato donde se publica: Catalunya e Illes Balears) y municipios de Catalunya (auditorías de los operadores y de la ACA). Pasa el ratón o toca el mapa para ver cada dato con su año y su fuente; haz clic para fijarlo en el panel.</p>
+      <p class="lede" id="lede">Cuatro niveles de lectura con fuentes públicas, oficiales y sectoriales: países (EurEau 2026), comunidades autónomas (INE 2024), los 8.131 municipios de España (pérdidas, modelo de gestión, operador y estado de la red donde se publican: auditorías en Catalunya, Govern IB en Baleares, EIEL y SINAC en el resto) y municipios de Catalunya (auditorías de los operadores y de la ACA). Pasa el ratón o toca el mapa para ver cada dato con su año y su fuente; haz clic para fijarlo en el panel.</p>
     </div>
     <div class="controls">
       <div class="lvl" role="group" aria-label="Nivel">
@@ -24,6 +24,8 @@
       <div class="seg" id="segMG" role="group" aria-label="Colorear municipios por" hidden>
         <button data-g="loss" aria-pressed="true">Pérdidas</button>
         <button data-g="ges" aria-pressed="false">Modelo de gestión</button>
+        <button data-g="fc" aria-pressed="false" class="esonly">Fibrocemento</button>
+        <button data-g="est" aria-pressed="false" class="esonly">Estado de la red</button>
       </div>
       <label class="yearsel" id="yearsel" hidden>Año <select id="year" aria-label="Año del dato INE"></select></label>
       <label class="yearsel" id="ccsel" hidden>Ir a comunidad <select id="ccgo" aria-label="Ir a comunidad autónoma"></select></label>
@@ -48,6 +50,9 @@
           </pattern>
           <pattern id="hatchMu" width="130" height="130" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
             <line class="umh-ln" x1="0" y1="0" x2="0" y2="130"></line>
+          </pattern>
+          <pattern id="hatchDe" width="90" height="90" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+            <line class="umd-ln" x1="0" y1="0" x2="0" y2="90"></line>
           </pattern>
         </defs>
         __CTX__
@@ -76,6 +81,13 @@
     <div class="rankctl" id="rankCtl" hidden>
       <label id="onlyWrap"><input type="checkbox" id="onlyData" checked> Solo municipios con dato</label>
       <label id="rankCcWrap" hidden>Comunidad <select id="rankCc" aria-label="Filtrar por comunidad"></select></label>
+      <span id="rankEs" class="rankes" hidden>
+        <label>Modelo <select id="rankGm" aria-label="Filtrar por modelo de gestión"></select></label>
+        <label>Operador <input id="opq" type="search" list="opl" autocomplete="off" placeholder="p. ej. FCC AQUALIA" aria-label="Filtrar por operador (SINAC)"></label>
+        <datalist id="opl"></datalist>
+        <span id="opCount" aria-live="polite"></span>
+        <button class="cta" id="csvBtn" type="button">Exportar CSV</button>
+      </span>
       <span id="rankCount"></span>
     </div>
     <div class="rank" id="rank"></div>
@@ -98,7 +110,7 @@
     <div><b>Europa.</b> EurEau, <a href="https://www.svensktvatten.se/contentassets/1f3e568a52284548ae674d5b485d9f14/europes-water-in-figures-report-2026.pdf" target="_blank" rel="noopener">Europe's Water in Figures 2026</a>, anexo de datos (datos mayoritariamente 2022-2024). Medias EUR* ponderadas por población conectada. EurEau advierte que la comparación directa entre países puede inducir a error. España: agua no registrada del INE 2024 (EurEau no la publica). Población: Eurostat 1/1/2025 (UE), FSO 31/12/2024 (Suiza), ONS mid-2024 (Reino Unido), <a href="https://www.ssb.no/en/befolkning/folketall/statistikk/befolkning" target="_blank" rel="noopener">SSB</a> 1/1/2025 (Noruega), <a href="https://old.statice.is/publications/news-archive/inhabitants/the-population-on-1-january-2025/" target="_blank" rel="noopener">Statistics Iceland</a> 1/1/2025. Operadores: dos o tres por país, verificados en la web oficial de cada operador o administración (octubre 2026); no es una lista exhaustiva.</div>
     <div><b>España por comunidades.</b> INE, <a href="https://ine.es/dyngs/Prensa/es/ESSA2024.htm" target="_blank" rel="noopener">Estadística sobre el Suministro y Saneamiento del Agua 2024</a> (2 jul 2026), <a href="https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/53447" target="_blank" rel="noopener">tabla 53447</a>, serie 2008-2024 (bienal desde 2014). Porcentajes calculados sobre el volumen suministrado a la red. Ceuta y Melilla se publican agregadas. La Rioja 2022: el INE publica pérdidas reales mayores que el agua no registrada; ese dato se omite. Consumo de hogares 2024: nota de prensa del INE (España y las seis comunidades que cita).</div>
     <div><b>Catalunya por municipios.</b> Agua no registrada (indicador F9 de la ACA: % del volumen de entrada no medido). Dato 2024: auditorías de eficiencia hidráulica publicadas por cada operador (junio 2025 en adelante), enlazadas desde el <a href="https://aca.gencat.cat/ca/laigua/infraestructures/xarxes-abastament/xarxes-municipals-auditories-deficiencia-hidraulica/" target="_blank" rel="noopener">registro de la ACA</a>. Dato 2022: ACA, <i>Avaluació comparativa de les auditories</i>, annex III (mayo 2025). Las unidades de gestión de varios municipios (Aigües de Barcelona, 23; Aigües de Banyoles, 5; Cicle de l'Aigua del Ter, 3; Salou y Vila-seca; Palamós y Mont-ras en 2022) comparten valor. Población: Idescat, padrón 1/1/2025. Nombres y comarcas: Idescat. Geometría: es-atlas 0.6.0, obra derivada de las Líneas límite municipales del <a href="https://www.ign.es" target="_blank" rel="noopener">Instituto Geográfico Nacional</a> (CC BY 4.0, ign.es), unida por código INE de 5 dígitos; Sant Hipòlit de Voltregà, © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>. En gris, municipios sin auditoría publicada: no se estima ningún valor.</div>
-    <div><b>España por municipio.</b> 8.131 municipios de es-atlas 0.6.0 (geometría derivada de las Líneas límite municipales del IGN, CC BY 4.0), unidos por código INE de 5 dígitos. Población: INE, <a href="https://www.ine.es/dynt3/inebase/es/index.htm?padre=525" target="_blank" rel="noopener">Revisión del Padrón municipal a 1/1/2025</a> (CC BY 4.0). Catalunya: los mismos datos que la vista Catalunya (agua no registrada, auditorías; ACA, F9). Illes Balears: font: Govern de les Illes Balears, Servei de Planificació. <a href="https://www.caib.es/sites/aigua/ca/proveament_distribucia_potabilitzacia/" target="_blank" rel="noopener">Dades d'abastiment urbà 2000-2024</a>. Consulta 22/10/2026. Llicència CC BY-SA. Es una estimación del Govern a partir de los datos de los gestores (% d'aigua no comptabilitzada), no una auditoría. Fuera de Catalunya y Baleares no hay registro público de pérdidas por municipio (MITECO, Informe nacional de fugas 2024, p. 29, para Andalucía y Castilla-La Mancha); esos municipios aparecen en gris y no se estima ningún valor. En gris oscuro sin interacción, territorios compartidos entre municipios.</div>
+    <div><b>España por municipio.</b> 8.131 municipios de es-atlas 0.6.0 (geometría derivada de las Líneas límite municipales del IGN, CC BY 4.0), unidos por código INE de 5 dígitos. Población: INE, <a href="https://www.ine.es/dynt3/inebase/es/index.htm?padre=525" target="_blank" rel="noopener">Revisión del Padrón municipal a 1/1/2025</a> (CC BY 4.0). Catalunya: los mismos datos que la vista Catalunya (agua no registrada, auditorías; ACA, F9). Illes Balears: font: Govern de les Illes Balears, Servei de Planificació. <a href="https://www.caib.es/sites/aigua/ca/proveament_distribucia_potabilitzacia/" target="_blank" rel="noopener">Dades d'abastiment urbà 2000-2024</a>. Consulta 22/10/2026. Llicència CC BY-SA. Es una estimación del Govern a partir de los datos de los gestores (% d'aigua no comptabilitzada), no una auditoría. Resto: © Secretaría de Estado de Política Territorial, <a href="https://eiel.redsara.es/visor/" target="_blank" rel="noopener">Encuesta de Infraestructura y Equipamientos Locales (EIEL)</a>, fase de cada provincia (2016-2025), extracción 29-30/10/2026, CC BY-NC-SA 4.0: pérdidas declaradas por los ayuntamientos para cada núcleo (dato declarado, no medido), material, estado y gestión de cada tramo de la red de distribución. Cubre los municipios de menos de 50.000 habitantes; no incluye País Vasco ni Navarra (por ley) ni las provincias que no están en su visor nacional. Operadores: Ministerio de Sanidad, <a href="https://sinac.sanidad.gob.es/CiudadanoWeb/" target="_blank" rel="noopener">SINAC</a>, gestor y responsable de cada red de distribución, extracción 30/10/2026; el tipo de operador se asigna por su nombre con una tabla editable y lo que no casa queda sin clasificar. Modelo de gestión en Catalunya: Enginyeria Sense Fronteres / Aigua és Vida, <a href="https://datawrapper.dwcdn.net/F298j/45/" target="_blank" rel="noopener">La Gestió de l'Aigua a Catalunya per Municipi</a> (10/07/2026), derechos de sus autores. Donde ninguna fuente da el dato, el municipio aparece en gris y no se estima ningún valor. En gris oscuro sin interacción, territorios compartidos entre municipios.</div>
     <div><b>Definiciones.</b> Agua no registrada (ANR): agua que entra en la red y no se mide en ningún contador; incluye fugas, consumos no medidos y errores de medida. Pérdidas reales: solo fugas y roturas. Índice estructural de fugas (ILI, F4): pérdidas reales frente a las inevitables para esa red. Kimedes, octubre 2026.</div>
   </footer>
 </div>
