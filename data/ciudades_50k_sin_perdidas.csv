@@ -27,7 +27,7 @@ ine;nombre;poblacion_ine_2025;operador_sinac;operador_agrupado;estado_art63;indi
 28074;Leganés;195734;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 28065;Getafe;193238;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 28058;Fuenlabrada;190076;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
-20069;Donostia/San Sebastián;189866;AYUNTAMIENTO DE DONOSTIA/SAN SEBASTIÁN (responsable);;no_verificado;;no
+20069;Donostia/San Sebastián;189866;AYUNTAMIENTO DE DONOSTIA/SAN SEBASTIÁN (responsable);;no_publica;;no
 12040;Castelló de la Plana;183711;FACSA;FACSA;no_publica;;no
 09059;Burgos;177402;AGUAS DE BURGOS;AGUAS DE BURGOS;no_publica;;no
 28007;Alcorcón;175719;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
@@ -47,7 +47,7 @@ ine;nombre;poblacion_ine_2025;operador_sinac;operador_agrupado;estado_art63;indi
 28006;Alcobendas;123342;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 23050;Jaén;112235;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 04079;Roquetas de Mar;111240;HIDRALIA;Veolia y Unicaja;no_publica;;no
-11012;Cádiz;109950;AGUAS DE CÁDIZ;AGUAS DE CADIZ;no_publica;;no
+11012;Cádiz;109950;AGUAS DE CÁDIZ;AGUAS DE CADIZ;publica;PERDIDAS_REALES 10.59 % (2022);sí
 32054;Ourense;105769;VIAQUA S.A;VIAQUA;solo_sistema;;no
 35026;Telde;104168;AGUAS DE TELDE GESTIÓN INTEGRAL DEL SERVICIO, S.A.;;no_publica;;no
 28123;Rivas-Vaciamadrid;103148;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
@@ -64,9 +64,9 @@ ine;nombre;poblacion_ine_2025;operador_sinac;operador_agrupado;estado_art63;indi
 19130;Guadalajara;92834;SACYR GUADALAGUA, S.L.U.;Sacyr;no_publica;;no
 04902;El Ejido;91440;DESARROLLO URBANISTICO DE EL EJIDO SL;DESARROLLO URBANISTICO DE EL EJIDO;bloqueado;;no
 46244;Torrent;90928;EMPRESA MIXTA AIGÜES DE L'HORTA, S.A:;EMPRESA MIXTA;solo_sistema;;no
-11015;Chiclana de la Frontera;90864;CHICLANA NATURAL;CHICLANA NATURAL;no_publica;;no
+11015;Chiclana de la Frontera;90864;CHICLANA NATURAL;CHICLANA NATURAL;publica;ANR 20.01 % (2019) · RENDIMIENTO 79.99 % (2019);sí
 11027;El Puerto de Santa María;89983;AGUAS DEL PUERTO EMPRESA MUNICIPAL, S.A.;EMPRESA MUNICIPAL;no_publica;;no
-28115;Pozuelo de Alarcón;89770;REPRESENTACIONES BLÁZQUEZ S.A;;no_publica;;sistema
+28115;Pozuelo de Alarcón;89770;REPRESENTACIONES BLÁZQUEZ S.A;;solo_sistema;;sistema
 38006;Arona;87793;CANARAGUA CONCESIONES, S.A.;CANARAGUA;no_publica;;no
 45168;Toledo;87216;TAGUS SERVICIOS INTEGRALES;;no_verificado;;no
 52001;Melilla;86780;AYTO. DE MELILLA_52001_MELILLA;AYTO;no_publica;;no
@@ -96,7 +96,7 @@ ine;nombre;poblacion_ine_2025;operador_sinac;operador_agrupado;estado_art63;indi
 35004;Arrecife;70811;CONSORCIO DEL AGUA DE LANZAROTE;CONSORCIO;no_publica;;no
 11032;Sanlúcar de Barrameda;70012;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 28047;Collado Villalba;67274;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
-28022;Boadilla del Monte;66349;SUMINISTRADORA DE AGUAS LOMAS BOSQUE S.A.;;no_publica;;sistema
+28022;Boadilla del Monte;66349;SUMINISTRADORA DE AGUAS LOMAS BOSQUE S.A.;;solo_sistema;;sistema
 11022;La Línea de la Concepción;64499;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 15036;Ferrol;64367;EMPRESA MIXTA DE AUGAS DE FERROL, SA;EMPRESA MIXTA;no_publica;;no
 20045;Irun;63835;AYUNTAMIENTO DE IRUN (responsable);;solo_sistema;;no
