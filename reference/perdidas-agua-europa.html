@@ -305,6 +305,29 @@ dl.ops2 .tag{margin-left:6px}
 .lgmore{flex-basis:100%}
 .lgmore summary{cursor:pointer;font:500 11px/16px var(--mono);color:var(--signal-ink);letter-spacing:.04em}
 .lgmore summary:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+/* FWG-1871, Parte E: buscador sobre el mapa, línea de ciudades de 50.000 hab. y ficha imprimible */
+.mapsearch{position:absolute;left:10px;top:10px;z-index:5;width:min(280px,calc(100% - 64px))}
+.mapsearch input{box-sizing:border-box;width:100%;font:500 12px/16px var(--mono);color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:0;padding:8px 10px}
+.mapsearch input:focus-visible{outline:2px solid var(--signal);outline-offset:1px}
+.mapsearch ul{list-style:none;margin:2px 0 0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:2px;max-height:280px;overflow:auto}
+.mapsearch li{padding:7px 10px;font:500 13px/17px var(--body);color:var(--fg);cursor:pointer;border-top:1px solid var(--hair)}
+.mapsearch li:first-child{border-top:0}
+.mapsearch li small{display:block;font:400 10px/14px var(--mono);color:var(--muted);letter-spacing:.04em}
+.mapsearch li[aria-selected="true"],.mapsearch li:hover{background:var(--sunken)}
+.mapsearch li.none{color:var(--muted);cursor:default}
+.maphead .cov50{display:block}
+.maphead .cov50 a{color:var(--signal-ink)}
+.printhead{display:none}
+@media print{
+  html.printing .wrap>*:not(.grid),html.printing .mapbox,html.printing .noprint,html.printing .tip,html.printing .panel .chip{display:none!important}
+  html.printing body{background:#fff}
+  html.printing .grid{display:block}
+  html.printing .panel{position:static;max-height:none;overflow:visible;border:0;box-shadow:none;width:auto}
+  html.printing .printhead{display:block;margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  html.printing .printhead .pmeta{font:400 10px/14px var(--mono);color:var(--muted);word-break:break-all}
+  html.printing .srcs a::after{content:" " attr(href);word-break:break-all}
+  html.printing *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 
 </style>
 </head>
@@ -385,6 +408,10 @@ dl.ops2 .tag{margin-left:6px}
         <g id="catLayer" hidden opacity="0"></g>
         <g id="intLayer" hidden opacity="0"></g>
       </svg>
+      <div class="mapsearch" id="mapSearch" hidden>
+        <input id="mapq" type="search" autocomplete="off" placeholder="Buscar municipio o código INE" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="mapqList" aria-label="Buscar municipio por nombre o código INE">
+        <ul id="mapqList" role="listbox" aria-label="Municipios encontrados" hidden></ul>
+      </div>
       <div class="zoomctl" id="zoomCtl" role="group" aria-label="Zoom del mapa" hidden>
         <button type="button" data-z="in" aria-label="Acercar">+</button>
         <button type="button" data-z="out" aria-label="Alejar">−</button>
@@ -396,6 +423,7 @@ dl.ops2 .tag{margin-left:6px}
       <div class="hint" id="hint"></div>
     </div>
 
+    <div class="printhead" id="printHead"></div>
     <aside class="panel" id="panel" aria-live="polite"></aside>
   </div>
 
@@ -674,6 +702,10 @@ const PRI_COLORS=MU_BINS.map(b=>b[1]);
 LAYER.pri={has:()=>true,txt:"con índice de prioridad comercial (calculado)"};
 const umCount=k=>{const ids=UM_IDS.filter(LAYER[k].has);const pop=ids.reduce((a,id)=>a+MUD[id][1],0);
   return `${grp(ids.length)} de ${grp(UM_IDS.length)} municipios ${LAYER[k].txt} · ${es(pop/POP_ES*100,1)} % de la población de España`;};
+// Ciudades de 50.000 hab. o más (padrón INE 2025) con dato en la capa activa (FWG-1871, E.4), con enlace al detalle de fuentes
+const SRC_MD="https://github.com/Kimedes-Artificial-Intelligence/visor-perdidas-agua/blob/main/data/sources.md";
+const UM_50K=UM_IDS.filter(id=>MUD[id][1]>=50000);
+const umCount50=k=>`${grp(UM_50K.filter(LAYER[k].has).length)} de ${grp(UM_50K.length)} ciudades de 50.000 hab. o más ${LAYER[k].txt}`;
 const UM_NOTE="Catalunya (auditorías, agua no registrada), Baleares (estimación del Govern, agua no contabilizada), las ciudades con dato del operador (agua no registrada o pérdidas reales, art. 63.2 RD 3/2023) el resto (pérdidas declaradas por los ayuntamientos en la EIEL, no medidas) y los municipios con la cifra de todo el sistema de su operador (no municipal) son indicadores distintos. Se pintan en la misma escala para leer el orden de magnitud, no para comparar municipio a municipio. El rendimiento y el índice de fugas estructurales (IFE) que publican algunos operadores tampoco son el mismo indicador: se muestran en la ficha, no en el mapa.";
 // Valor de pérdidas tal como se publica: las cifras del operador con sus decimales; el resto, con uno
 const lossTxt=L=>L.dec!=null?es(L.v,L.dec):es(L.v,1);
@@ -851,7 +883,7 @@ function legend(){
 }
 function headerCtl(){
   document.querySelectorAll(".lvl button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.l===level));
-  $("#segEU").hidden=level!=="eu";$("#segES").hidden=level!=="es";$("#yearsel").hidden=level!=="es";$("#ccsel").hidden=level!=="mu";$("#segMG").hidden=level!=="mu"&&level!=="cat";document.querySelectorAll("#segMG .esonly").forEach(b=>b.hidden=level!=="mu");document.querySelectorAll("#segMG button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.g===colorBy));$("#zoomCtl").hidden=level!=="mu";svg.classList.toggle("zoomable",level==="mu");
+  $("#segEU").hidden=level!=="eu";$("#segES").hidden=level!=="es";$("#yearsel").hidden=level!=="es";$("#ccsel").hidden=level!=="mu";$("#segMG").hidden=level!=="mu"&&level!=="cat";document.querySelectorAll("#segMG .esonly").forEach(b=>b.hidden=level!=="mu");document.querySelectorAll("#segMG button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.g===colorBy));$("#zoomCtl").hidden=level!=="mu";$("#mapSearch").hidden=level!=="mu";svg.classList.toggle("zoomable",level==="mu");
   document.querySelectorAll("#segEU button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===metric));
   document.querySelectorAll("#segES button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===esMetric));
   const A=$("#avg");
@@ -863,6 +895,7 @@ function headerCtl(){
   const C=$("#crumbs");const T={eu:"Europa",es:"España",mu:"Municipios",cat:"Catalunya",int:"Internacional"};const chain={eu:["eu"],es:["eu","es"],mu:["eu","es","mu"],cat:["eu","es","cat"],int:["eu","int"]}[level];
   C.innerHTML=chain.map(l=>[l,T[l]]).map(([l,t],i)=>`${i?'<span class="sep">/</span>':''}<button data-l="${l}" ${l===level?'aria-current="page"':''}>${t}</button>`).join("");
   $("#maphead").textContent=level==="eu"?"ETRS89-LAEA · EurEau 2026":level==="es"?`Comunidades autónomas · INE ${YRS[yi]}`:level==="mu"?umCount(colorBy):level==="int"?"Italia · 20 regiones y 109 capitales de provincia · ISTAT 2022":"947 municipios · auditorías 2022-2024 (ACA y operadores)";
+  if(level==="mu")$("#maphead").innerHTML=`${esc(umCount(colorBy))}<span class="cov50">${esc(umCount50(colorBy))} · <a href="${SRC_MD}" target="_blank" rel="noopener">fuentes y cobertura</a></span>`;
 }
 function paintMun(){
   for(const [id,e] of Object.entries(muEls)){let f="";
@@ -1066,6 +1099,7 @@ function mitBlock(id){const r=A63.mt.m[id];if(!r)return "";
 function a63Block(id){const R=A63.m[id];if(!R)return "";
   return `<div><h3>Publicado por el operador (art. 63.2 RD 3/2023)</h3><dl>${R.map(r=>row(`${A63_IND[r[0]]} ${r[3]}`,r[2]==="%"?es(r[1],2).replace(/,?0+$/,""):es(r[1],2),r[2]==="%"?"%":esc(r[2]))).join("")}</dl>
   <p class="srcline">${esc(R[0][4])} · ${R.map(r=>esc(r[6])).filter((x,i,a)=>a.indexOf(x)===i).join(" · ")} · <a href="${esc(R[0][5])}" target="_blank" rel="noopener">documento del operador</a>. Cifras transcritas tal como se publican; no se calcula ninguna.</p></div>`;}
+const PRINT_BTN=`<div class="ctas noprint"><button class="cta" type="button" data-print>Imprimir ficha</button></div>`;
 // Índice de prioridad comercial con sus factores, para que se vea de dónde sale
 function priBlock(id){const p=priAll().m[id];const f=x=>es(x,2);
   return `<div><h3>Prioridad comercial (Índice Kimedes)</h3><dl>${row("Índice y quintil",`${es(p.idx,3)} · Q${p.q}`)}${row("Población (percentil)",f(p.P))}${row(`Pérdidas${p.loss==null?" (sin dato publicado)":""}`,f(p.L))}${row(`Fibrocemento${p.fc==null?" (sin dato EIEL)":""}`,f(p.F))}${row(`Antigüedad de la EIEL${p.fase==null?" (sin EIEL)":" (fase "+p.fase+")"}`,f(p.A))}${row(`Modelo de gestión (${GCAT[p.gm][0].toLowerCase()})`,f(p.G))}</dl>
@@ -1074,7 +1108,7 @@ function panelUM(P,id,chip){const r=MUD[id];if(!r){P.innerHTML="";return;}const 
   const head=`<div class="ph"><div><h2>${esc(r[0])}</h2><span class="code">INE ${id} · ${esc(prov===ccName(c)?prov:prov+" · "+ccName(c))} · ${grp(r[1])} hab. (INE 2025)</span></div>${chip}</div>`;
   const muni=`<div><h3>Municipio</h3><dl>${row("Código INE",id)}${row("Provincia",esc(prov))}${row("Comunidad",esc(ccName(c)))}${row("Población (INE, 1/1/2025)",grp(r[1]))}</dl></div>`;
   // Gestión, operadores y red: en todas las comunidades; en Catalunya, además, la ficha de ESF
-  const rest=muni+mitBlock(id)+(MU[id]?gesBlock(id):gesBlockES(id))+opsBlock(id)+redBlock(id)+priBlock(id)+srcList(umSources(id,L),id);
+  const rest=muni+mitBlock(id)+(MU[id]?gesBlock(id):gesBlockES(id))+opsBlock(id)+redBlock(id)+priBlock(id)+srcList(umSources(id,L),id)+PRINT_BTN;
   if(!L&&A63.m[id]){const r=A63.m[id][0];
     P.innerHTML=head+`<div class="hero"><span class="lbl">Indicador publicado por el operador</span><span class="big">${es(r[1],2).replace(/,?0+$/,"")}<small>${r[2]==="%"?"%":""}</small></span><span class="src">${esc(A63_IND[r[0]])} · ${r[3]} · ${esc(r[4])} · <a href="${esc(r[5])}" target="_blank" rel="noopener">documento</a></span></div>
     <p class="note warn">El indicador «${esc(A63_IND[r[0]])}» no es un porcentaje de pérdidas: no se pinta en la escala de pérdidas ni se convierte (100 menos el rendimiento sería un valor calculado por Kimedes, no publicado).</p>${a63Block(id)}`+rest;return;}
@@ -1205,7 +1239,7 @@ function setLevel(l,animate=true,vb=null){
     sizeLabels();if(k<1)anim=requestAnimationFrame(step);};
   anim=requestAnimationFrame(step);
   svg.setAttribute("aria-label",l==="eu"?"Mapa de Europa por pérdidas de agua":l==="es"?"Mapa de España por comunidades autónomas":l==="mu"?"Mapa de España por municipios":l==="int"?"Mapa de Italia por regiones y capitales de provincia":"Mapa de Catalunya por municipios");
-  try{history.replaceState(null,"",l==="eu"?location.pathname+location.search:"#"+({es:"espana",mu:"municipios",cat:"catalunya",int:"internacional"})[l])}catch(e){}
+  syncHash();
   store.set("lv",l);paint();
 }
 window.addEventListener("resize",sizeLabels);
@@ -1259,10 +1293,61 @@ $("#opl").innerHTML=OPN.slice(0,400).map(n=>`<option value="${esc(n)}"></option>
 {let t=null;$("#opq").addEventListener("input",e=>{clearTimeout(t);t=setTimeout(()=>setOp(e.target.value),200);});}
 $("#csvBtn").addEventListener("click",()=>exportCsv());
 
+// ================= enlaces para compartir (FWG-1871, E.1) =================
+// #<vista>[/<clave>][/<capa>]: la vista, el elemento fijado por el usuario y la capa activa (p. ej. #municipios/46250/perdidas),
+// para que un enlace pegado en un correo abra la misma ficha. Sin selección del usuario, solo la vista, como antes.
+const VIEW_SLUG={eu:"europa",es:"espana",mu:"municipios",cat:"catalunya",int:"internacional"},SLUG_VIEW=Object.fromEntries(Object.entries(VIEW_SLUG).map(([k,v])=>[v,k]));
+const LAYER_SLUG={loss:"perdidas",ges:"gestion",fc:"fibrocemento",est:"estado",pri:"prioridad"},SLUG_LAYER=Object.fromEntries(Object.entries(LAYER_SLUG).map(([k,v])=>[v,k]));
+const chosen={};
+const layerOk=(l,g)=>l==="mu"||(l==="cat"&&(g==="loss"||g==="ges"));
+const keyOk=(l,k)=>l==="mu"?!!MUD[k]:l==="cat"?!!MU[k]:l==="es"?!!CC.r[k]:l==="eu"?!!D[k]:l==="int"?!!(k[0]==="r"?INT.reg[k.slice(1)]:k[0]==="c"&&INT.cap[k.slice(1)]):false;
+function hashFor(){const k=chosen[level]&&pinned[level];const p=[VIEW_SLUG[level]];if(k)p.push(encodeURIComponent(k));
+  if(layerOk(level,colorBy)&&(k||colorBy!=="loss"))p.push(LAYER_SLUG[colorBy]);
+  return level==="eu"&&p.length===1?location.pathname+location.search:"#"+p.join("/");}
+function syncHash(){try{history.replaceState(null,"",hashFor())}catch(e){}}
+// Lee el hash; lo que no se reconoce se ignora y se abre la vista de Europa, como antes
+function parseHash(h){const seg=h.replace(/^#/,"").split("/").map(x=>{try{return decodeURIComponent(x)}catch(e){return ""}});
+  const l=SLUG_VIEW[seg[0]]||"eu";let key=null,layer=null;
+  for(const x of seg.slice(1)){if(SLUG_LAYER[x]&&layerOk(l,SLUG_LAYER[x]))layer=SLUG_LAYER[x];else if(x&&keyOk(l,x))key=x;}
+  return {l,key,layer};}
+// Encuadre de un municipio: su forma (en el grupo escalado a 1/100) o su punto, con margen para ver el entorno
+function muBox(id){const e=umEls[id];if(!e)return null;const b=e.getBBox(),k=e.tagName==="path"?.01:1;
+  const w=Math.max(b.width*k,b.height*k,MUN.vb[2]/40)*4,cx=(b.x+b.width/2)*k,cy=(b.y+b.height/2)*k,h=w*MUN.vb[3]/MUN.vb[2];
+  return [cx-w/2,cy-h/2,w,h];}
+function focusMu(id,animate=true){const v=muBox(id);if(!v)return;if(level!=="mu"){setLevel("mu",animate,clampVB(v));}else if(animate)animVB(v,500);else{cancelAnimationFrame(anim);setVB(clampVB(v));}}
+function openKey(k,animate=true){if(level==="mu")focusMu(k,animate);pin(k);}
+
+// ================= buscador de municipios sobre el mapa (FWG-1871, E.2) =================
+// Por nombre sin acentos o por código INE; al elegir, el mapa se acerca y la ficha queda fijada
+const UM_NORM=Object.fromEntries(UM_IDS.map(id=>[id,opNorm(MUD[id][0])]));
+function muFind(q){const n=opNorm(q);if(!n)return [];
+  const byCode=/^\d{2,5}$/.test(q.trim())?UM_IDS.filter(id=>id.startsWith(q.trim())):[];
+  const byName=UM_IDS.filter(id=>(" "+UM_NORM[id]).includes(" "+n)||UM_NORM[id].includes(n));
+  const rank=id=>(UM_NORM[id]===n?0:UM_NORM[id].startsWith(n)?1:2);
+  return [...new Set([...byCode,...byName])].sort((a,b)=>rank(a)-rank(b)||MUD[b][1]-MUD[a][1]).slice(0,8);}
+{const inp=$("#mapq"),list=$("#mapqList");let hits=[],act=-1;
+  const close=()=>{list.hidden=true;inp.setAttribute("aria-expanded","false");inp.removeAttribute("aria-activedescendant");act=-1;};
+  const show=()=>{list.innerHTML=hits.length?hits.map((id,i)=>`<li role="option" id="mapq${i}" data-id="${id}" aria-selected="${i===act}">${esc(MUD[id][0])}<small>${esc(PROV[id.slice(0,2)][0])} · INE ${id}</small></li>`).join(""):`<li class="none" role="option" aria-disabled="true">Sin resultados</li>`;
+    list.hidden=false;inp.setAttribute("aria-expanded","true");if(act>=0)inp.setAttribute("aria-activedescendant","mapq"+act);else inp.removeAttribute("aria-activedescendant");};
+  const choose=id=>{inp.value=MUD[id][0];close();openKey(id);};
+  inp.addEventListener("input",()=>{const q=inp.value.trim();hits=q.length>=2||/^\d+$/.test(q)?muFind(q):[];act=hits.length?0:-1;if(q.length>=2||/^\d+$/.test(q))show();else close();});
+  inp.addEventListener("keydown",e=>{if(e.key==="ArrowDown"||e.key==="ArrowUp"){if(!hits.length)return;e.preventDefault();act=(act+(e.key==="ArrowDown"?1:hits.length-1))%hits.length;show();}
+    else if(e.key==="Enter"){if(act>=0&&hits[act]){e.preventDefault();choose(hits[act]);}}else if(e.key==="Escape")close();});
+  list.addEventListener("pointerdown",e=>{const li=e.target.closest("[data-id]");if(li){e.preventDefault();choose(li.dataset.id);}});
+  inp.addEventListener("blur",()=>setTimeout(close,100));}
+
+// ================= ficha imprimible (FWG-1871, E.3) =================
+// Imprime solo la ficha fijada, con la cabecera de Kimedes, el enlace a la misma ficha y todas sus fuentes numeradas
+function printCard(){const h=$("#printHead");const d=new Date();
+  h.innerHTML=`<div class="eyebrow">Kimedes · Visor de pérdidas de agua</div><div class="pmeta">Ficha impresa el ${d.toLocaleDateString("es-ES")} · ${esc(location.href)}</div>`;
+  document.documentElement.classList.add("printing");window.print();}
+window.addEventListener("afterprint",()=>document.documentElement.classList.remove("printing"));
+document.addEventListener("click",e=>{if(e.target.closest("[data-print]"))printCard();});
+
 // ================= eventos =================
 const keyOf=t=>{if(level==="int"){const e=t.closest("[data-it]");return e?e.dataset.it:null;}if(level==="mu"){const e=t.closest("[data-u]");return e?e.dataset.u:null;}if(level==="eu"){const e=t.closest("[data-c]");return e?e.dataset.c:null;}if(level==="es"){const e=t.closest("[data-r]");return e?ccCode(e.dataset.r):null;}const e=t.closest("[data-m]");return e?e.dataset.m:null;};
 function setHover(k){if(hovered===k)return;hovered=k;marks();renderPanel();}
-function pin(k){pinned[level]=k;hovered=null;marks();renderPanel();
+function pin(k){pinned[level]=k;chosen[level]=true;hovered=null;marks();renderPanel();syncHash();
   if(window.matchMedia("(max-width:900px)").matches)$("#panel").scrollIntoView({behavior:reduce()?"auto":"smooth",block:"start"});}
 svg.addEventListener("pointermove",e=>{if(e.pointerType==="touch"||(drag&&drag.moved))return;const k=keyOf(e.target);const [x,y]=rel(e);
   if(!k){const s=level==="mu"&&e.target.closest("[data-sh]");if(s)showTip(`<b>${esc(MUN.shn[s.dataset.sh]||"")}</b><span>Territorio compartido entre municipios</span>`,x,y);else hideTip();setHover(null);return;}showTip(tipFor(k),x,y);setHover(k);});
@@ -1281,16 +1366,17 @@ $("#onlyData").addEventListener("change",()=>{rankAll=false;renderRank();marks()
 $("#moreBtn").addEventListener("click",()=>{rankAll=!rankAll;renderRank();marks();});
 document.addEventListener("click",e=>{const b=e.target.closest("[data-go],.lvl button,.crumbs button");if(!b)return;const l=b.dataset.go||b.dataset.l;if(l==="mu"&&b.dataset.cc)goMu(b.dataset.cc);else if(l&&l!==level)setLevel(l);});
 document.querySelectorAll("#segEU button").forEach(b=>b.addEventListener("click",()=>{metric=b.dataset.m;store.set("m",metric);paint();}));
-document.querySelectorAll("#segMG button").forEach(b=>b.addEventListener("click",()=>{colorBy=b.dataset.g;paint();}));
+document.querySelectorAll("#segMG button").forEach(b=>b.addEventListener("click",()=>{colorBy=b.dataset.g;paint();syncHash();}));
 document.querySelectorAll("#segES button").forEach(b=>b.addEventListener("click",()=>{esMetric=b.dataset.m;store.set("em",esMetric);paint();}));
 const ysel=$("#year");ysel.innerHTML=YRS.map((y,i)=>`<option value="${i}" ${i===yi?"selected":""}>${y}</option>`).join("");
 ysel.addEventListener("change",()=>{yi=+ysel.value;paint();});
-window.addEventListener("hashchange",()=>{const h=location.hash;const l=h==="#espana"?"es":h==="#municipios"?"mu":h==="#catalunya"?"cat":h==="#internacional"?"int":"eu";if(l!==level)setLevel(l);});
+window.addEventListener("hashchange",()=>{const o=parseHash(location.hash);if(o.layer)colorBy=o.layer;if(o.l!==level)setLevel(o.l);else paint();if(o.key)openKey(o.key);});
 
 // ================= inicio =================
 {const s=store.get("m");if(s&&M[s])metric=s;const t=store.get("em");if(t&&ESM[t])esMetric=t;}
-const h0=location.hash;let l0=h0==="#espana"?"es":h0==="#municipios"?"mu":h0==="#catalunya"?"cat":h0==="#internacional"?"int":h0==="#europa"?"eu":"eu";
+const h0=parseHash(location.hash),l0=h0.l;if(h0.layer)colorBy=h0.layer;
 setVB(VB[l0]||FULL);layerVis({es:l0==="es"?1:0,mu:l0==="mu"?1:0,cat:l0==="cat"?1:0,int:l0==="int"?1:0});setLevel(l0,false);
+if(h0.key)openKey(h0.key,false);
 </script>
 </body>
 </html>
