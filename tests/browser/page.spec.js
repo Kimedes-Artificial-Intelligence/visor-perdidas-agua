@@ -183,6 +183,7 @@ test('un municipio sin dato (Madrid) muestra el motivo y el valor INE de su comu
   await expect(P.locator('h2')).toHaveText('Madrid');
   await expect(P).toContainText('Sin dato municipal publicado. No se estima ningún valor.');
   await expect(P).toContainText('El operador no publica el indicador del art. 63.2 del RD 3/2023 para este municipio a fecha 30/10/2026: solo da la cifra de todo su sistema');
+  await expect(P).toContainText('MITECO no publica por municipio la evaluación de fugas estructurales de 2024 (RD 3/2023), solo un resumen; la solicitud de acceso a la tabla municipal está pendiente de presentar.');
   await expect(P).toContainText('Agua no registrada, Comunidad de Madrid (INE 2024)');
   await expect(P).toContainText('3.506.730');
 });

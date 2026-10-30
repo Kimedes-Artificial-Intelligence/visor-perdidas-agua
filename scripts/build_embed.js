@@ -54,6 +54,8 @@ const AR=JSON.parse(fs.readFileSync('data/art63.json'));
 const A63={m:Object.fromEntries(Object.entries(AR.mun).map(([k,R])=>[k,R.map(r=>[r.ind,r.v,r.unit,r.y,r.op,r.url,r.page,r.legal,r.date])])),
   e:Object.fromEntries(Object.entries(AR.estado).filter(([,o])=>o.e!=='publica').map(([k,o])=>[k,[o.e,o.motivo,o.date]])),
   // s: cifras de todo el sistema de un operador, para la ficha de operador: [patrón, operador, ámbito, indicador, valor, unidad, año, URL, página, aviso legal, fecha]
+  // mt: tabla de MITECO por municipio (vacía hasta la respuesta a la solicitud) y fecha de la solicitud
+  mt:{sol:AR.miteco.sol,m:Object.fromEntries(Object.entries(AR.miteco.mun).map(([k,o])=>[k,[o.anr,o.ife,o.rend,o.tipo,o.y,o.doc,o.rec]]))},
   s:AR.sys.map(r=>[r.pat,r.op,r.amb,r.ind,r.v,r.unit,r.y,r.url,r.page,r.legal,r.date])};
 // Pesos del índice de prioridad comercial (src/prioridad.js)
 const PRI_W=JSON.parse(fs.readFileSync('data/prioridad_pesos.json'));

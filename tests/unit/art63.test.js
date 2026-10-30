@@ -38,8 +38,8 @@ test('las 126 ciudades de 50.000 hab. o más sin pérdidas previas tienen dato p
 });
 test('data/art63.json y data/ciudades_50k_sin_perdidas.csv coinciden con lo que se genera desde raw/',()=>{
   const {mun,estado,cities}=build();
-  const {sys}=build();
-  assert.deepEqual(JSON.parse(read('data/art63.json')),{meta:{src:F.a63,estado:F.estado,sys:F.sys},mun,estado,sys});
+  const {sys,miteco}=build();
+  assert.deepEqual(JSON.parse(read('data/art63.json')),{meta:{src:F.a63,estado:F.estado,sys:F.sys,miteco:F.miteco},mun,estado,sys,miteco});
   assert.equal(read('data/ciudades_50k_sin_perdidas.csv').trim().split('\n').length,cities.length+1);
 });
 
@@ -70,4 +70,23 @@ test('cada patrón de las cifras de sistema casa con algún operador del SINAC',
   const pv=read(FE.pvnav).trim().split('\n').filter(l=>/^\d{5}\|/.test(l)).map(l=>l.split('|')[1]); // operadores en baja del País Vasco
   const names=new Set([...csv(read(FE.sinac)).map(r=>r.gestor),...pv].map(n=>' '+normOp(n)+' '));
   assert.deepEqual(SYS.filter(r=>![...names].some(n=>n.includes(' '+normOp(r.patron)+' '))).map(r=>r.patron),[]);
+});
+
+// ---- MITECO (Parte 5): estructura para la tabla por municipio del Informe nacional de fugas 2024
+const {parseMiteco,checkMiteco}=require('../../scripts/build_art63.js');
+const {mitecoReason}=require('../../src/loss.js');
+const MIT_HEAD='solicitud_presentada:2026-11-05\nine|anr_pct|ife|rendimiento_pct|tipo_evaluacion|año_dato|documento|fecha_recepcion|nota\n';
+test('la tabla de MITECO está vacía hasta que llegue la respuesta y sin fecha de solicitud',()=>{
+  const m=parseMiteco(read(F.miteco));assert.equal(m.sol,'');assert.deepEqual(m.rows,[]);assert.deepEqual(checkMiteco(m,PADRON),[]);
+});
+test('una tabla de MITECO bien formada se acepta y una mal formada se rechaza',()=>{
+  assert.deepEqual(checkMiteco(parseMiteco(MIT_HEAD+'28079|12.5|3.1||detallada|2024|Resolución 001/2027|2027-01-15|'),PADRON),[]);
+  for(const l of ['99999|12.5|||basica|2024|R|2027-01-15|','28079|12,5|||basica|2024|R|2027-01-15|','28079||||basica|2024|R|2027-01-15|',
+    '28079|12.5|||otra|2024|R|2027-01-15|','28079|12.5|||basica|2023|R|2027-01-15|','28079|12.5|||basica|2024||2027-01-15|'])
+    assert.ok(checkMiteco(parseMiteco(MIT_HEAD+l),PADRON).length>0,l);
+  assert.ok(checkMiteco(parseMiteco(MIT_HEAD.replace('2026-11-05','5/11/2026')),PADRON).length>0);
+});
+test('el motivo en gris dice si la solicitud a MITECO está pendiente o presentada y cuándo',()=>{
+  assert.match(mitecoReason(''),/pendiente de presentar\.$/);
+  assert.match(mitecoReason('2026-11-05'),/presentada el 05\/11\/2026\.$/);
 });

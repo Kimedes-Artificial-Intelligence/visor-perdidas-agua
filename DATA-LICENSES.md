@@ -68,6 +68,7 @@ Condiciones comprobadas el 21 y el 22 de octubre de 2026 (EurEau, IGN y origen d
 | `raw/italia_capoluoghi_cruce.psv` | Tabla propia: cruce por nombre de los capoluoghi con su código ISTAT | MIT | |
 | `raw/internacional_paises.psv` | Tabla propia: estado de la fuente de cada país | MIT | 30/10/2026 |
 | `data/internacional.json` | Generado por `scripts/build_int.js` | CC BY 4.0 (ISTAT) | |
+| `raw/miteco_fugas_2024.psv` | MITECO, tabla por municipio del Informe nacional de fugas 2024, si llega por solicitud de acceso (hoy vacía) | Información pública; condiciones según la resolución de MITECO | |
 | `raw/operadores_sistema_2026-10.psv` | Indicadores del art. 63.2 que el operador publica para todo su sistema (ficha de operador) | Derechos de cada operador; dato de hecho citado | Consulta 30/10/2026, año del dato en cada fila |
 | `data/prioridad_pesos.json` | Pesos del índice de prioridad comercial (tabla propia) | MIT | |
 | `raw/gestion_pv_nav_2026-10-30.psv` | País Vasco y Navarra: operador en baja de cada municipio según la web del propio operador (cita literal y URL) | Tabla propia, MIT; las páginas citadas conservan sus condiciones | 30/10/2026 |

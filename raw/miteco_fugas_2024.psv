@@ -1,0 +1,6 @@
+# MITECO, Informe nacional de fugas estructurales 2024 (RD 3/2023): tabla por municipio, si llega por solicitud de acceso a la información (FWG-1870, Parte 5).
+# MITECO solo publica el resumen (art. 63.1, Phweb); la unidad de reporte de 2024 es el municipio (informe, p. 35). David presenta la solicitud.
+# solicitud_presentada: fecha AAAA-MM-DD en que se presentó la solicitud; vacía mientras no se presente. Cambia el motivo que se muestra en gris.
+# Columnas: ine (5 cifras, padrón INE 2025) | anr_pct | ife | rendimiento_pct (vacío si no viene) | tipo_evaluacion (basica, detallada) | año_dato | documento (referencia o URL de la respuesta) | fecha_recepcion (AAAA-MM-DD) | nota
+solicitud_presentada:
+ine|anr_pct|ife|rendimiento_pct|tipo_evaluacion|año_dato|documento|fecha_recepcion|nota
