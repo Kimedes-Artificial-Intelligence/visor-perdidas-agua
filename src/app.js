@@ -431,10 +431,12 @@ function panelMU(P,id,chip){const r=MU[id];if(!r){P.innerHTML="";return;}const L
    ${row("Población (Idescat 2025)",grp(r[2]))}
   </dl></div>
   ${unit?`<p class="note">Dato de la unidad de gestión ${esc(unit)}: el mismo valor para todos sus municipios.</p>`:""}
+  ${a24&&a24[7]?`<p class="note">Dos redes auditadas en 2024: se muestra la del servicio con más abonados (${esc(a24[7][2])}, ${es(a24[0],1)} %). La otra red (${esc(a24[7][3])}) publica ${es(a24[7][0],1)} %.</p>`:""}
   ${a22&&a22[5]?`<p class="note">Dos redes auditadas en Vallirana en 2022 (43,6 % y 43,5 %).</p>`:""}
   ${!a24&&r[6]===1?`<p class="note">El operador ha publicado la auditoría 2024 (registro de la ACA); aquí se muestra el dato 2022 del anexo de la ACA.</p>`:""}`+gesBlock(id)+srcList(catSources(id,L));}
 function catSources(id,L){const r=MU[id];const out=[];
   if(L&&L.url)out.push(["Pérdidas 2024",{n:"Auditoría de eficiencia hidráulica 2024 publicada por el operador",u:L.url,d:"Agua no registrada (F9) y pérdidas reales, según la plantilla de la ACA"}]);
+  if(r&&r[3]&&r[3][7])out.push(["Pérdidas 2024, otra red",{n:"Auditoría de eficiencia hidráulica 2024 de la otra red ("+r[3][7][3]+")",u:URLS[r[3][7][1]],d:"Agua no registrada (F9) de esa red"}]);
   if(r&&r[4])out.push(["Pérdidas 2022","aca22"]);
   out.push(["Obligación y registro de auditorías","acareg"]);
   out.push(["Modelo de gestión y operador","esf"]);

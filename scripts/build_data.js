@@ -22,6 +22,8 @@ for(const l of R('aca2024_extract.psv')){if(l.startsWith('#'))continue;const [id
   const rec={anr:+f9,anf:num(f7),f1:num(f1),ili:num(f4),app_auth:num(f6),pr:num(pr),pa:num(pa),year:+y,url};
   const list=id==='AMB'?UNITS.AMB.map(byName):id==='GIR'?UNITS.GIR.map(byName):[id];
   if(id==='AMB')rec.unit=UNAME.AMB; if(id==='GIR')rec.unit=UNAME.GIR; if(id==='43171'||id==='43905')rec.unit=UNAME.SLV;
+  // Vallirana: dos auditorías 2024, una por red. Se muestra la del servicio con más abonados (decisión de David, 30/10/2026)
+  if(id==='08295')rec.alt={anr:51.9,url:'https://www.vallirana.cat/media/repository/serveis/Subministrament_Aigua/Dades_Aigua_2025/Memoria_Vallirana-FCC_2024.pdf',shown:'AVALLSA, 5.357 abonados',other:'FCC, 2.218 abonados'};
   for(const c of list){if(a24[c])throw 'dup24 '+c;a24[c]=rec;}}
 const pb={};for(const l of R('aca_powerbi_2024_obligats.psv')){const [c,n,link]=l.split('|');if(c==='varis')continue;pb[c.slice(0,5)]=link==='1';}
 for(const c of UNITS.AMB.map(byName))pb[c]=true; for(const c of UNITS.SLV.map(byName))pb[c]=true;

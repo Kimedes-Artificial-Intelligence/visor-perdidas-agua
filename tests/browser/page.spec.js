@@ -82,6 +82,16 @@ for(const [ine,name,v,host] of [['08238','Sant Quirze del Vallès','35,5','sqvai
   });
 }
 
+test('Vallirana muestra la auditoría 2024 de la red con más abonados y cita la de la otra red',async({page})=>{
+  await open(page,'dist',LEVELS.catalunya);
+  if(await page.locator('#moreBtn').isVisible())await page.click('#moreBtn');
+  await page.click('#rank button[data-k="08295"]');await settle(page);
+  const P=page.locator('#panel');
+  await expect(P.locator('.hero .big')).toContainText('42,6');
+  await expect(P).toContainText('Dos redes auditadas en 2024: se muestra la del servicio con más abonados (AVALLSA, 5.357 abonados, 42,6 %). La otra red (FCC, 2.218 abonados) publica 51,9 %.');
+  await expect(P.locator('.srcs a[href$="Memoria_Vallirana-FCC_2024.pdf"]')).toHaveCount(1);
+});
+
 test('Sant Hipòlit de Voltregà (08215) está dibujado y responde al ratón',async({page})=>{
   await open(page,'dist',LEVELS.catalunya);
   const c=await centerOf(page,'#catLayer [data-m="08215"]');

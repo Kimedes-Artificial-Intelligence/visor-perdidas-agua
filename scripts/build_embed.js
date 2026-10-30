@@ -13,6 +13,8 @@ const coms=[...new Set(M.muni.map(m=>m.comarca))].sort();const urls=[];const uni
 const u=(arr,v)=>{if(v==null)return -1;let i=arr.indexOf(v);if(i<0){arr.push(v);i=arr.length-1;}return i;};
 const MU={};
 for(const m of M.muni){const a24=m.a24?[m.a24.anr,m.a24.pr,m.a24.ili,m.a24.f1,m.a24.anf,u(urls,m.a24.url),u(units,m.a24.unit||null)]:0;
+  // Posición 7, solo si el municipio tiene otra auditoría 2024 de otra red: [ANR, URL, red mostrada, otra red]
+  if(m.a24&&m.a24.alt)a24.push([m.a24.alt.anr,u(urls,m.a24.alt.url),m.a24.alt.shown,m.a24.alt.other]);
   const a22=m.aca?[m.aca.anr,m.aca.ili,m.aca.f1,m.aca.anf,u(units,m.aca.unit),m.aca.note?1:0]:0;
   // Posición 5: antes 3Cat/ACN, retirado por su licencia; se mantiene a 0 para no mover el resto
   MU[m.ine]=[m.name,coms.indexOf(m.comarca),m.pop,a24,a22,0,m.audit2024===true?1:m.audit2024===false?2:0];}

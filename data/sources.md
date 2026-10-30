@@ -8,7 +8,7 @@ Consulta: 19 oct 2026. Todo dato del visor lleva año y fuente. Ningún valor es
 |---|---|---|---|---|
 | Países | EurEau 2026 (heredado de la v1) + INE 2024 para la ANR de España | 2022-2024 | 31 países | Contrastado el 22 oct 2026 con el anexo de datos del PDF oficial (transcripción en `raw/eureau_ewif2026.psv`): 0 diferencias en pérdidas reales, ANR, m³/km/año, producción, consumo, red, telelectura, renovación, tarifa y medias EUR*/EU27. España actualizada a INE 2024 (23,1 %) |
 | España por CCAA | INE ESSA, tabla 53447 | 2008-2024 | 18 filas + España | Descarga completa de la API; checksum de la transcripción idéntico al de la API |
-| Catalunya, dato 2024 | Auditorías 2024 publicadas por cada operador (enlazadas desde el registro de la ACA) | 2024 | **112 municipios, 6,20 M hab.** (30 oct 2026) | Texto del PDF extraído con pdf.js en el navegador; 6 casos leídos en pantalla (PDF imagen: Mataró, Caldes, la Garriga, Mollet, Figueres, Tortosa); 6 re-verificados contra el PDF original |
+| Catalunya, dato 2024 | Auditorías 2024 publicadas por cada operador (enlazadas desde el registro de la ACA) | 2024 | **113 municipios, 6,22 M hab.** (30 oct 2026) | Texto del PDF extraído con pdf.js en el navegador; 6 casos leídos en pantalla (PDF imagen: Mataró, Caldes, la Garriga, Mollet, Figueres, Tortosa); 6 re-verificados contra el PDF original |
 | Catalunya, dato 2022 | ACA, anexo III de la *Avaluació comparativa* (mayo 2025) | 2022 | 26 municipios más (0,49 M hab.) | Checksum de la transcripción idéntico al xlsx; códigos INE 108/108 iguales a los de la ACA |
 | **Total Catalunya con dato** | | | **137 de 947 municipios, 6,68 M hab. (82 %)** (30 oct 2026) | |
 | Población municipal | Idescat, padrón 1/1/2025 | 2025 | 947/947 | Suma 8.146.265 = total Idescat |
@@ -35,10 +35,9 @@ Consulta: 19 oct 2026. Todo dato del visor lleva año y fuente. Ningún valor es
 
 ## Pendientes
 
-- Revisión del 30 oct 2026 (FWG-1870) de los 30 municipios que figuraban aquí: 10 ya se incorporaron el 22 oct (Reus, Begur, Deltebre, la Ràpita, Malgrat, Banyoles, Olesa, Torelló, Torroella, Castellbisbal) y 2 el 30 oct (Sant Sadurní d'Anoia, Sant Quirze del Vallès). Quedan 18, que muestran 2022 o nada:
+- Revisión del 30 oct 2026 (FWG-1870) de los 30 municipios que figuraban aquí: 10 ya se incorporaron el 22 oct (Reus, Begur, Deltebre, la Ràpita, Malgrat, Banyoles, Olesa, Torelló, Torroella, Castellbisbal) y 3 el 30 oct (Sant Sadurní d'Anoia, Sant Quirze del Vallès, Vallirana). Quedan 17, que muestran 2022 o nada:
   - Aqualia (aqualia.com responde con un desafío anti-bots; no se insiste, descarga manual): Lleida, Lloret de Mar, Molins de Rei, Sant Andreu de la Barca, Sant Feliu de Guíxols, Santa Cristina d'Aro, Tordera, Castelló d'Empúries, Castell-Platja d'Aro, l'Ametlla de Mar.
   - Sant Andreu de Llavaneres: aigua.ajllavaneres.cat responde 403.
-  - Vallirana: dos auditorías 2024, una por red (FCC, F9 51,9 %; AVALLSA, F9 42,6 %). Pendiente de decidir cuál se muestra.
   - Abrera: solo el balance 2024, sin indicadores. Ripoll y Montornès: solo 2022 en la web del operador. el Masnou, Altafulla, la Bisbal d'Empordà: sin auditoría 2024 encontrada.
   - Detalle y URLs en `raw/aca2024_notes.txt` y en la sección del 30 oct 2026, al final.
 - Sin dato: Balaguer, la Seu d'Urgell, Vielha e Mijaran (obligados sin auditoría publicada) y 797 municipios no obligados.
@@ -195,9 +194,10 @@ Consulta: 30/10/2026. Se repasan los 30 municipios de la lista de pendientes. Lo
 | INE | Municipio | Documento | Año | F9 | SHA-256 del PDF |
 |---|---|---|---|---|---|
 | 08240 | Sant Sadurní d'Anoia | https://minasalut.com/wp-content/uploads/2025/07/AUDITORIA-EFICIENCIA-HIDRAULICA-DEL-2024.pdf (Comunitat Mina i Aigües de la Salut). Red principal, Sant Sadurní - Can Catassús | 2024 (p.1) | 23,1 % | 0883bb81caa36f3c045ca99e0448ff83c1457012f083d75ce37886644ce74369 |
+| 08295 | Vallirana | https://www.vallirana.cat/media/repository/serveis/Subministrament_Aigua/Dades_Aigua_2025/Memoria_Vallirana-AVALLSA_2024.pdf (red AVALLSA, 5.357 abonados). La otra red (FCC, 2.218 abonados, F9 51,9 %, https://www.vallirana.cat/media/repository/serveis/Subministrament_Aigua/Dades_Aigua_2025/Memoria_Vallirana-FCC_2024.pdf, SHA-256 025bc379c7b86cf4dd9fe444dc2dbce07d70a2f1ec4f1c75acf7f8c8e05de202) va como nota en la ficha | 2024 (p.3) | 42,6 % | 632da0760ff5ea2c6caefbd5a6d49c4f325990ef3f3caa29bbfcaba7dc4646cd |
 | 08238 | Sant Quirze del Vallès | https://sqvaigua.cat/wp-content/uploads/2026/01/2024-Auditoria_HidrC3A0ulica-SQVaigua.Compl_.pdf (SQVaigua), enlazado desde https://sqvaigua.cat/informat/auditoria-hidraulica/ | 2024 (nombre del archivo) | 35,5 % | 07e17e2b2130c56e312476c9103f7190ba9f35b46d4b09fee2df0df9b26fab2c |
 
-Cobertura de Catalunya: 137 de 947 municipios, 6,68 M hab. (82 %); 112 con dato 2024. España por municipio: 5.176 municipios con pérdidas.
+Cobertura de Catalunya: 137 de 947 municipios, 6,68 M hab. (82 %); 113 con dato 2024. Vallirana: se muestra la red con más abonados (decisión de David, 30/10/2026). España por municipio: 5.176 municipios con pérdidas.
 
 Sin incorporar (no se salta ninguna protección):
 
@@ -213,7 +213,6 @@ Sin incorporar (no se salta ninguna protección):
 | l'Ametlla de Mar | Ídem | https://www.aqualia.com/informacion-al-ciudadano/la-ametlla-de-mar |
 | Lleida, Castelló d'Empúries | Ídem; sin página localizada (el buscador de Aqualia también está protegido) | https://www.aqualia.com/ |
 | Sant Andreu de Llavaneres | 403 | https://aigua.ajllavaneres.cat/ |
-| Vallirana | Dos auditorías 2024, una por red; pendiente de decisión | https://www.vallirana.cat/media/repository/serveis/Subministrament_Aigua/Dades_Aigua_2025/Memoria_Vallirana-FCC_2024.pdf · https://www.vallirana.cat/media/repository/serveis/Subministrament_Aigua/Dades_Aigua_2025/Memoria_Vallirana-AVALLSA_2024.pdf |
 | Abrera | Solo balance 2024, sin F9 | https://www.ajuntamentabrera.cat/files/doc6924/balanc-hidric-2024.pdf |
 | Ripoll, Montornès del Vallès | Solo auditoría 2022 publicada | https://somasrsa.cat/wp-content/uploads/2025/09/Auditoria-hidraulica-Ripoll-2022.pdf · https://giacsa.com/wp-content/uploads/2024/05/Annex-Auditoria-Hidraulica-vs-2-1.pdf |
 | el Masnou, Altafulla, la Bisbal d'Empordà | Sin auditoría 2024 en las webs del ayuntamiento y del operador | |
