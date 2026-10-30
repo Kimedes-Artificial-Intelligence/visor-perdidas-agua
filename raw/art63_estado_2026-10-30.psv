@@ -1,0 +1,123 @@
+# Búsqueda del indicador del art. 63.2 del RD 3/2023 en las ciudades de 50.000 hab. o más sin pérdidas en la EIEL, la ACA ni el Govern IB (FWG-1870).
+# estado: publica (ver raw/operadores_art63_2026-10.psv), solo_sistema, no_publica, bloqueado, no_verificado, excluido_aviso_legal. motivo: detalle que se muestra en la ficha.
+# País Vasco y Navarra (Bilbao, Vitoria, Donostia, Pamplona, Barakaldo, Getxo, Irun) van en la Parte 4.
+ine|estado|fecha_consulta|urls_revisadas|motivo
+02003|no_publica|2026-10-30|https://www.aguasdealbacete.com/informacion-de-transparencia|Aguas de Albacete: el último documento es una auditoría de 2021, sin el indicador
+03009|bloqueado|2026-10-30|https://www.aqualia.com/ (y portales de transparencia de cada ayuntamiento)|FCC Aqualia: aqualia.com responde con un desafío anti-bots (Incapsula); el ayuntamiento no publica el indicador
+03014|publica|2026-10-30|https://www.aguasdealicante.es/documents/d/amaem/informe-sostenibilidad-2024|
+03031|solo_sistema|2026-10-30|https://hidraqua.veolia.es/documents/d/hidraqua/hidraqua-ids-2024-final|Hidraqua publica el rendimiento de toda la empresa, sin desglose por municipio
+03065|publica|2026-10-30|https://www.aigueselx.com/documents/d/aguas-de-elche/aigues-elx-informe_2025_def|
+03066|solo_sistema|2026-10-30|https://hidraqua.veolia.es/documents/d/hidraqua/hidraqua-ids-2024-final|Hidraqua publica el rendimiento de toda la empresa, sin desglose por municipio
+03099|solo_sistema|2026-10-30|https://hidraqua.veolia.es/documents/d/hidraqua/hidraqua-ids-2024-final|Hidraqua publica el rendimiento de toda la empresa, sin desglose por municipio
+03122|publica|2026-10-30|https://www.aguasdealicante.es/documents/d/amaem/informe-sostenibilidad-2024|
+03133|publica|2026-10-30|https://www.agamed.es/documents/d/agamed/informe-desarrollo-sostenible-documento-interactivo-agamed-2025|
+04013|bloqueado|2026-10-30|https://www.aqualia.com/ (y portales de transparencia de cada ayuntamiento)|FCC Aqualia: aqualia.com responde con un desafío anti-bots (Incapsula); el ayuntamiento no publica el indicador
+04079|no_publica|2026-10-30|https://www.hidralia-sa.es/es/informe-de-desarrollo-sostenible|Hidralia no publica ficha de Roquetas de Mar
+04902|bloqueado|2026-10-30|https://www.aguasdeelejido.es/|La web del servicio de aguas responde 403
+05019|bloqueado|2026-10-30|https://www.aqualia.com/ (y portales de transparencia de cada ayuntamiento)|FCC Aqualia: aqualia.com responde con un desafío anti-bots (Incapsula); el ayuntamiento no publica el indicador
+06015|bloqueado|2026-10-30|https://www.aqualia.com/ (y portales de transparencia de cada ayuntamiento)|FCC Aqualia: aqualia.com responde con un desafío anti-bots (Incapsula); el ayuntamiento no publica el indicador
+06083|bloqueado|2026-10-30|https://www.aqualia.com/ https://merida.es/|FCC Aqualia: aqualia.com responde con un desafío anti-bots; merida.es responde 403
+09059|no_publica|2026-10-30|https://www.aguasdeburgos.com/transparencia/|Aguas de Burgos no publica el indicador
+10037|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+11004|no_verificado|2026-10-30|https://www.emalgesa.com/|La web de EMALGESA no tiene enlaces navegables ni mapa del sitio
+11012|no_publica|2026-10-30|https://www.aguasdecadiz.es/transparencia-2/|Aguas de Cádiz no publica el indicador
+11015|no_publica|2026-10-30|https://chiclananatural.com/|Chiclana Natural no publica el indicador
+11020|bloqueado|2026-10-30|https://www.aqualia.com/ (y portales de transparencia de cada ayuntamiento)|FCC Aqualia: aqualia.com responde con un desafío anti-bots (Incapsula); el ayuntamiento no publica el indicador
+11022|bloqueado|2026-10-30|https://www.aqualia.com/ (y portales de transparencia de cada ayuntamiento)|FCC Aqualia: aqualia.com responde con un desafío anti-bots (Incapsula); el ayuntamiento no publica el indicador
+11027|no_verificado|2026-10-30|https://www.apemsa.es/|La web de Aguas del Puerto no se ha podido recorrer
+11031|publica|2026-10-30|https://www.hidralia-sa.es/documents/345987/470706/Memoria+San+Fernando+2023.pdf/93b795ea-bc55-bc79-2443-cd11f5cd3c53|
+11032|bloqueado|2026-10-30|https://www.aqualia.com/ (y portales de transparencia de cada ayuntamiento)|FCC Aqualia: aqualia.com responde con un desafío anti-bots (Incapsula); el ayuntamiento no publica el indicador
+12040|no_publica|2026-10-30|https://www.facsa.com/informes/|FACSA: su informe 2024 no da el indicador
+12135|no_publica|2026-10-30|https://www.facsa.com/informes/|FACSA: su informe 2024 no da el indicador
+13034|no_publica|2026-10-30|https://aquona.veolia.es/es/informe-de-desarrollo-sostenible https://aquona.veolia.es/es/indicadores-de-sostenibilidad-ambiental|Aquona solo publica informes de toda la empresa, sin el indicador
+14021|publica|2026-10-30|https://emacsa.es/wp-content/uploads/2014/10/DATOS-2025-INFORMACION-AL-CIUDADANO-RD-3-2023.pdf|
+15030|no_verificado|2026-10-30|https://www.emalcsa.es/|La web de EMALCSA no tiene enlaces navegables ni mapa del sitio
+15036|no_verificado|2026-10-30|https://www.ferrol.gal/|No se ha localizado la web del operador
+15078|solo_sistema|2026-10-30|https://viaqua.veolia.gal/es/informe-de-desarrollo-sostenible|Viaqua publica el rendimiento de toda la empresa (48 municipios), no por municipio
+16078|no_verificado|2026-10-30|https://www.cuenca.es/|No se ha localizado la publicación en la web del ayuntamiento
+18087|publica|2026-10-30|https://www.emasagra.es/documents/d/emasagra/memoria-de-sostenibilidad-digital-2025-alta-29-09-pdf|
+18140|bloqueado|2026-10-30|https://www.aqualia.com/ (y portales de transparencia de cada ayuntamiento)|FCC Aqualia: aqualia.com responde con un desafío anti-bots (Incapsula); el ayuntamiento no publica el indicador
+19130|no_publica|2026-10-30|https://guadalagua.es/ https://guadalagua.es/calidad-y-medio-ambiente|Guadalagua no publica el indicador
+21041|publica|2026-10-30|https://www.aguashuelva.com/documents/d/huelva/2025_memoria-sostenibilidad-aguas-de-huelva|
+22125|bloqueado|2026-10-30|https://www.huesca.es/|huesca.es responde 403
+23050|bloqueado|2026-10-30|https://www.aqualia.com/ (y portales de transparencia de cada ayuntamiento)|FCC Aqualia: aqualia.com responde con un desafío anti-bots (Incapsula); el ayuntamiento no publica el indicador
+23055|no_verificado|2026-10-30|https://www.linaqua.es/|La web de LINAQUA no tiene enlaces navegables
+24089|no_publica|2026-10-30|https://www.aguasdeleon.com/informe-de-desarrollo-sostenible|Aguas de León: el último informe es de 2022 y no fecha el rendimiento que cita
+24115|no_publica|2026-10-30|https://aquona.veolia.es/es/informe-de-desarrollo-sostenible https://aquona.veolia.es/es/indicadores-de-sostenibilidad-ambiental|Aquona solo publica informes de toda la empresa, sin el indicador
+26089|no_verificado|2026-10-30|https://www.logrono.es/|No se ha localizado la publicación en la web del ayuntamiento
+27028|no_publica|2026-10-30|https://gestagua.es/|Gestagua no publica informes con el indicador
+28005|bloqueado|2026-10-30|https://www.aguasdealcala.es/|Aguas de Alcalá: la web responde con un desafío anti-bots (Incapsula)
+28006|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28007|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28013|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28014|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28022|no_verificado|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia|No se ha revisado la web de Suministradora de Aguas Lomas Bosque ni la del ayuntamiento
+28045|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28047|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28049|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28058|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28065|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28074|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28079|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28080|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28092|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28106|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28113|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28115|no_verificado|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia|No se ha revisado la web de Representaciones Blázquez ni la del ayuntamiento
+28123|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28127|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28134|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28148|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28161|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+28903|solo_sistema|2026-10-30|https://www.canaldeisabelsegunda.es/transparencia https://www.canaldeisabelsegunda.es/documents/d/site/informe-de-sostenibilidad-de-canal-de-isabel-ii-2025|Canal de Isabel II publica pérdidas reales y agua no registrada de toda la empresa (Comunidad de Madrid y Delegación de Cáceres), no por municipio
+29025|no_publica|2026-10-30|https://www.emabesa.es/|EMABESA no publica el indicador
+29051|publica|2026-10-30|https://www.hidralia-sa.es/documents/d/hidralia/def_estepona_2024|
+29054|no_publica|2026-10-30|https://gestagua.es/|Gestagua no publica informes con el indicador
+29067|no_publica|2026-10-30|https://www.emasa.es/transparencia/|EMASA no publica el indicador
+29069|publica|2026-10-30|https://www.hidralia-sa.es/documents/d/hidralia/marbella_2025|
+29070|no_publica|2026-10-30|https://www.acosol.es/|ACOSOL describe su estudio de fugas del RD 3/2023, sin cifras
+29082|no_publica|2026-10-30|https://www.hidralia-sa.es/es/informe-de-desarrollo-sostenible|Hidralia: la última ficha de Rincón de la Victoria publicada es de 2019
+29094|bloqueado|2026-10-30|https://www.aqualia.com/ (y portales de transparencia de cada ayuntamiento)|FCC Aqualia: aqualia.com responde con un desafío anti-bots (Incapsula); el ayuntamiento no publica el indicador
+29901|no_verificado|2026-10-30|https://www.torremolinos.es/|No se ha localizado la web del operador
+30016|no_publica|2026-10-30|https://hidrogea.veolia.es/es/informe-de-desarrollo-sostenible https://hidrogea.veolia.es/es/datos-significativos|Hidrogea no publica el indicador
+30024|no_publica|2026-10-30|https://www.aguasdelorca.com/control-calidad-del-agua|Aguas de Lorca no publica el indicador
+30027|excluido_aviso_legal|2026-10-30|https://www.sercomosa.es/wp-content/uploads/2026/07/EINF-2025-SERCOMOSA.pdf https://www.sercomosa.es/aviso-legal/|SERCOMOSA publica el rendimiento de la red de Molina de Segura (EINF 2025, p.39), pero su aviso legal prohíbe expresamente la «estracción, reutilización» de sus contenidos
+30030|publica|2026-10-30|https://www.emuasa.es/documents/d/emuasa/ids-emuasa-24-multimedia-p1-3-|
+32054|solo_sistema|2026-10-30|https://viaqua.veolia.gal/es/informe-de-desarrollo-sostenible|Viaqua publica el rendimiento de toda la empresa (48 municipios), no por municipio
+33004|publica|2026-10-30|https://www.aguasdeaviles.es/documents/d/aguas-de-aviles/ids-aviles-2023|
+33024|no_verificado|2026-10-30|https://www.emagijon.es/|La web de la EMA de Gijón no se ha revisado a fondo
+33044|bloqueado|2026-10-30|https://www.aqualia.com/ (y portales de transparencia de cada ayuntamiento)|FCC Aqualia: aqualia.com responde con un desafío anti-bots (Incapsula); el ayuntamiento no publica el indicador
+33066|no_publica|2026-10-30|https://www.ayto-siero.es/|El ayuntamiento no publica el indicador
+34120|no_publica|2026-10-30|https://aquona.veolia.es/es/informe-de-desarrollo-sostenible https://aquona.veolia.es/es/indicadores-de-sostenibilidad-ambiental|Aquona solo publica informes de toda la empresa, sin el indicador
+35004|no_publica|2026-10-30|https://www.canalgestionlanzarote.es/|Canal Gestión Lanzarote no publica el indicador
+35016|no_publica|2026-10-30|https://emalsa.es/|EMALSA: su informe 2025 no da el indicador
+35019|no_publica|2026-10-30|https://www.canaragua.es/es/informe-de-desarrollo-sostenible https://canaragua.canariastransparente.org/transparencia-voluntaria|Canaragua no publica documentos con el indicador
+35022|no_publica|2026-10-30|https://www.canaragua.es/es/informe-de-desarrollo-sostenible https://canaragua.canariastransparente.org/transparencia-voluntaria|Canaragua no publica documentos con el indicador
+35026|no_publica|2026-10-30|https://www.aguasdetelde.com/control-calidad-del-agua|Aguas de Telde no publica el indicador
+36038|solo_sistema|2026-10-30|https://viaqua.veolia.gal/es/informe-de-desarrollo-sostenible|Viaqua publica el rendimiento de toda la empresa (48 municipios), no por municipio
+36057|bloqueado|2026-10-30|https://www.aqualia.com/ (y portales de transparencia de cada ayuntamiento)|FCC Aqualia: aqualia.com responde con un desafío anti-bots (Incapsula); el ayuntamiento no publica el indicador
+37274|bloqueado|2026-10-30|https://www.aqualia.com/ https://www.aytosalamanca.es/robots.txt|FCC Aqualia: aqualia.com responde con un desafío anti-bots; el robots.txt del ayuntamiento no admite la consulta
+38001|no_verificado|2026-10-30|https://www.entemanser.es/|La web de ENTEMANSER no tiene enlaces navegables
+38006|no_publica|2026-10-30|https://www.canaragua.es/es/informe-de-desarrollo-sostenible https://canaragua.canariastransparente.org/transparencia-voluntaria|Canaragua no publica documentos con el indicador
+38017|no_verificado|2026-10-30|https://www.entemanser.es/|La web de ENTEMANSER no tiene enlaces navegables
+38023|no_publica|2026-10-30|https://www.teidagua.es/es/informe-de-desarrollo-sostenible https://teidagua.portaltransparencia.es/informacion-economica-y-estadistica|Teidagua no publica el indicador
+38038|no_publica|2026-10-30|https://www.emmasa.es/|EMMASA no publica el indicador
+39075|bloqueado|2026-10-30|https://www.aqualia.com/ (y portales de transparencia de cada ayuntamiento)|FCC Aqualia: aqualia.com responde con un desafío anti-bots (Incapsula); el ayuntamiento no publica el indicador
+39087|no_publica|2026-10-30|https://aguastorrelavega.com/|Aguas Torrelavega no publica el indicador
+40194|no_publica|2026-10-30|https://aquona.veolia.es/es/informe-de-desarrollo-sostenible https://aquona.veolia.es/es/indicadores-de-sostenibilidad-ambiental|Aquona solo publica informes de toda la empresa, sin el indicador
+41004|solo_sistema|2026-10-30|https://www.emasesa.com/conocenos/plataforma-de-transparencia-en-la-gestion-del-ciclo-integral-del-agua/|EMASESA publica el rendimiento y el IFE de su red en baja (12 municipios), sin año ni desglose por municipio
+41038|solo_sistema|2026-10-30|https://www.emasesa.com/conocenos/plataforma-de-transparencia-en-la-gestion-del-ciclo-integral-del-agua/|EMASESA publica el rendimiento y el IFE de su red en baja (12 municipios), sin año ni desglose por municipio
+41091|solo_sistema|2026-10-30|https://www.emasesa.com/conocenos/plataforma-de-transparencia-en-la-gestion-del-ciclo-integral-del-agua/|EMASESA publica el rendimiento y el IFE de su red en baja (12 municipios), sin año ni desglose por municipio
+41095|no_publica|2026-10-30|https://www.aguasdelhuesna.com/|Aguas del Huesna no publica el indicador
+45165|bloqueado|2026-10-30|https://www.aqualia.com/ (y portales de transparencia de cada ayuntamiento)|FCC Aqualia: aqualia.com responde con un desafío anti-bots (Incapsula); el ayuntamiento no publica el indicador
+45168|no_verificado|2026-10-30|https://www.toledo.es/|No se ha localizado la web del operador (Tagus Servicios Integrales)
+46131|no_verificado|2026-10-30|https://www.globalomnium.com/DataBackEnd/Sites/20/Docs/Sostenibilidad/Informe%20sostenibilidad%202025.pdf https://www.emivasa.es/|Global Omnium: su informe de sostenibilidad 2025 no da cifras; los portales de las empresas locales no se han podido revisar por completo
+46190|solo_sistema|2026-10-30|https://hidraqua.veolia.es/documents/d/hidraqua/hidraqua-ids-2024-final https://aiguesdepaterna.portaltransparencia.es|Aigües de Paterna: solo el rendimiento de toda la empresa, que no abastece a todo el municipio
+46220|no_verificado|2026-10-30|https://www.globalomnium.com/DataBackEnd/Sites/20/Docs/Sostenibilidad/Informe%20sostenibilidad%202025.pdf https://www.emivasa.es/|Global Omnium: su informe de sostenibilidad 2025 no da cifras; los portales de las empresas locales no se han podido revisar por completo
+46244|solo_sistema|2026-10-30|https://hidraqua.veolia.es/documents/d/hidraqua/hidraqua-ids-2024-final https://aigueshorta.portaltransparencia.es|Aigües de l'Horta: solo el rendimiento de toda la empresa
+46250|no_verificado|2026-10-30|https://www.globalomnium.com/DataBackEnd/Sites/20/Docs/Sostenibilidad/Informe%20sostenibilidad%202025.pdf https://www.emivasa.es/|Global Omnium: su informe de sostenibilidad 2025 no da cifras; los portales de las empresas locales no se han podido revisar por completo
+47186|no_publica|2026-10-30|https://www.aquavall.es/memorias-de-sostenibilidad-aquavall/|AQUAVALL: sus memorias 2023 y 2024 no dan el indicador
+49275|no_publica|2026-10-30|https://aquona.veolia.es/es/informe-de-desarrollo-sostenible https://aquona.veolia.es/es/indicadores-de-sostenibilidad-ambiental|Aquona solo publica informes de toda la empresa, sin el indicador
+50297|no_verificado|2026-10-30|https://www.zaragoza.es/|No se ha localizado la publicación en la web del ayuntamiento
+51001|no_verificado|2026-10-30|https://www.acemsa.org/|La web de ACEMSA no tiene enlaces navegables
+52001|no_verificado|2026-10-30|https://www.melilla.es/|No se ha localizado la publicación en la web de la Ciudad Autónoma

@@ -116,6 +116,9 @@
 .srcs li b{color:var(--fg);font-weight:600}.srcs li a{color:var(--signal-ink);word-break:break-word}
 .srcs li .what{display:block;font:400 10px/14px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
 #muLayer .umdecl{fill:url(#hatchDe);pointer-events:none}
+#muLayer .umop{fill:url(#hatchOp);pointer-events:none}
+.umo-ln{stroke:var(--fg);stroke-width:16;stroke-opacity:.45}
+.umt-bg{fill:var(--nodata)}.umt-dot{fill:var(--fg);fill-opacity:.55}
 .umd-ln{stroke:var(--fg);stroke-width:14;stroke-opacity:.35}
 #muLayer.opf .um:not(.opm){fill-opacity:.12}
 #muLayer.opf .um.opm{stroke:var(--fg);stroke-width:.6;stroke-opacity:1}
@@ -125,4 +128,4 @@
 .rankes .cta{padding:6px 10px}
 dl.ops2 dt{word-break:break-word}
 dl.ops2 .tag{margin-left:6px}
-#muLayer.opf .umdecl,#muLayer.opf .umlow{display:none}
+#muLayer.opf .umdecl,#muLayer.opf .umlow,#muLayer.opf .umop{display:none}

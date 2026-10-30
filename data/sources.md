@@ -241,3 +241,45 @@ Criterios aplicados:
 Siguen sin clasificar, de los 60 primeros: Aguas de Alcalá UTE (UTE concesionaria; socios sin fuente primaria), Aguas de Telde, ARCGISA (certificado TLS no válido), Aguas Sierra de Cádiz, Aquaoleiros, Aqua Campiña, COSMA-Narón (certificado caducado; Aqualia tras desafío anti-bots), C.P. La Cizaña, Tagus Servicios Integrales, Aguas de Langreo (desafío anti-bots), ARU Obras y Servicios, UTE Aigües de SVH (el BOP de 2024 nombra a SGAB como gestora, no a la UTE), Aigües de Banyoles, Aigua de Rigat, Comunitat Minera Olesana, Aguas de Narixa (desafío anti-bots) y Augaservi.
 
 La ficha del municipio muestra el grupo junto a cada operador y añade a la lista de fuentes la página que confirma su tipo (constante `OPC`).
+
+## Añadido el 30 oct 2026: pérdidas publicadas por el operador en las ciudades de 50.000 hab. o más (FWG-1870, Parte 1)
+
+Palanca legal: art. 63.2 y anexo XI parte B.1 del RD 3/2023. El ayuntamiento o el operador debe publicar en su web el rendimiento del sistema y el indicador de fugas estructurales (IFE). Consulta: 30/10/2026.
+
+- Lista de trabajo: `data/ciudades_50k_sin_perdidas.csv`. Son las 126 ciudades de 50.000 hab. o más (padrón INE 2025) sin pérdidas de la ACA, el Govern IB ni la EIEL, con su operador principal del SINAC y su grupo. Las 7 del País Vasco y Navarra van en la Parte 4.
+- Cifras: `raw/operadores_art63_2026-10.psv`, una fila por municipio e indicador. Recoge el nombre del operador, el indicador (ANR, PERDIDAS_REALES, IFE, ILI, RENDIMIENTO) con su valor y unidad tal como se publican, y el año del dato. Añade la URL, la fecha de consulta, la página o sección, el aviso legal (URL y frase literal) y una nota con el año tal como lo dice el documento y el SHA-256 del PDF descargado. Solo cifras que la fuente atribuye al municipio: las de un sistema de varios municipios (Canal de Isabel II, EMASESA, Hidraqua, Viaqua) no se asignan a ninguno y se reservan para la ficha de operador (Parte 6).
+- No se guardan los PDF en `raw/art63/`: todos los avisos legales revisados reservan los derechos de reproducción. Queda la URL y el SHA-256 de la copia descargada el 30/10/2026.
+- Resultado de la búsqueda por ciudad: `raw/art63_estado_2026-10-30.psv`, con las URL revisadas y el motivo.
+
+| Estado | Ciudades | Texto en la ficha |
+|---|---|---|
+| publica | 12 | El indicador, con su nombre exacto, año, página y enlace |
+| solo_sistema | 33 | "El operador no publica el indicador del art. 63.2 del RD 3/2023 para este municipio a fecha 30/10/2026: solo da la cifra de todo su sistema..." |
+| no_publica | 34 | "El operador no publica el indicador del art. 63.2 del RD 3/2023 a fecha 30/10/2026." |
+| bloqueado | 19 | "No se ha podido comprobar si el operador publica el indicador...: su web no admite consultas automatizadas... Pendiente de revisión manual." |
+| no_verificado | 20 | "No se ha podido completar la búsqueda..." y el detalle |
+| excluido_aviso_legal | 1 (Molina de Segura) | "El operador publica el indicador, pero su aviso legal prohíbe expresamente extraer y reutilizar sus contenidos: no se incorpora." |
+
+Cifras incorporadas (todas comprobadas descargando el documento y leyendo la página citada; las infografías, renderizadas):
+
+| INE | Ciudad | Operador | Indicador | Año | Se pinta |
+|---|---|---|---|---|---|
+| 14021 | Córdoba | EMACSA | ANR 8,45 % e IFE 2,02 (sin unidad impresa) | 2025 | Sí (ANR) |
+| 03065 | Elche | Aigües d'Elx | ANR 11,71 % y rendimiento 88,30 % | 2025 | Sí (ANR) |
+| 18087 | Granada | EMASAGRA | Rendimiento 80,98 % | 2025 | No |
+| 21041 | Huelva | Aguas de Huelva | Rendimiento 81,76 % | 2025 | No |
+| 30030 | Murcia | EMUASA | Rendimiento 85,74 % | 2024 | No |
+| 33004 | Avilés | Aguas de Avilés | Rendimiento 81 % | 2023 | No |
+| 29069 | Marbella | Hidralia | Rendimiento 93,9 % | 2025 | No |
+| 29051 | Estepona | Hidralia | Rendimiento 84 % | 2024 | No |
+| 11031 | San Fernando | Hidralia | Rendimiento 90,3 % | 2023 | No |
+| 03014 | Alicante | Aguas de Alicante | Rendimiento 88,55 % | 2024 | No |
+| 03122 | Sant Vicent del Raspeig | Aguas de Alicante | Rendimiento 85,99 % | 2024 | No |
+| 03133 | Torrevieja | AGAMED | Rendimiento 87,45 % | 2025 | No |
+
+Reglas aplicadas (decisiones de David del 30/10/2026):
+- Solo el agua no registrada y las pérdidas reales en % se pintan con `MU_BINS`, con una trama horizontal propia. El rendimiento, el IFE y el ILI se muestran en la ficha y en el mapa con un punteado, "el operador publica otro indicador, no comparable". No se calcula 100 menos el rendimiento.
+- Precedencia (`src/loss.js`): auditoría ACA > operador (art. 63.2) > EIEL > Govern IB. La EIEL da un solo valor por municipio, así que "medido" y "declarado" no compiten. La ficha dice qué parte de sus valores son múltiplos de 5.
+- Avisos legales: se cita el dato de hecho aunque el aviso reserve los derechos. Se excluye SERCOMOSA (Molina de Segura), cuyo aviso prohíbe la "estracción, reutilización" de sus contenidos: rendimiento 87,65 % en 2025 en su EINF, p.39, no incorporado.
+
+Cobertura de pérdidas en España por municipio: 5.176 → 5.178 municipios (43,1 → 44,2 % de la población). Ciudades de 50.000 hab. o más con pérdidas en el mapa: 27 → 29; con algún indicador del operador en la ficha: 12.

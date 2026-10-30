@@ -110,8 +110,8 @@ test('#municipios carga los 8.131 municipios y el contador de cobertura',async({
   expect(errors).toEqual([]);
   await expect(page.locator('#muLayer [data-u]')).toHaveCount(8131);
   await expect(page.locator('.lvl button[data-l="mu"]')).toHaveAttribute('aria-pressed','true');
-  await expect(page.locator('#maphead')).toHaveText(/^5\.176 de 8\.131 municipios con dato de pérdidas publicado · \d+,\d % de la población de España$/);
-  await expect(page.locator('#legend')).toContainText('son tres indicadores distintos');
+  await expect(page.locator('#maphead')).toHaveText(/^5\.178 de 8\.131 municipios con dato de pérdidas publicado · \d+,\d % de la población de España$/);
+  await expect(page.locator('#legend')).toContainText('son indicadores distintos');
 });
 
 test('la rueda, los botones y el doble clic acercan; restablecer vuelve a toda España',async({page})=>{
@@ -180,14 +180,51 @@ test('un municipio sin dato (Madrid) muestra el motivo y el valor INE de su comu
   const P=page.locator('#panel');
   await expect(P.locator('h2')).toHaveText('Madrid');
   await expect(P).toContainText('Sin dato municipal publicado. No se estima ningún valor.');
-  await expect(P).toContainText('Esta provincia no está en el visor nacional de la EIEL');
+  await expect(P).toContainText('El operador no publica el indicador del art. 63.2 del RD 3/2023 para este municipio a fecha 30/10/2026: solo da la cifra de todo su sistema');
   await expect(P).toContainText('Agua no registrada, Comunidad de Madrid (INE 2024)');
   await expect(P).toContainText('3.506.730');
 });
 
+// ---- Pérdidas publicadas por el operador (art. 63.2 RD 3/2023, FWG-1870)
+test('Córdoba: el agua no registrada del operador se pinta con la escala, con trama propia, y la ficha da el IFE y la fuente',async({page})=>{
+  await openMu(page);
+  expect(await page.locator('#muLayer [data-u="14021"]').evaluate(e=>e.style.fill)).toBe('rgb(159, 211, 192)'); // 8,45 % -> tramo < 10 %
+  expect(await page.locator('#muLayer .umop').getAttribute('d')).not.toBe('');
+  await page.evaluate(()=>pin('14021'));
+  const P=page.locator('#panel');
+  await expect(P.locator('.hero .lbl')).toHaveText('Agua no registrada');
+  await expect(P.locator('.hero .big')).toHaveText('8,5%');
+  await expect(P.locator('.hero')).toContainText('2025 · Agua no registrada publicada por el operador (art. 63.2 RD 3/2023)');
+  await expect(P).toContainText('Índice de fugas estructurales (IFE) 2025');
+  await expect(P).toContainText('2,02');
+  await expect(P.locator('.srcs a[href*="emacsa.es"]')).toHaveCount(1);
+  await expect(P.locator('.srcs')).toContainText('Aviso legal');
+});
+test('Granada: el operador solo publica el rendimiento; no se pinta en la escala ni se convierte',async({page})=>{
+  await openMu(page);
+  expect(await page.locator('#muLayer [data-u="18087"]').evaluate(e=>e.style.fill)).toContain('dotsOt');
+  await page.evaluate(()=>pin('18087'));
+  const P=page.locator('#panel');
+  await expect(P.locator('.hero .lbl')).toHaveText('Indicador publicado por el operador');
+  await expect(P.locator('.hero .big')).toHaveText('80,98%');
+  await expect(P.locator('.hero')).toContainText('Rendimiento técnico hidráulico · 2025 · EMASAGRA');
+  await expect(P).toContainText('no es un porcentaje de pérdidas: no se pinta en la escala de pérdidas ni se convierte');
+  await expect(P.locator('#rank button[data-k="18087"]')).toHaveCount(0);
+});
+for(const [ine,name,txt] of [['30027','Molina de Segura','su aviso legal prohíbe expresamente extraer y reutilizar sus contenidos'],
+  ['36057','Vigo','su web no admite consultas automatizadas (30/10/2026). Pendiente de revisión manual'],
+  ['29067','Málaga','El operador no publica el indicador del art. 63.2 del RD 3/2023 a fecha 30/10/2026.']])
+  test(`${name}: sin dato, el motivo dice el resultado exacto de la búsqueda del art. 63.2`,async({page})=>{
+    await openMu(page);await page.evaluate(id=>pin(id),ine);
+    const P=page.locator('#panel');
+    await expect(P.locator('h2')).toHaveText(name);
+    await expect(P).toContainText('Sin dato municipal publicado');
+    await expect(P).toContainText(txt);
+  });
+
 test('el ranking nacional se filtra por comunidad y fija el municipio al hacer clic',async({page})=>{
   await openMu(page);
-  await expect(page.locator('#rankCount')).toHaveText('5.176 municipios con dato de pérdidas publicado');
+  await expect(page.locator('#rankCount')).toHaveText('5.178 municipios con dato de pérdidas publicado');
   await page.selectOption('#rankCc','04');
   await expect(page.locator('#rankCount')).toHaveText('67 municipios con dato de pérdidas publicado en Illes Balears');
   await page.click('#moreBtn');
