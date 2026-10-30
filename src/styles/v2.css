@@ -136,3 +136,26 @@
 dl.ops2 dt{word-break:break-word}
 dl.ops2 .tag{margin-left:6px}
 #muLayer.opf .umdecl,#muLayer.opf .umlow,#muLayer.opf .umop{display:none}
+/* FWG-1871, Parte E: buscador sobre el mapa, línea de ciudades de 50.000 hab. y ficha imprimible */
+.mapsearch{position:absolute;left:10px;top:10px;z-index:5;width:min(280px,calc(100% - 64px))}
+.mapsearch input{box-sizing:border-box;width:100%;font:500 12px/16px var(--mono);color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:8px 10px}
+.mapsearch input:focus-visible{outline:2px solid var(--signal);outline-offset:1px}
+.mapsearch ul{list-style:none;margin:2px 0 0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:2px;max-height:280px;overflow:auto}
+.mapsearch li{padding:7px 10px;font:500 13px/17px var(--body);color:var(--fg);cursor:pointer;border-top:1px solid var(--hair)}
+.mapsearch li:first-child{border-top:0}
+.mapsearch li small{display:block;font:400 10px/14px var(--mono);color:var(--muted);letter-spacing:.04em}
+.mapsearch li[aria-selected="true"],.mapsearch li:hover{background:var(--sunken)}
+.mapsearch li.none{color:var(--muted);cursor:default}
+.maphead .cov50{display:block}
+.maphead .cov50 a{color:var(--signal-ink)}
+.printhead{display:none}
+@media print{
+  html.printing .wrap>*:not(.grid),html.printing .mapbox,html.printing .noprint,html.printing .tip,html.printing .panel .chip{display:none!important}
+  html.printing body{background:#fff}
+  html.printing .grid{display:block}
+  html.printing .panel{position:static;max-height:none;overflow:visible;border:0;box-shadow:none;width:auto}
+  html.printing .printhead{display:block;margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  html.printing .printhead .pmeta{font:400 10px/14px var(--mono);color:var(--muted);word-break:break-all}
+  html.printing .srcs a::after{content:" " attr(href);word-break:break-all}
+  html.printing *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}

@@ -112,7 +112,7 @@ test('#municipios carga los 8.131 municipios y el contador de cobertura',async({
   expect(errors).toEqual([]);
   await expect(page.locator('#muLayer [data-u]')).toHaveCount(8131);
   await expect(page.locator('.lvl button[data-l="mu"]')).toHaveAttribute('aria-pressed','true');
-  await expect(page.locator('#maphead')).toHaveText(/^5\.178 de 8\.131 municipios con dato de pérdidas publicado · \d+,\d % de la población de España$/);
+  await expect(page.locator('#maphead')).toHaveText(/^5\.178 de 8\.131 municipios con dato de pérdidas publicado · \d+,\d % de la población de España\d+ de \d+ ciudades/);
   await expect(page.locator('#legend')).toContainText('son indicadores distintos');
 });
 
@@ -468,4 +468,83 @@ test('Exportar CSV descarga el ranking filtrado completo',async({page})=>{
   expect(lines[0].split(';').slice(0,3)).toEqual(['codigo_ine','municipio','provincia']);
   expect(lines.length-1).toBe(67);
   expect(lines.find(l=>l.startsWith('07024;'))).toContain('Formentera');
+});
+
+// ---- Parte E de FWG-1871: enlaces para compartir, buscador sobre el mapa, ficha imprimible y ciudades de 50.000 hab.
+test('un enlace con municipio y capa abre la misma ficha fijada, con la capa activa y el mapa acercado',async({page})=>{
+  const errors=await openMu(page,'#municipios/46250/gestion');
+  expect(errors).toEqual([]);
+  await expect(page.locator('#panel h2')).toHaveText('València');
+  await expect(page.locator('#panel .chip')).toHaveText('Fijado');
+  await expect(page.locator('#segMG button[data-g="ges"]')).toHaveAttribute('aria-pressed','true');
+  expect((await vb(page))[2]).toBeLessThan(60);
+  await expect(page).toHaveURL(/#municipios\/46250\/gestion$/);
+});
+test('al fijar un municipio o cambiar de capa, la URL guarda la vista, el municipio y la capa',async({page})=>{
+  await openMu(page);
+  await expect(page).toHaveURL(/#municipios$/);
+  await page.click('#rank button[data-k]');
+  const k=await page.locator('#rank button.sel').getAttribute('data-k');
+  await expect(page).toHaveURL(new RegExp(`#municipios/${k}/perdidas$`));
+  await page.click('#segMG button[data-g="pri"]');
+  await expect(page).toHaveURL(new RegExp(`#municipios/${k}/prioridad$`));
+  // Abrir el enlace copiado en otra pestaña lleva a la misma ficha
+  const url=page.url();const p2=await page.context().newPage();await p2.setViewportSize({width:1360,height:1300});
+  await p2.route(/^https?:/,r=>r.abort());await p2.goto(url);
+  await expect(p2.locator('#panel h2')).toHaveText(await page.locator('#panel h2').innerText());
+  await expect(p2.locator('#segMG button[data-g="pri"]')).toHaveAttribute('aria-pressed','true');
+});
+test('un enlace con un código o una capa que no existen abre la vista sin romperse',async({page})=>{
+  const errors=await openMu(page,'#municipios/99999/inventada');
+  expect(errors).toEqual([]);
+  await expect(page.locator('.lvl button[data-l="mu"]')).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('#segMG button[data-g="loss"]')).toHaveAttribute('aria-pressed','true');
+});
+test('el buscador del mapa encuentra sin acentos y por código INE, acerca el mapa y fija la ficha',async({page})=>{
+  await openMu(page);
+  const full=await vb(page);
+  await expect(page.locator('#mapSearch')).toBeVisible();
+  await page.fill('#mapq','alcala de henares');
+  await expect(page.locator('#mapqList li').first()).toContainText('Alcalá de Henares');
+  await page.keyboard.press('Enter');await page.waitForTimeout(700);
+  await expect(page.locator('#panel h2')).toHaveText('Alcalá de Henares');
+  await expect(page.locator('#panel .chip')).toHaveText('Fijado');
+  expect((await vb(page))[2]).toBeLessThan(full[2]/4);
+  await expect(page).toHaveURL(/#municipios\/28005\/perdidas$/);
+  await page.fill('#mapq','08019');
+  await expect(page.locator('#mapqList li').first()).toContainText('Barcelona');
+  await page.locator('#mapqList li').first().dispatchEvent('pointerdown');
+  await expect(page.locator('#panel h2')).toHaveText('Barcelona');
+  await page.fill('#mapq','zzzz');
+  await expect(page.locator('#mapqList li')).toHaveText(['Sin resultados']);
+  await page.click('.lvl button[data-l="es"]');
+  await expect(page.locator('#mapSearch')).toBeHidden();
+});
+test('la ficha del municipio tiene «Imprimir ficha» y al imprimir solo se ve la ficha, con la cabecera y las fuentes con su URL',async({page})=>{
+  await openMu(page,'#municipios/46250');
+  await page.evaluate(()=>{window.print=()=>{window.__printed=true;};});
+  await page.click('#panel [data-print]');
+  expect(await page.evaluate(()=>window.__printed)).toBe(true);
+  await page.emulateMedia({media:'print'});
+  await expect(page.locator('#printHead')).toBeVisible();
+  await expect(page.locator('#printHead')).toContainText('Kimedes · Visor de pérdidas de agua');
+  await expect(page.locator('#printHead')).toContainText('#municipios/46250');
+  await expect(page.locator('#mapbox')).toBeHidden();
+  await expect(page.locator('.rankwrap')).toBeHidden();
+  await expect(page.locator('header')).toBeHidden();
+  await expect(page.locator('#panel .srcs')).toBeVisible();
+  await expect(page.locator('#panel [data-print]')).toBeHidden();
+  const after=await page.locator('#panel .srcs a').first().evaluate(a=>getComputedStyle(a,'::after').content);
+  expect(after).toContain('http');
+});
+test('bajo el mapa, la segunda línea cuenta las ciudades de 50.000 hab. o más con dato y enlaza a las fuentes',async({page})=>{
+  await openMu(page);
+  const t=await page.locator('#maphead .cov50').innerText();
+  const m=/^(\d+) de (\d+) ciudades de 50\.000 hab\. o más con dato de pérdidas publicado · fuentes y cobertura$/.exec(t);
+  expect(m).not.toBeNull();
+  const T=await page.evaluate(()=>Object.values(MUD).filter(r=>r[1]>=50000).length);
+  expect(+m[2]).toBe(T);
+  await expect(page.locator('#maphead .cov50 a')).toHaveAttribute('href',/data\/sources\.md$/);
+  await page.click('#segMG button[data-g="ges"]');
+  await expect(page.locator('#maphead .cov50')).toContainText('ciudades de 50.000 hab. o más con modelo de gestión');
 });
