@@ -219,7 +219,7 @@ test('Córdoba: el agua no registrada del operador se pinta con la escala, con t
   await page.evaluate(()=>pin('14021'));
   const P=page.locator('#panel');
   await expect(P.locator('.hero .lbl')).toHaveText('Agua no registrada');
-  await expect(P.locator('.hero .big')).toHaveText('8,5%');
+  await expect(P.locator('.hero .big')).toHaveText('8,45%'); // tal como lo publica EMACSA, sin redondear
   await expect(P.locator('.hero')).toContainText('2025 · Agua no registrada publicada por el operador (art. 63.2 RD 3/2023)');
   await expect(P).toContainText('Índice de fugas estructurales (IFE) 2025');
   await expect(P).toContainText('2,02');
@@ -294,7 +294,8 @@ test('el selector de capa cambia leyenda, contador y color; fibrocemento y estad
   const fill=()=>page.locator('#muLayer [data-u="11002"]').evaluate(e=>e.style.fill);
   const lossFill=await fill();
   await layer(page,'ges');
-  await expect(page.locator('#maphead')).toHaveText(/^7\.581 de 8\.131 municipios con modelo de gestión/);
+  const nGes=await page.evaluate(()=>grp(UM_IDS.filter(LAYER.ges.has).length)); // crece con cada operador clasificado
+  await expect(page.locator('#maphead')).toHaveText(new RegExp(`^${nGes.replace('.','\\.')} de 8\\.131 municipios con modelo de gestión`));
   await expect(page.locator('#legend')).toContainText('Vecinal / cooperativa');
   expect(await fill()).toBe('var(--g-p)');
   await layer(page,'fc');
@@ -402,7 +403,7 @@ test('el filtro por operador "FCC AQUALIA" resalta sus municipios, da el recuent
 });
 
 // ---- Herramientas de venta (FWG-1870, Parte 6)
-test('ficha de operador "FCC AQUALIA": municipios, población, pérdidas medias por fuente sin mezclar indicadores y exportación',async({page})=>{
+test('ficha de operador "FCC AQUALIA": municipios, población, pérdidas publicadas por fuente sin mezclar indicadores y exportación',async({page})=>{
   await openMu(page);
   await page.fill('#opq','FCC AQUALIA');
   await expect(page.locator('#opCount')).toHaveText(/^\d{3} municipios/);
@@ -412,7 +413,7 @@ test('ficha de operador "FCC AQUALIA": municipios, población, pérdidas medias 
   await expect(P).toContainText('Ficha de operador');
   await expect(P).toContainText('Municipios donde opera'+n);
   await expect(P).toContainText('Tipo'+'Privado (utility)');
-  await expect(P).toContainText('calculada por Kimedes por separado para cada fuente');
+  await expect(P).toContainText('No se calcula ninguna media');
   await expect(P.locator('#opCsv')).toBeVisible();
 });
 test('ficha de operador "CANAL DE ISABEL II": da las cifras de todo su sistema, sin asignarlas a un municipio',async({page})=>{
@@ -496,4 +497,56 @@ test('Exportar CSV descarga el ranking filtrado completo',async({page})=>{
   expect(lines[0].split(';').slice(0,3)).toEqual(['codigo_ine','municipio','provincia']);
   expect(lines.length-1).toBe(67);
   expect(lines.find(l=>l.startsWith('07024;'))).toContain('Formentera');
+});
+
+// ---- Correcciones de la revisión de FWG-1870 (FWG-1871, Parte B)
+test('con el teclado, el foco se queda en el elemento y Enter lo fija (capital de Italia, país, municipio de Catalunya)',async({page})=>{
+  await page.setViewportSize({width:1360,height:1300});await open(page,'dist','#internacional');
+  await page.focus('#intLayer [data-it="c076063"]');await settle(page);
+  expect(await page.evaluate(()=>document.activeElement.dataset.it)).toBe('c076063');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#panel h2')).toHaveText('Potenza');
+  await open(page,'dist','#catalunya');
+  const k=await page.locator('#catLayer path.mu.has').nth(3).getAttribute('data-m');
+  await page.focus(`#catLayer [data-m="${k}"]`);await settle(page);
+  expect(await page.evaluate(()=>document.activeElement.dataset.m)).toBe(k);
+});
+test('la ficha de operador no calcula medias: da el rango publicado por fuente; su CSV lleva todos sus municipios',async({page})=>{
+  await openMu(page);
+  await page.fill('#opq','FCC AQUALIA');await page.waitForTimeout(400);
+  const P=page.locator('#panel');
+  await expect(P).toContainText('Pérdidas publicadas en sus municipios');
+  await expect(P).not.toContainText('Media ponderada');
+  const n=await page.evaluate(()=>opMatch.size);
+  const [dl]=await Promise.all([page.waitForEvent('download'),page.click('#opCsv')]);
+  const lines=require('fs').readFileSync(await dl.path(),'utf8').replace(/^\ufeff/,'').trim().split('\r\n');
+  expect(lines.length-1).toBe(n);
+});
+test('AMVISA, que el SINAC no nombra, tiene ficha de operador con sus cifras de sistema',async({page})=>{
+  await openMu(page);
+  await page.fill('#opq','AMVISA');await page.waitForTimeout(400);
+  const P=page.locator('#panel');
+  await expect(P.locator('h2')).toHaveText('AMVISA');
+  await expect(P).toContainText('Agua no registrada 2023');
+  await expect(P).toContainText('15,6');
+});
+test('el CSV escribe los números con coma decimal para Excel en español',async({page})=>{
+  await openMu(page,'#municipios');
+  await page.selectOption('#rankCc','04');
+  const [dl]=await Promise.all([page.waitForEvent('download'),page.click('#csvBtn')]);
+  const lines=require('fs').readFileSync(await dl.path(),'utf8').replace(/^\ufeff/,'').trim().split('\r\n');
+  const H=lines[0].split(';'),r=lines.find(l=>l.startsWith('07040;')).split(';');
+  expect(r[H.indexOf('perdidas_pct')]).toBe('17,74');
+  expect(r[H.indexOf('indice_prioridad_kimedes')]).toMatch(/^\d,\d{4}$/);
+});
+test('un municipio de Catalunya con auditoría no muestra el motivo de "sin dato"',async({page})=>{
+  await page.setViewportSize({width:1360,height:1300});await open(page,'dist','#catalunya');
+  await page.evaluate(()=>pin('08019'));
+  await expect(page.locator('#panel')).not.toContainText('MITECO no publica por municipio');
+});
+test('las tramas usan tinta oscura fija, también en modo oscuro, y las líneas no quedan cortadas en el borde de la tesela',async({page})=>{
+  await page.emulateMedia({colorScheme:'dark'});await openMu(page);
+  const ink=await page.evaluate(()=>getComputedStyle(document.querySelector('.umo-ln')).stroke);
+  expect(ink).toBe('rgb(22, 44, 64)');
+  expect(await page.locator('#hatchOp line').getAttribute('y1')).toBe('40');
 });

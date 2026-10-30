@@ -23,6 +23,8 @@ function psv(text,cols,file){
     return Object.assign(Object.fromEntries(cols.map((c,i)=>[c,a[i]])),{_line:n});});
 }
 
+// Fecha AAAA-MM-DD que existe en el calendario
+const isDate=s=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(s))return false;const d=new Date(s+'T00:00:00Z');return !isNaN(d)&&d.toISOString().slice(0,10)===s;};
 // Errores de forma de cada fila de pérdidas publicadas; padron = conjunto de códigos INE válidos
 function checkA63(rows,padron){
   const err=[];const at=r=>`${F.a63}, línea ${r._line}`;const seen=new Set();
@@ -31,9 +33,10 @@ function checkA63(rows,padron){
     if(!IND.has(r.indicador))err.push(`${at(r)}: indicador "${r.indicador}" no admitido`);
     if(!/^\d+(\.\d+)?$/.test(r.valor))err.push(`${at(r)}: valor "${r.valor}" no es un número con punto decimal`);
     else if(PCT.has(r.indicador)&&(r.unidad!=='%'||+r.valor>100))err.push(`${at(r)}: ${r.indicador} debe ser un % entre 0 y 100`);
-    if(!/^20\d\d$/.test(r['año_dato'])||+r['año_dato']>2026)err.push(`${at(r)}: año "${r['año_dato']}"`);
+    if(!isDate(r.fecha_consulta))err.push(`${at(r)}: fecha de consulta "${r.fecha_consulta}"`);
+    // El año del dato no puede ser posterior al de la consulta
+    if(!/^20\d\d$/.test(r['año_dato'])||+r['año_dato']>+String(r.fecha_consulta).slice(0,4))err.push(`${at(r)}: año "${r['año_dato']}"`);
     if(!/^https:\/\/\S+$/.test(r.url))err.push(`${at(r)}: URL "${r.url}"`);
-    if(!/^\d{4}-\d{2}-\d{2}$/.test(r.fecha_consulta))err.push(`${at(r)}: fecha de consulta "${r.fecha_consulta}"`);
     for(const c of ['operador','unidad','pagina_o_seccion','licencia_o_aviso_legal'])if(!r[c])err.push(`${at(r)}: ${c} vacío`);
     if(!/^https:\/\/\S+ /.test(r.licencia_o_aviso_legal))err.push(`${at(r)}: el aviso legal debe empezar por su URL`);
     const k=r.ine+'|'+r.indicador;if(seen.has(k))err.push(`${at(r)}: ${k} repetido`);seen.add(k);}
@@ -102,7 +105,9 @@ function build(read=f=>fs.readFileSync(path.join(ROOT,f),'utf8')){
   const a63=psv(read(F.a63),COLS,F.a63),est=psv(read(F.estado),ESTADO_COLS,F.estado);
   const sys=psv(read(F.sys),SYS_COLS,F.sys),mit=parseMiteco(read(F.miteco)),smun=psv(read(F.smun),SMUN_COLS,F.smun);
   const err=[...checkA63(a63,padron),...checkEstado(est,padron,a63),...checkSys(sys),...checkMiteco(mit,padron),...checkSmun(smun,padron,sys)];if(err.length)throw new Error(err.join('\n'));
-  const mun={};for(const r of a63)(mun[r.ine]??=[]).push({ind:r.indicador,v:+r.valor,unit:r.unidad,y:+r['año_dato'],op:r.operador,url:r.url,
+  // d: decimales tal como se publican (79.00 se muestra 79,00), para no redondear la cifra del operador en la ficha
+  const dec=v=>(v.split('.')[1]||'').length;
+  const mun={};for(const r of a63)(mun[r.ine]??=[]).push({ind:r.indicador,v:+r.valor,d:dec(r.valor),unit:r.unidad,y:+r['año_dato'],op:r.operador,url:r.url,
     page:r.pagina_o_seccion,legal:r.licencia_o_aviso_legal,date:r.fecha_consulta});
   const estado=Object.fromEntries(est.map(r=>[r.ine,{e:r.estado,date:r.fecha_consulta,motivo:r.motivo}]));
   // Ciudades de 50.000 hab. o más sin pérdidas en las fuentes anteriores a FWG-1870 (ACA, Govern IB, EIEL): la lista de trabajo de la Parte 1
@@ -117,7 +122,7 @@ function build(read=f=>fs.readFileSync(path.join(ROOT,f),'utf8')){
       const p=paintable(mun[id]||[]),sp=!p&&sysPainted[id];
       return [id,name,pop,top?top[0]+(top[2]?' (responsable)':''):'',c?(c.grupo||c.p.trim()):'',estado[id]?estado[id].e:'',
         (mun[id]||[]).map(r=>`${r.ind} ${r.v}${r.unit==='%'?' %':''} (${r.y})`).join(' · '),p?'sí':sp?'sistema':'no'];});
-  const sysOut=sys.map(r=>({pat:r.patron,op:r.operador,amb:r.ambito,ind:r.indicador,v:+r.valor,unit:r.unidad,y:+r['año_dato'],url:r.url,page:r.pagina_o_seccion,legal:r.licencia_o_aviso_legal,date:r.fecha_consulta,nota:r.nota}));
+  const sysOut=sys.map(r=>({pat:r.patron,op:r.operador,amb:r.ambito,ind:r.indicador,v:+r.valor,d:dec(r.valor),unit:r.unidad,y:+r['año_dato'],url:r.url,page:r.pagina_o_seccion,legal:r.licencia_o_aviso_legal,date:r.fecha_consulta,nota:r.nota}));
   const miteco={sol:mit.sol,mun:Object.fromEntries(mit.rows.map(r=>[r.ine,{anr:r.anr_pct===''?null:+r.anr_pct,ife:r.ife===''?null:+r.ife,rend:r.rendimiento_pct===''?null:+r.rendimiento_pct,tipo:r.tipo_evaluacion,y:2024,doc:r.documento,rec:r.fecha_recepcion}]))};
   const smunOut=Object.fromEntries(smun.map(r=>[r.ine,{pat:r.patron,name:r.nombre_en_fuente,srv:r.servicio,url:r.url,page:r.pagina_o_seccion,date:r.fecha_consulta}]));
   return {mun,estado,cities,sys:sysOut,miteco,smun:smunOut};

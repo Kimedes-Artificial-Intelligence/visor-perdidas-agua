@@ -436,6 +436,21 @@ Cobertura de pérdidas, España por municipio (padrón INE 2025), antes y despu�
 | De las 126 sin dato previo: pintadas | 2 | 30 (4 municipales, 26 por sistema) |
 | De las 126: `no_publica` / `bloqueado` / `solo_sistema` sin pintar / `no_verificado` / excluida | 45 / 24 / 39 / 3 / 1 | 34 / 27 / 16 / 3 / 1, y 15 con solo rendimiento o IFE (ficha) |
 
+## Añadido el 31 oct 2026: revisión de FWG-1870 (FWG-1871, Parte B)
+
+Datos. Se volvieron a comprobar contra su fuente 82 filas de los archivos nuevos de FWG-1870: todas las de `raw/operadores_art63_2026-10.psv`, `raw/operadores_sistema_2026-10.psv` y `raw/gestion_pv_nav_2026-10-30.psv`, 10 estados de búsqueda al azar, 23 patrones de `data/operadores_clasificacion.csv`, tres municipios de `raw/aca2024_extract.psv` y 8 filas de ISTAT. No hay ningún valor, año, unidad ni indicador mal transcrito. Todos los documentos descargados de nuevo tienen el mismo SHA-256 que el registrado. Correcciones de notas: Canal de Isabel II (el ámbito con la Delegación de Cáceres sale de la nota de la p.316; la nota sobre el cambio de criterio del ANR se refiere al dato de 2023) y Torremolinos (ver Parte A). No se pudieron volver a comprobar, porque su `robots.txt` no admite la consulta automatizada: MCP (mcp.es), AIGUES DE MATARO, FIGUERES DE SERVEIS, CCB, MALGRAT y los demás patrones citados en bop.diba.cat, y el municipio de Vallirana de la ACA. Quedan en la lista de revisión manual.
+
+Página (cambios visibles):
+- La ficha de operador ya no calcula una media de pérdidas ponderada por población (era un valor calculado por Kimedes y mezclaba años e indicadores): da, por fuente, cuántos municipios tienen dato y los valores mínimo y máximo publicados.
+- "Exportar sus municipios" en la ficha de operador exporta todos sus municipios, no solo los del ranking filtrado.
+- Los operadores que solo nombra su propia fuente en el País Vasco y Navarra (AMVISA, Servicios de Txingudi) se pueden buscar en el filtro de operador y su ficha muestra sus cifras de sistema.
+- Las cifras del operador se muestran con los decimales que publica (Córdoba, 8,45 %, no 8,5 %).
+- Las tramas usan una tinta oscura fija, centrada en la tesela: se leen también en modo oscuro (contraste antes de 1,07 a 1,33:1 sobre los tramos claros).
+- El CSV escribe los números con coma decimal, para Excel en español.
+- El foco de teclado ya no se pierde al recorrer el mapa con el tabulador (países, comunidades, municipios de Catalunya, capitales de Italia).
+- La ficha de un municipio de Catalunya con auditoría ya no muestra el motivo de "sin dato".
+- La nota larga de la leyenda se pliega en pantallas estrechas ("Cómo leer este mapa").
+- Validaciones: fechas que existen en el calendario, año del dato no posterior a la consulta, tabla de países con 8 columnas y estados conocidos, filas vacías en las hojas xlsx.
 ## Añadido el 31 oct 2026: operadores y modelo de gestión (FWG-1871, Parte C)
 
 - **Tipo `Cooperativa` (decisión D4).** Para comunidades de regantes, cooperativas y comunidades de propietarios o entidades urbanísticas de conservación que suministran agua potable. Da el modelo "vecinal / cooperativa" (grupo C de `data/prioridad_pesos.json`, peso 0,3). El resto de D4 ya estaba aplicado en FWG-1870: Aigües de Mataró, SOMACYL, GIACSA, CCB y Figueres de Serveis como `Municipalizado`; Hidrobal, Aigües de Vic y Aigües Potables de Malgrat como `Privado`.
