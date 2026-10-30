@@ -68,6 +68,30 @@ test('Balaguer, sin dato, muestra "sin dato publicado" al pasar el ratón y al h
   await expect(page.locator('#panel')).toContainText('Sin dato publicado. No se estima ningún valor.');
 });
 
+// Auditorías 2024 incorporadas el 30/10/2026 (FWG-1870): Sant Quirze no tenía dato; Sant Sadurní pasa de 2022 a 2024
+for(const [ine,name,v,host] of [['08238','Sant Quirze del Vallès','35,5','sqvaigua.cat'],['08240',"Sant Sadurní d'Anoia",'23,1','minasalut.com']]){
+  test(`${name} muestra el agua no registrada de su auditoría 2024 y el enlace al documento`,async({page})=>{
+    await open(page,'dist',LEVELS.catalunya);
+    if(await page.locator('#moreBtn').isVisible())await page.click('#moreBtn');
+    await page.click(`#rank button[data-k="${ine}"]`);await settle(page);
+    const P=page.locator('#panel');
+    await expect(P.locator('h2')).toHaveText(name);
+    await expect(P.locator('.hero .big')).toContainText(v);
+    await expect(P.locator('.hero')).toContainText('2024');
+    await expect(P.locator(`.hero a[href*="${host}"]`)).toHaveCount(1);
+  });
+}
+
+test('Vallirana muestra la auditoría 2024 de la red con más abonados y cita la de la otra red',async({page})=>{
+  await open(page,'dist',LEVELS.catalunya);
+  if(await page.locator('#moreBtn').isVisible())await page.click('#moreBtn');
+  await page.click('#rank button[data-k="08295"]');await settle(page);
+  const P=page.locator('#panel');
+  await expect(P.locator('.hero .big')).toContainText('42,6');
+  await expect(P).toContainText('Dos redes auditadas en 2024: se muestra la del servicio con más abonados (AVALLSA, 5.357 abonados, 42,6 %). La otra red (FCC, 2.218 abonados) publica 51,9 %.');
+  await expect(P.locator('.srcs a[href$="Memoria_Vallirana-FCC_2024.pdf"]')).toHaveCount(1);
+});
+
 test('Sant Hipòlit de Voltregà (08215) está dibujado y responde al ratón',async({page})=>{
   await open(page,'dist',LEVELS.catalunya);
   const c=await centerOf(page,'#catLayer [data-m="08215"]');
@@ -86,7 +110,7 @@ test('#municipios carga los 8.131 municipios y el contador de cobertura',async({
   expect(errors).toEqual([]);
   await expect(page.locator('#muLayer [data-u]')).toHaveCount(8131);
   await expect(page.locator('.lvl button[data-l="mu"]')).toHaveAttribute('aria-pressed','true');
-  await expect(page.locator('#maphead')).toHaveText(/^5\.175 de 8\.131 municipios con dato de pérdidas publicado · \d+,\d % de la población de España$/);
+  await expect(page.locator('#maphead')).toHaveText(/^5\.176 de 8\.131 municipios con dato de pérdidas publicado · \d+,\d % de la población de España$/);
   await expect(page.locator('#legend')).toContainText('son tres indicadores distintos');
 });
 
@@ -163,7 +187,7 @@ test('un municipio sin dato (Madrid) muestra el motivo y el valor INE de su comu
 
 test('el ranking nacional se filtra por comunidad y fija el municipio al hacer clic',async({page})=>{
   await openMu(page);
-  await expect(page.locator('#rankCount')).toHaveText('5.175 municipios con dato de pérdidas publicado');
+  await expect(page.locator('#rankCount')).toHaveText('5.176 municipios con dato de pérdidas publicado');
   await page.selectOption('#rankCc','04');
   await expect(page.locator('#rankCount')).toHaveText('67 municipios con dato de pérdidas publicado en Illes Balears');
   await page.click('#moreBtn');
