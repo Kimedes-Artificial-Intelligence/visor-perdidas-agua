@@ -6,10 +6,57 @@ CNTA;No es operador;;Laboratorio: se usa el responsable de la red
 PLUS CONTROL;No es operador;;Empresa de control sanitario: se usa el responsable de la red
 AQM LABORATORIOS;No es operador;;Laboratorio: se usa el responsable de la red
 SPT;No es operador;;Empresa de control y tratamiento: se usa el responsable de la red
+EMASESA;Municipalizado;;Fuente: https://www.sevilla.org/transparencia/informacion-sobre-la-corporacion-municipal/estatutos_sociales_emasesa1.pdf (consulta 30/10/2026): «sociedades mercantiles de titularidad pública» y «La Junta General estará constituida por todos y cada uno de los Ayuntamientos que hayan adquirido la cualidad de socios». Estatutos sociales
+EMASAGRA;Mixto;Hidralia (Veolia y Unicaja);Fuente: https://www.emasagra.es/informacion-corporativa (consulta 30/10/2026): «Emasagra está formada por el Ayuntamiento de Granada que posee el 51% de las acciones e Hidralia [...] el 49%»
+AQUAVALL;Municipalizado;;Fuente: https://www.valladolid.es/en/temas/hacemos/auditorias-sector-publico-municipal/auditorias-sector-publico-municipal-2022/epel-aguas-valladolid-entidad-publica-empresarial.files/933725-INFORME%20CUMPLIMIENTO%202022%20definitivo%20AQUAVALL.pdf (consulta 30/10/2026): «Agua de Valladolid Entidad Pública Empresarial Local (en adelante AQUAVALL o la Entidad)». Informe de cumplimiento 2022 del Ayuntamiento de Valladolid
+EMALCSA;Municipalizado;;Fuente: https://eidus.coruna.es/descarga/1453856380960/ORZAMENTO-2024.pdf (consulta 30/10/2026): «EMALCSA é unha sociedade anónima cuxo capital é integramente de propiedade municipal». Orzamento 2024 do Concello da Coruña
+TERRASSA CICLE DE L AIGUA;Municipalizado;;Fuente: https://bop.diba.cat/anuncio/ver-pdf/3269950 (consulta 30/10/2026): «Estatuts de l'Entitat Pública Empresarial «Terrassa Cicle de l'Aigua, EPEL»». BOP Barcelona, 2022
+AIGUES I SANEJAMENT D ELX;Mixto;Hidraqua;Fuente: https://www.aigueselx.com/informacion-corporativa (consulta 30/10/2026): «la Empresa Mixta Aigües d'Elx, formada en un 51% por el Ayuntamiento de Elche y en un 49% por Hidraqua, S.A.»
+AGUAS DE BURGOS;Municipalizado;;Fuente: https://cultura.aytoburgos.es/documents/38509/f871976f-81bf-f2d1-ce1e-841a09d67b06 (consulta 30/10/2026): «SOCIEDAD MUNICIPAL AGUAS DE BURGOS, S.A., cuyo Capital Social pertenece íntegramente al Excmo. Ayuntamiento de Burgos». Presupuesto municipal
+AGUAS DE ALBACETE;Mixto;Aquona;Fuente: https://www.aguasdealbacete.com/informacion-corporativa (consulta 30/10/2026): «participada por el Ayuntamiento de Albacete (26 %), titular del servicio, y Aquona Gestión de Aguas de Castilla S.A.U. (74%)»
+CICLE DE L AIGUA DEL TER;Municipalizado;;Fuente: https://web.girona.cat/noticies?id=11120052 (consulta 30/10/2026): «la nova empresa supramunicipal que s'encarregarà de la gestió de l'aigua a Girona, Salt i Sarrià de Ter» y «l'ens comptarà amb fons 100% públics». Noticia del Ayuntamiento de Girona al aprobar su creación (sin fecha visible)
+EMAHSA;Mixto;Hidralia (Veolia y Unicaja);Fuente: https://www.aguashuelva.com/informacion-corporativa (consulta 30/10/2026): «El Ayuntamiento de Huelva ostenta el 51 % de las acciones y el 49% Hidralia»
+AGUASVIRA;Mixto;Hidralia (Veolia y Unicaja);Fuente: https://www.hidralia-sa.es/informacion-corporativa (consulta 30/10/2026): «a través de sus empresas mixtas: Aguas de Huelva, Aguas de Montilla, Aguas de Benahavís, Aguas de Torremolinos, Emasagra y Aguasvira». Web del socio privado, el socio público y el % no constan
+EMALSA;Mixto;Saur y Nuinsa;Fuente: https://emalsa.es/quienes-somos/nosotros/ (consulta 30/10/2026): «34% por el Excmo. Ayuntamiento de Las Palmas de Gran Canaria. 33% por Nuinsa. 33% por la Societé D'Amenagement Urbain et Rural S.A. -SAUR»
+AGUAS DE LORCA;Mixto;Hidrogea;Fuente: https://www.aguasdelorca.com/informacion-corporativa (consulta 30/10/2026): «el Ayuntamiento de Lorca en un cincuenta y uno por cierto y, por otra, Hidrogea en un cuarenta y nueve por ciento»
+ACOSOL;Municipalizado;;Fuente: https://www.juntadeandalucia.es/boja/1994/47/25 (consulta 30/10/2026): «Mancomunidad de Municipios de la Costa del Sol Occidental, titular exclusiva de la totalidad de las acciones». Estatutos, BOJA 1994
+HIDROBAL;Privado;;Fuente: https://intranet.caib.es/eboibfront/pdf/es/2020/204/1074718 (consulta 30/10/2026): «prórroga del contrato de concesión de la gestión de los servicios municipales de abastecimiento» con Hidrobal, Gestión de Aguas de Balears, SAU. BOIB 5/12/2020 (concesión de Alaró)
+SERCOMOSA;Mixto;Acciona;Fuente: https://www.sercomosa.es/accionistas/ (consulta 30/10/2026): «formada en un 51,396% por el Ayuntamiento de Molina de Segura y en un 48,604% por Acciona Agua Servicios S.L.»
+AGAMED;Mixto;Hidraqua;Fuente: https://agamed.es/informacion-corporativa (consulta 30/10/2026): «formada en un 26% por el Ayuntamiento de Torrevieja y en un 74% por Hidraqua, S.A.»
+ASTOSAM;Mixto;Hidralia (Veolia y Unicaja);Fuente: https://www.aguasdetorremolinos.es/informacion-corporativa (consulta 30/10/2026): Ayuntamiento de Torremolinos «5% de las acciones» e «Hidralia, Gestión Integral de Aguas de Andalucía S.A., que posee el 95%»
+AIGUES DE VIC;Privado;;Fuente: https://aiguesvic.com/coneix-nos/empreses-del-grup (consulta 30/10/2026): «realitza l'abastament d'aigua potable a la ciutat de Vic, per concessió administrativa de l'Ajuntament des de l'any 1952»
+AIGUES DEL PRAT;Municipalizado;;Fuente: https://www.aiguesdelprat.cat/funcions-de-l-empresa (consulta 30/10/2026): «Aigües del Prat, SA, és una empresa de capital íntegrament municipal»
+AGUAS DE PUERTOLLANO;Mixto;;Fuente: https://ted.europa.eu/es/notice/73397-2026/pdf (consulta 30/10/2026): «Consejo de Administración de la Sociedad Mixta Aguas de Puertollano S.L.». Anuncio TED 73397-2026, el socio privado no consta
+AIGUES DE BLANES;Mixto;;Fuente: https://seu-e.cat/documents/709438/21663355/projecte.pdf/c5e00427-6a16-4010-82f9-f3f37a7dd54f (consulta 30/10/2026): «la societat d'economia mixta Aigües de Blanes SA, titular de l'explotació, la qual està participada en un 51% per l'Ajuntament de Blanes». Ordenanza, sede electrónica de Blanes
+EMASA;Municipalizado;;Fuente: https://portalparticipacion.malaga.eu/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBWkk9IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--6bc95a87d152f367d88e7b6e8d4938398e5bf601/305400ae1c6b0bb936c326e55c6d79dacdc7a226.pdf (consulta 30/10/2026): «capital social pertenece íntegramente al Ayuntamiento de Málaga». Portal de participación del Ayuntamiento de Málaga
+GRUPO ENERGETICO DE PUERTO REAL;Municipalizado;;Fuente: https://www.grupoenergetico.es/la-empresa/ (consulta 30/10/2026): «sociedad de capital íntegramente municipal y medio propio del Ayuntamiento de Puerto Real»
+AGUAS DE LUCENA;Municipalizado;;Fuente: https://lucena.es/wp-content/uploads/2020/12/certificado_consejo_administracion_aguas_de_lucena.pdf (consulta 30/10/2026): «la sociedad mercantil cuyo único socio es el» Ayuntamiento de Lucena. Certificado del Ayuntamiento de Lucena, 2020
+JUNTA MUNICIPAL AGUAS DE TUDELA;Municipalizado;;Fuente: https://parlamentodenavarra.es/sites/default/files/boletines/B2012100.pdf (consulta 30/10/2026): «El Ayuntamiento de Tudela [...] se ha dotado del organismo autónomo, Junta Municipal de Aguas». Cámara de Comptos, cuentas 2010, BOPN nº 100, 22/11/2012
+COMPANYIA D AIGUES DE VILANOVA I LA GELTRU;Municipalizado;;Fuente: https://bop.diba.cat/anuncio/descargar-pdf/3319855 (consulta 30/10/2026): «societat privada municipal i unipersonal del soci únic, l'Excm. Ajuntament de Vilanova i la Geltrú». Estatutos, BOP Barcelona
+AIGUES DE MATARO;Municipalizado;;Fuente: https://oficinavirtual.aiguesmataro.com/api/doc/F2104/memoria-amsa-2024 (consulta 30/10/2026): «L'empresa Aigües de Mataró és una empresa privada propietat de l'Ajuntament de Mataró». Memòria d'activitats 2024, no indica el % de capital
+AGUAS DE CIEZA;Mixto;Hidrogea;Fuente: https://hidrogea.veolia.es/documents/1825785/7455641/IRC-2017.pdf/8e982ac5-1859-967c-6101-aecec71cb0b8 (consulta 30/10/2026): «Las empresas mixtas en las que Hidrogea tiene el 49% del accionariado, perteneciendo el 51% restante a los respectivos ayuntamientos son Aguas de Cieza, Aguas de Jumilla, Aguas de Lorca». Informe de Responsabilidad Corporativa 2017 de Hidrogea
+CHICLANA NATURAL;Municipalizado;;Fuente: https://chiclananatural.com/conocenos/presentacion/ (consulta 30/10/2026): «empresa municipal propiedad exclusiva del Ayuntamiento de Chiclana de la Frontera»
+EMAYA;Municipalizado;;Fuente: https://www.emaya.es/informacion-corporativa/sobre-emaya/quienes-somos/ (consulta 30/10/2026): «empresa pública municipal del Ayuntamiento de Palma, que posee el 100 % de su capital social»
+AGUAS DE CADIZ;Municipalizado;;Fuente: https://www.aguasdecadiz.es/informacion-corporativa/ (consulta 30/10/2026): «Empresa Municipal, en forma de Sociedad Anónima de capital íntegramente público»
+AGUAS DEL TORCAL;Municipalizado;;Fuente: https://www.aguasdeltorcal.com/presentacion (consulta 30/10/2026): «empresa pública perteneciente en su totalidad al Excmo. Ayuntamiento de Antequera»
+AUGAS DE AMES;Municipalizado;;Fuente: https://www.augasdeames.gal/transparencia-gl.html (consulta 30/10/2026): «ente público con capital 100% municipal»
+ONAIGUA;Municipalizado;;Fuente: https://onaigua.cat/nosaltres/ (consulta 30/10/2026): «ONAIGUA és una empresa pública creada pel Consell Comarcal d'Osona». EPEL del Consell Comarcal d'Osona
+AGUAS DE AVILES;Mixto;Asturagua;Fuente: https://www.aguasdeaviles.es/informacion-corporativa (consulta 30/10/2026): «Somos una sociedad mixta constituida por el Ayuntamiento de Avilés y Asturagua»
+AIGUES MUNICIPALS DE PATERNA;Mixto;Hidraqua;Fuente: https://www.aiguesdepaterna.es/informacion-corporativa (consulta 30/10/2026): «Hidraqua, el socio privado del Ayuntamiento de Paterna»
+AGUAS DE MONTILLA;Mixto;Hidralia (Veolia y Unicaja);Fuente: https://www.aguasdemontilla.es/informacion-corporativa (consulta 30/10/2026): «formada en un 51 por ciento por el ayuntamiento de Montilla y un 49 por ciento por Hidralia»
+SACYR GUADALAGUA;Privado;Sacyr;Fuente: https://sacyr.com/web/sacyr-agua/-/guadalajara (consulta 30/10/2026): «Guadalagua gestiona, en régimen de concesión municipal administrativa desde el año 2009»
+AGUAS DE PRIEGO;Municipalizado;;Fuente: https://bop.dipucordoba.es/visor-pdf/28-06-2024/BOP-A-2024-2518.pdf (consulta 30/10/2026): «La empresa Aguas de Priego Sociedad Limitada es una sociedad de capital íntegramente municipal». BOP Córdoba 28/06/2024
+AGUAS DE JUMILLA;Mixto;Hidrogea;Fuente: https://hidrogea.veolia.es/documents/1825785/7455641/IRC-2017.pdf/8e982ac5-1859-967c-6101-aecec71cb0b8 (consulta 30/10/2026): «Las empresas mixtas en las que Hidrogea tiene el 49% del accionariado [...] son Aguas de Cieza, Aguas de Jumilla». Informe de Responsabilidad Corporativa 2017 de Hidrogea
+AGUAS TORRELAVEGA;Municipalizado;;Fuente: https://aguastorrelavega.com/wp-content/uploads/2026/09/01-CONTRATO-PROGRAMA-2025_-rev-19-11-2025-Ayto.pdf (consulta 30/10/2026): «Aguas Torrelavega constituye un medio propio del Ayuntamiento de Torrelavega» y «AGUAS TORRELAVEGA S.A.U.». Contrato programa 2025, rev. 19/11/2025
+EMPRESA DE SERVEIS DEL MUNICIPI DE MANACOR;Municipalizado;;Fuente: https://intranet.caib.es/eboibfront/pdf/ca/2019/81/1036599 (consulta 30/10/2026): «creada precisament l'any 2000 com a societat privada mercantil amb capital íntegrament municipal». BOIB 18/06/2019
+DESARROLLO URBANISTICO DE EL EJIDO;Municipalizado;;Fuente: https://transparencia.elejido.es/files/pdfs/contabilidad/2023/presupuesosgenerales/expedientepresupuestogeneral2022.PDF (consulta 30/10/2026): «a través de la empresa de titularidad íntegramente municipal Desarrollo Urbanístico de El Ejido S.L.». Expediente del presupuesto general 2022
+SERMUBENIEL;Mixto;Hidrogea;Fuente: https://borm.es/services/anuncio/ano/2020/numero/1849/pdf (consulta 30/10/2026): «siendo la sociedad de economía mixta, a la que corresponde la titularidad del ingreso, “SERMUBENIEL, S.A.”». BORM 30/03/2020. El 49 % de Hidrogea consta en su Informe de Responsabilidad Corporativa 2017
+COMPANYIA D AIGUES DE PALAMOS;Mixto;;Fuente: https://seu-e.cat/documents/28532/15779134/Compte+general+2022/797db0d9-b3ee-496e-82ef-6abd5a1141bc (consulta 30/10/2026): «gestió indirecta d'economia mixta. La participació de l'Ajuntament en l'esmentada societat és del 25% del capital social». Compte general 2022 de l'Ajuntament de Palamós, el socio privado no consta
+INIMA WATER SERVICES;Privado;GS Inima;Fuente: https://inima.com/en/project/inima-water/ (consulta 30/10/2026): «GS Inima is responsible for the supply and sanitation of 5 municipalities in Cantabria in Spain: Castro Urdiales». Web del grupo, no nombra la sociedad
 AIGUES DE BARCELONA EMPRESA METROPOLITANA;Mixto;;
 EMMASA;Mixto;;
 SOCIEDAD MIXTA DEL AGUA JAEN;Mixto;;
-EMUASA;Mixto;;
+EMUASA;Mixto;Veolia;Fuente: https://www.emuasa.es/presentacion (consulta 30/10/2026): «Somos una sociedad mixta, fundada en 1989, con el 51% de acciones de participación pública municipal (Ayuntamiento de Murcia) y el 49% restante de participación privada a través de Veolia»
 EMANAGUA;Mixto;;
 EMPRESA MIXTA;Mixto;;
 MIXTA;Mixto;;
@@ -19,7 +66,7 @@ SGAB;Privado;;
 SOCIEDAD GENERAL DE AGUAS DE BARCELONA;Privado;;
 AQUONA;Privado;;
 HIDRAQUA;Privado;;
-HIDRALIA;Privado;;
+HIDRALIA;Privado;Veolia y Unicaja;Fuente: https://www.hidralia-sa.es/informacion-corporativa (consulta 30/10/2026): «participada por la caja andaluza Unicaja Banco S.A. y por el grupo Veolia»
 HIDROGEA;Privado;;
 VIAQUA;Privado;;
 ASTURAGUA;Privado;;
