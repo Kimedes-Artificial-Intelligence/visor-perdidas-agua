@@ -4,7 +4,7 @@ Mapa interactivo de las pérdidas de agua en las redes de abastecimiento, en cua
 
 - **Europa:** agua no registrada, pérdidas reales e índice lineal por país (EurEau; España con INE 2024).
 - **España:** serie 2008-2024 por comunidad autónoma (INE, tabla 53447).
-- **España por municipio:** los 8.131 municipios, con dato donde se publica por municipio: Catalunya (auditorías) e Illes Balears (estimación del Govern IB, 2000-2024). El resto, en gris con el motivo. Con zoom y selector de comunidad.
+- **España por municipio:** los 8.131 municipios en cuatro capas: pérdidas (Catalunya, auditorías; Illes Balears, estimación del Govern IB; resto, pérdidas declaradas por los ayuntamientos en la EIEL), modelo de gestión (ESF en Catalunya; EIEL y SINAC en el resto), red en fibrocemento y red en mal estado (EIEL). Ficha por municipio con operadores (SINAC) y todas las fuentes numeradas, filtro por operador y exportación del ranking a CSV. Lo que ninguna fuente da, en gris con el motivo. Con zoom y selector de comunidad.
 - **Catalunya:** agua no registrada por municipio, a partir de las auditorías de eficiencia hidráulica publicadas (ACA y operadores, 2024 y 2022).
 
 Cada dato visible lleva su año y su fuente. Donde no hay dato publicado, el municipio aparece en gris con el texto "sin dato publicado". No hay valores estimados.
@@ -36,7 +36,9 @@ El resultado se escribe en `dist/index.html`. Puedes abrirlo directamente en el 
 
 ## Fuentes y licencias
 
-El código se publica con licencia MIT (`LICENSE`). Los datos conservan la licencia de su fuente original: consulta `DATA-LICENSES.md`. El detalle de cada fuente, la fecha de consulta y las decisiones aplicadas están en `data/sources.md`.
+El código se publica con licencia MIT (`LICENSE`). Los datos conservan la licencia de su fuente original: consulta `DATA-LICENSES.md`.
+
+Desde FWG-1868 el visor usa también fuentes que no permiten redistribuir libremente sus datos (ESF / Aigua és Vida, con derechos de sus autores; SINAC, información pública del Ministerio de Sanidad cuyas condiciones de reutilización están pendientes de verificar; EIEL, CC BY-NC-SA 4.0, sin uso comercial). Se admiten porque cada dato se cita con su fuente en la ficha del municipio, en `data/sources.md` y en `DATA-LICENSES.md`. Que el visor sea privado se decidirá en otro ticket. El detalle de cada fuente, la fecha de consulta y las decisiones aplicadas están en `data/sources.md`.
 
 ## Cómo contribuir
 

@@ -113,3 +113,10 @@ test('data/es_mun.json y data/operadores_sin_clasificar.csv coinciden con lo que
   const csvRows=R('data/operadores_sin_clasificar.csv').slice(1);
   assert.equal(csvRows.length,unk.length);assert.equal(csvRows[0],unk[0].join(';'));
 });
+
+// ---- Extracción EIEL (scripts/extract_eiel.js): lectura de la ficha HTML de un núcleo
+test('la ficha EIEL de Alcalá del Valle da su nombre, padrón, consumos y pérdidas',()=>{
+  const {parseNucleo}=require('../../scripts/extract_eiel.js');
+  const html=fs.readFileSync(path.join(ROOT,'tests/fixtures/eiel_infowindow_11-511763.html'),'utf8');
+  assert.deepEqual(parseNucleo(html),{nucleo:'ALCALÁ DEL VALLE',padron:'4900',inv:'1292',ver:'1368',per:'25'});
+});

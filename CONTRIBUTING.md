@@ -44,7 +44,7 @@ Reglas que no se pueden saltar:
 - Solo valores publicados por una fuente oficial o por el operador. Si un indicador no aparece en el documento, deja ese campo vacío. Nunca lo calcules ni lo estimes.
 - El año tiene que estar claro en el documento. Si no lo está, explícalo en las notas (paso 4).
 - Si el municipio no tiene auditoría publicada, no se añade nada: el visor lo muestra en gris con "sin dato publicado".
-- No se pueden usar datos de fuentes que no permitan su reutilización. Consulta `DATA-LICENSES.md`.
+- Toda fuente tiene que estar citada en la ficha del municipio, en `data/sources.md` y en `DATA-LICENSES.md`, con sus condiciones de uso. Desde FWG-1868 se admiten fuentes con derechos reservados o sin uso comercial (ESF / Aigua és Vida, SINAC, EIEL) siempre que se citen así; no se admiten fuentes cuyo aviso legal prohíba expresamente extraer sus datos (por ejemplo 3Cat/ACN).
 
 ## 3. Editar `raw/aca2024_extract.psv`
 
@@ -175,3 +175,29 @@ Antes de abrir el pull request, comprueba la regla de procedencia (ningún dato 
 ```bash
 npm run check:provenance -- main
 ```
+
+## Clasificar operadores del SINAC
+
+El SINAC da el nombre del gestor de cada red, no su tipo. El tipo (municipalizado, mixto o privado) sale de `data/operadores_clasificacion.csv`, una tabla que se edita a mano:
+
+```
+patron;tipo;grupo;nota
+FCC AQUALIA;Privado;;
+```
+
+- `patron`: texto que debe aparecer en el nombre del gestor. Se compara sin acentos, en mayúsculas, sin signos y por palabras completas (`SPT` no casa con `ASPTEC`).
+- `tipo`: `Municipalizado`, `Mixto`, `Privado` o `No es operador`. Este último sirve para sistemas de información y laboratorios (EKUIS, ANTICIMEX...): en su lugar se muestra el responsable de la red, que no se usa para deducir el modelo de gestión.
+- Gana el **primer** patrón que casa, así que los más específicos y los mixtos van antes que los genéricos.
+- Solo se añade un patrón cuando el tipo está confirmado en una fuente (web del operador, registro mercantil, pliego). Nunca por intuición: lo que no casa queda "Sin clasificar".
+
+`npm run build` regenera `data/operadores_sin_clasificar.csv`, ordenado por población abastecida: es la lista de trabajo para completar la tabla.
+
+## Volver a extraer la EIEL
+
+`eiel.redsara.es` no responde desde la nube; se extrae en local con Playwright:
+
+```bash
+node scripts/extract_eiel.js --fecha=2026-10-30
+```
+
+Escribe `raw/eiel_provincias_<fecha>.csv`, `raw/eiel_nucleos_<fecha>.csv` y `raw/eiel_rd_<fecha>.csv` (4 peticiones a la vez como máximo, 60 ms de pausa). Con `--prov=11 --check` vuelve a extraer una provincia y la compara con los archivos de `raw/` sin escribir nada. Si cambia la fecha, actualiza las rutas de `scripts/build_es_mun.js` y de `tests/lib/provenance.js`.
