@@ -176,7 +176,7 @@ Copias exactas de los archivos de la extracción del 29-30/10/2026 (carpeta VISO
 
 - 210 nombres de núcleo con la codificación rota en la extracción (por ejemplo "VVA. DE CÃÂRDOBA"). No se usan en la página y no se corrigen a mano en `raw/`.
 - Población abastecida del SINAC en Madrid capital: 70.669 (la tabla de localidades de las redes grandes reparte la ciudad por distritos con % bajos). Se muestra tal cual, como el resto del SINAC; pendiente de revisar.
-- `scripts/extract_sinac.js` **no está incluido**: la consulta ciudadana del SINAC responde 403 a clientes automatizados y no se ha podido ver la petición real. Hace falta la petición que se usó en la extracción del 30/10/2026 (o un HAR de la consulta) para escribirlo sin inventar parámetros.
+- SINAC: la consulta ciudadana responde 403 a clientes automatizados. La extracción se reproduce con `scripts/extract_sinac_console.js`, el script de consola de navegador que se usó el 30/10/2026 (8.132 municipios, 18.939 redes, 2 errores). Uso en el README.
 
 ### Página
 

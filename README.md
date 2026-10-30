@@ -22,6 +22,20 @@ npm run build
 
 El resultado se escribe en `dist/index.html`. Puedes abrirlo directamente en el navegador.
 
+## Refrescar los datos del SINAC
+
+Los operadores de cada red de distribución salen de la consulta ciudadana del SINAC (Ministerio de Sanidad). El SINAC responde 403 a clientes automatizados (curl, Playwright), así que la extracción se hace con un **script de consola de navegador**, `scripts/extract_sinac_console.js`. El script lanza las peticiones desde la propia página del SINAC, sin saltar ninguna protección. Es el método que se usó el 30/10/2026.
+
+1. Abre en el navegador https://sinac.sanidad.gob.es/CiudadanoWeb/ciudadano/informacionAbastecimientoActionEntrada.do
+2. Abre la consola (Cmd+Opt+J en Mac, Ctrl+Mayús+J en Windows), pega el contenido de `scripts/extract_sinac_console.js` y pulsa Intro.
+3. Espera: son unas 27.000 peticiones y el servidor atiende una o dos por segundo, así que tarda varias horas. El título de la pestaña muestra el avance. No la cierres.
+4. Al terminar aparece un botón azul **Descargar sinac_redes.csv**: púlsalo (el navegador no permite descargas automáticas sin clic). La consola indica cuántas redes se han descargado y cuántos errores ha habido.
+5. Copia el archivo a `raw/sinac_redes_<fecha>.csv`, actualiza esa ruta en `scripts/build_es_mun.js` y en `tests/lib/provenance.js`, y ejecuta `npm run build` y `npm test`.
+
+Cómo funciona: pide las provincias y los municipios de cada comunidad (`cargarComboProvinciasAction.do`, `cargarComboMunicipiosAction.do`), las redes de cada municipio (`informacionRedes.do`) y la ficha de cada red (`informacionAbastecimientoActionDetalleRed.do`). Todas las peticiones son POST con `credentials: 'omit'`: sin la cookie de sesión, el servidor no pone las peticiones en cola y va de 5 a 10 veces más rápido. Trata 4 municipios en paralelo y reintenta cada petición 3 veces. De cada ficha guarda gestor, responsable, localidades abastecidas (localidad, población y %), dotación y emisor de la factura. La extracción del 30/10/2026 dio 8.132 municipios, 18.939 redes y 2 errores. En aquella ejecución se procesaron primero las ciudades de más de 20.000 habitantes; el script recorre las comunidades en orden, lo que cambia el orden de las filas pero no su contenido.
+
+La EIEL se refresca con `node scripts/extract_eiel.js` (ver `CONTRIBUTING.md`).
+
 ## Estructura
 
 | Carpeta | Contenido |
