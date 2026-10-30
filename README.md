@@ -1,10 +1,11 @@
 # Visor de pérdidas de agua
 
-Mapa interactivo de las pérdidas de agua en las redes de abastecimiento, en cuatro niveles:
+Mapa interactivo de las pérdidas de agua en las redes de abastecimiento, en cinco niveles:
 
 - **Europa:** agua no registrada, pérdidas reales e índice lineal por país (EurEau; España con INE 2024).
 - **España:** serie 2008-2024 por comunidad autónoma (INE, tabla 53447).
 - **España por municipio:** los 8.131 municipios en cuatro capas: pérdidas (Catalunya, auditorías; ciudades cuyo operador publica el indicador del art. 63.2 del RD 3/2023; Illes Balears, estimación del Govern IB; resto, pérdidas declaradas por los ayuntamientos en la EIEL), modelo de gestión (ESF en Catalunya; EIEL y SINAC en el resto), red en fibrocemento y red en mal estado (EIEL). Ficha por municipio con operadores (SINAC) y todas las fuentes numeradas, filtro por operador y exportación del ranking a CSV. Lo que ninguna fuente da, en gris con el motivo. Con zoom y selector de comunidad.
+- **Internacional:** Italia por región y capital de provincia (ISTAT, perdite idriche totali 2022, CC BY 4.0) y el estado de las fuentes subnacionales de otros países (Inglaterra y Gales, Portugal, Francia, Brasil, Chile).
 - **Catalunya:** agua no registrada por municipio, a partir de las auditorías de eficiencia hidráulica publicadas (ACA y operadores, 2024 y 2022).
 
 Cada dato visible lleva su año y su fuente. Donde no hay dato publicado, el municipio aparece en gris con el texto "sin dato publicado". No hay valores estimados.

@@ -3,7 +3,7 @@
     <div>
       <div class="eyebrow">Kimedes · Inteligencia de mercado · Agua</div>
       <h1>Pérdidas de agua: de Europa al municipio</h1>
-      <p class="lede" id="lede">Cuatro niveles de lectura con fuentes públicas, oficiales y sectoriales: países (EurEau 2026), comunidades autónomas (INE 2024), los 8.131 municipios de España (pérdidas, modelo de gestión, operador y estado de la red donde se publican: auditorías en Catalunya, Govern IB en Baleares, EIEL y SINAC en el resto) y municipios de Catalunya (auditorías de los operadores y de la ACA). Pasa el ratón o toca el mapa para ver cada dato con su año y su fuente; haz clic para fijarlo en el panel.</p>
+      <p class="lede" id="lede">Cinco niveles de lectura con fuentes públicas, oficiales y sectoriales: países (EurEau 2026), regiones y capitales de provincia de Italia (ISTAT 2022), comunidades autónomas (INE 2024), los 8.131 municipios de España (pérdidas, modelo de gestión, operador y estado de la red donde se publican: auditorías en Catalunya, Govern IB en Baleares, EIEL y SINAC en el resto) y municipios de Catalunya (auditorías de los operadores y de la ACA). Pasa el ratón o toca el mapa para ver cada dato con su año y su fuente; haz clic para fijarlo en el panel.</p>
     </div>
     <div class="controls">
       <div class="lvl" role="group" aria-label="Nivel">
@@ -11,6 +11,7 @@
         <button data-l="es" aria-pressed="false">España</button>
         <button data-l="mu" aria-pressed="false">Municipios</button>
         <button data-l="cat" aria-pressed="false">Catalunya</button>
+        <button data-l="int" aria-pressed="false">Internacional</button>
       </div>
       <div class="seg" id="segEU" role="group" aria-label="Indicador">
         <button data-m="nrw" aria-pressed="true">Agua no registrada</button>
@@ -68,6 +69,7 @@
         <g id="espLayer" hidden opacity="0"></g>
         <g id="muLayer" hidden opacity="0"></g>
         <g id="catLayer" hidden opacity="0"></g>
+        <g id="intLayer" hidden opacity="0"></g>
       </svg>
       <div class="zoomctl" id="zoomCtl" role="group" aria-label="Zoom del mapa" hidden>
         <button type="button" data-z="in" aria-label="Acercar">+</button>

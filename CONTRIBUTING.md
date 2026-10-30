@@ -195,6 +195,16 @@ FCC AQUALIA;Privado;;
 
 `npm run build` regenera `data/operadores_sin_clasificar.csv`, ordenado por población abastecida: es la lista de trabajo para completar la tabla.
 
+## Añadir un país a la vista internacional
+
+La vista `#internacional` solo admite fuentes oficiales con licencia abierta y granularidad por región, ciudad, servicio o compañía. Para añadir un país:
+
+1. Guarda el original en `raw/<pais>/` si su licencia permite la copia (si no, solo su URL y su SHA-256) y transcríbelo con un extractor propio en `scripts/` a `raw/<pais>_<fuente>_<fecha>.psv`, con el indicador exacto, el año y las unidades tal como se publican. Nunca mezcles indicadores en una misma cifra.
+2. Geometría de una fuente oficial abierta, proyectada con `src/geometry/proj.json` como la de Italia (`scripts/extract_istat_geo.js`, `scripts/build_int.js`).
+3. Cambia su fila de `raw/internacional_paises.psv` a `datos` y añade una prueba de control en `tests/unit/internacional.test.js` con cifras del informe de la fuente.
+
+Portugal (ERSAR), Francia (SISPEA), Brasil (SNIS/SINISA) y Chile (SISS) están en `descarga_manual`; Inglaterra y Gales, en `licencia`.
+
 ## Cambiar los pesos del índice de prioridad comercial
 
 La capa "Prioridad comercial" de la vista España por municipio es un índice calculado por Kimedes, no un dato publicado: población × pérdidas (o ausencia de dato) × fibrocemento × antigüedad de la fase EIEL × modelo de gestión. La fórmula está en `src/prioridad.js` y los pesos en `data/prioridad_pesos.json`, que se puede editar sin tocar código: tope de pérdidas, valor sin dato de cada factor, base y pendiente del fibrocemento y de la antigüedad, año de referencia y peso de cada modelo (V privado, M mixto, P municipalizado, C vecinal, O otros, N sin dato). Después, `npm run build` y `npm run reference:update`.

@@ -19,9 +19,17 @@ const unxml=s=>s.replace(/<[^>]+>/g,'').replace(/&(lt|gt|amp|quot|apos|#(\d+)|#x
   d?String.fromCodePoint(+d):h?String.fromCodePoint(parseInt(h,16)):{lt:'<',gt:'>',amp:'&',quot:'"',apos:"'"}[e]);
 const colIdx=ref=>{let n=0;for(const ch of ref.match(/^[A-Z]+/)[0])n=n*26+ch.charCodeAt(0)-64;return n-1;};
 
-function xlsx(files){
+// Ruta de la hoja con ese nombre, por el libro y sus relaciones; sin nombre, la primera hoja
+function xlsxSheetPath(files,name){
+  if(!name)return Object.keys(files).filter(f=>/^xl\/worksheets\/sheet\d+\.xml$/.test(f)).sort((a,b)=>parseInt(a.match(/\d+/))-parseInt(b.match(/\d+/)))[0];
+  const wb=files['xl/workbook.xml']().toString('utf8'),rels=files['xl/_rels/workbook.xml.rels']().toString('utf8');
+  const s=[...wb.matchAll(/<sheet\b[^>]*?name="([^"]*)"[^>]*?r:id="([^"]*)"/g)].find(m=>unxml(m[1])===name);if(!s)throw new Error('no existe la hoja '+name);
+  const t=new RegExp('<Relationship\\b[^>]*?Id="'+s[2]+'"[^>]*?Target="([^"]*)"').exec(rels)||new RegExp('<Relationship\\b[^>]*?Target="([^"]*)"[^>]*?Id="'+s[2]+'"').exec(rels);
+  return 'xl/'+t[1].replace(/^\/?xl\//,'');
+}
+function xlsx(files,name){
   const ss=files['xl/sharedStrings.xml']?[...files['xl/sharedStrings.xml']().toString('utf8').matchAll(/<si>([\s\S]*?)<\/si>/g)].map(m=>unxml(m[1].replace(/<rPh[\s\S]*?<\/rPh>/g,''))):[];
-  const sheet=Object.keys(files).filter(f=>/^xl\/worksheets\/sheet\d+\.xml$/.test(f)).sort((a,b)=>parseInt(a.match(/\d+/))-parseInt(b.match(/\d+/)))[0];
+  const sheet=xlsxSheetPath(files,name);
   const rows=[];
   for(const r of files[sheet]().toString('utf8').matchAll(/<row\b([^>]*)>([\s\S]*?)<\/row>/g)){
     const ri=+/r="(\d+)"/.exec(r[1])[1]-1;const row=[];
@@ -50,9 +58,10 @@ function ods(files){
 }
 
 // El formato se detecta por el contenido, no por la extensión (la CAIB enlaza un XLSX como ODS)
-function readSheet(file){
+// name: hoja de un XLSX por su nombre (opcional)
+function readSheet(file,name){
   const files=unzip(fs.readFileSync(file));
-  if(files['xl/workbook.xml'])return {format:'xlsx',rows:xlsx(files)};
+  if(files['xl/workbook.xml'])return {format:'xlsx',rows:xlsx(files,name)};
   if(files['mimetype']&&files['mimetype']().toString().includes('opendocument.spreadsheet'))return {format:'ods',rows:ods(files)};
   throw new Error(file+': formato no reconocido');
 }
