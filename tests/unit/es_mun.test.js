@@ -60,11 +60,38 @@ test('una red repetida en el archivo cuenta una sola vez',()=>{
   const {mun}=sinac(redes(['7;1001;;FCC AQUALIA;AYTO;A:100:100;;','7;1001;;FCC AQUALIA;AYTO;A:100:100;;']),CLS);
   assert.equal(mun['01001'].nred,1);
 });
-for(const [name,tipo] of [['FCC AQUALIA','V'],['Proveïments d\'Aigua, SA','V'],['EMMASA (EMPRESA MIXTA DE AGUAS DE SANTA CRUZ DE TENERIFE S.A.)','M'],
+for(const [name,tipo] of [['EMASESA','P'],['EMASAGRA','M'],['SACYR GUADALAGUA, S.L.U.','V'],['AGUAS DEL ARCO MEDITERRANEO,S.A. (AGAMED)','M'],['FCC AQUALIA','V'],['Proveïments d\'Aigua, SA','V'],['EMMASA (EMPRESA MIXTA DE AGUAS DE SANTA CRUZ DE TENERIFE S.A.)','M'],
   ['AYTO. DE MIERES_33037_ASTURIAS','P'],['CANAL DE ISABEL II, S.A.M.P.','P'],['ANTICIMEX 3D SANIDAD AMBIENTAL S.A.U.','X']])
   test(`la tabla clasifica «${name}» como ${tipo}`,()=>assert.equal(CLS(name).t,tipo));
 test('un nombre sin patrón queda sin clasificar, aunque se parezca a uno (coincidencia por palabras completas)',()=>{
-  assert.equal(CLS('EMALSA'),null);assert.equal(CLS('AGUASVIRA'),null);assert.equal(CLS('ASPTEC AIGUES'),null); // "SPT" no casa dentro de una palabra
+  assert.equal(CLS('EMALSAS'),null);assert.equal(CLS('AGUASVIRAL'),null);assert.equal(CLS('ASPTEC AIGUES'),null); // "SPT" no casa dentro de una palabra
+});
+
+
+// ---- Regla de procedencia de la tabla de operadores (FWG-1870): un patrón solo con una fuente citada en «nota».
+// Los patrones de arranque de FWG-1868 venían del ticket y no la tienen; la lista queda congelada.
+const LEGACY=new Set(['EKUIS','ANTICIMEX','LASAOSA','CNTA','PLUS CONTROL','AQM LABORATORIOS','SPT','AIGUES DE BARCELONA EMPRESA METROPOLITANA','EMMASA',
+  'SOCIEDAD MIXTA DEL AGUA JAEN','EMUASA','EMANAGUA','EMPRESA MIXTA','MIXTA','FCC AQUALIA','AQUALIA','SGAB','SOCIEDAD GENERAL DE AGUAS DE BARCELONA','AQUONA',
+  'HIDRAQUA','HIDRALIA','HIDROGEA','VIAQUA','ASTURAGUA','AQUANEX','CANARAGUA','SOREA','GRUP CASSA','PROVEIMENTS D AIGUA','COMAIGUA','GLOBAL OMNIUM','AQLARA',
+  'FACSA','GESTAGUA','ACCIONA AGUA','SACYR AGUA','AQUARBE','ESPINA DELFIN','TEIDAGUA','AQUARA','HIDROGESTION','COMPANYIA GENERAL D AIGUES DE CATALUNYA',
+  'AYUNTAMIENTO','AYTO','CONCELLO','AJUNTAMENT','MANCOMUNIDAD','MANCOMUNITAT','CONSORCIO','COMARCA','CANAL DE ISABEL II','GIAHSA','EMPRESA PROVINCIAL',
+  'EMPRESA MUNICIPAL','AIGUES DE MANRESA','SERVICIOS DE LA COMARCA DE PAMPLONA','SERVICIOS DE MONTEJURRA','AGUAS DEL HUESNA','ALJARAFESA','GALASA','EMASER','ENTEMANSER']);
+const CLS_ROWS=csv(fs.readFileSync(path.join(ROOT,F.cls),'utf8'));
+const SOURCE=/^Fuente: https:\/\/\S+ \(consulta \d{2}\/\d{2}\/\d{4}\): \S/;
+test('cada patrón nuevo de la tabla de operadores cita su fuente, la fecha de consulta y el texto que lo confirma',()=>{
+  assert.deepEqual(CLS_ROWS.filter(r=>!LEGACY.has(r.patron)&&!SOURCE.test(r.nota)).map(r=>r.patron),[]);
+});
+test('si se rellena el grupo, la nota cita una fuente',()=>{
+  assert.deepEqual(CLS_ROWS.filter(r=>r.grupo&&!SOURCE.test(r.nota)).map(r=>r.patron),[]);
+});
+test('ningún patrón está repetido',()=>{
+  const seen=new Set();assert.deepEqual(CLS_ROWS.filter(r=>seen.has(r.patron)||!seen.add(r.patron)).map(r=>r.patron),[]);
+});
+test('cada patrón nuevo casa con algún gestor o responsable del SINAC',()=>{
+  const {normOp}=require('../../scripts/build_es_mun.js');
+  const names=new Set(csv(fs.readFileSync(path.join(ROOT,F.sinac),'utf8')).flatMap(r=>[r.gestor,r.responsable]).filter(Boolean).map(n=>' '+normOp(n)+' '));
+  const dead=CLS_ROWS.filter(r=>!LEGACY.has(r.patron)).filter(r=>{const p=' '+normOp(r.patron)+' ';return ![...names].some(n=>n.includes(p));});
+  assert.deepEqual(dead.map(r=>r.patron),[]);
 });
 
 // ---- Modelo de gestión
@@ -81,7 +108,8 @@ test('si el operador no es mixto, manda la gestión dominante de la EIEL agrupad
 });
 test('sin EIEL, el tipo del operador SINAC; sin clasificar o responsable, sin dato',()=>{
   assert.equal(m('28079',{ops:[['CANAL DE ISABEL II, S.A.M.P.',97]]}),'P');
-  assert.equal(m('41091',{ops:[['EMASESA',100]]}),'N');
+  assert.equal(m('41091',{ops:[['EMASESA',100]]}),'P'); // clasificado con fuente en FWG-1870
+  assert.equal(m('41091',{ops:[['OPERADOR SIN PATRON, S.A.',100]]}),'N');
   assert.equal(m('48020',{ops:[['AYUNTAMIENTO DE BILBAO',100,1]]}),'N');
 });
 
