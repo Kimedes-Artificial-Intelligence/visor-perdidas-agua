@@ -36,6 +36,8 @@
 #intLayer .ir{fill-rule:evenodd;stroke:var(--mu-line);stroke-width:.25;cursor:pointer}
 #intLayer .ic{stroke:var(--fg);stroke-width:.35;cursor:pointer}
 #intLayer .ir.hov,#intLayer .ir.act{stroke:var(--fg);stroke-width:.6}
+#intLayer .ie{fill-rule:evenodd;stroke:var(--mu-line);stroke-width:.15;cursor:pointer}
+#intLayer .ie.hov,#intLayer .ie.act{stroke:var(--fg);stroke-width:.4}
 #intLayer .ic.hov,#intLayer .ic.act{stroke:var(--signal);stroke-width:.7}
 .mu.has{stroke-width:.6}
 .mu.hov{stroke:var(--signal);stroke-width:1.6}
@@ -166,3 +168,7 @@ dl.ops2 .tag{margin-left:6px}
   html.printing .srcs a::after{content:" " attr(href);word-break:break-all}
   html.printing *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+/* FWG-1871: en escritorio, la ficha ocupa la altura de la columna del mapa y se desplaza por dentro.
+   Así su altura no mueve el ranking al pasar el ratón por sus filas (antes, cada vista previa cambiaba la altura de la rejilla) */
+@media (min-width:901px){.grid{align-items:stretch}.panel{contain:size;overflow-y:auto;max-height:none}}
+@media print{html.printing .panel{contain:none;overflow:visible}}

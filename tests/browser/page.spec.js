@@ -476,7 +476,8 @@ test('vista internacional: Italia por región y capital, con el indicador exacto
   await expect(page.locator('#legend')).toContainText('Perdite idriche totali: % del agua inmessa en la red de distribución');
   await expect(page.locator('#legend')).toContainText('Oriente Medio: no hay fuente pública con granularidad subnacional');
   await expect(page.locator('#panel')).toContainText('Estado por país (30/10/2026)');
-  await expect(page.locator('#panel')).toContainText('Inglaterra y GalesSin licencia de reutilización verificada');
+  await expect(page.locator('#panel')).toContainText('InglaterraCon datos');
+  await expect(page.locator('#panel')).toContainText('GalesSin licencia de reutilización verificada');
   await expect(page.locator('#rank button')).toHaveCount(40);
   await expect(page.locator('#rank button').first()).toContainText('Potenza');
   await page.click('#rank button[data-k="c076063"]');await settle(page);
@@ -627,4 +628,35 @@ test('las tramas usan tinta oscura fija, también en modo oscuro, y las líneas 
   const ink=await page.evaluate(()=>getComputedStyle(document.querySelector('.umo-ln')).stroke);
   expect(ink).toBe('rgb(22, 44, 64)');
   expect(await page.locator('#hatchOp line').getAttribute('y1')).toBe('40');
+});
+
+// ---- Inglaterra (FWG-1871, Parte D)
+test('vista internacional, Inglaterra: compañías de agua con sus fugas por propiedad y día, escala propia y Gales en gris con el motivo',async({page})=>{
+  await page.setViewportSize({width:1360,height:1300});const errors=await open(page,'dist','#internacional');
+  expect(errors).toEqual([]);
+  await expect(page.locator('#segINT')).toBeVisible();
+  await page.click('#segINT button[data-c="en"]');await page.waitForTimeout(900); // fin de la animación del encuadre
+  await expect(page).toHaveURL(/#internacional\/inglaterra$/);
+  await expect(page.locator('#legend')).toContainText('Inglaterra · fugas por propiedad y día (litros) · Environment Agency 2024-25');
+  await expect(page.locator('#legend')).toContainText('no es un porcentaje');
+  await expect(page.locator('#rank button')).toHaveCount(17);
+  await expect(page.locator('#rank button').first()).toContainText('Thames Water');
+  await page.click('#rank button[data-k="eTWS"]');
+  const P=page.locator('#panel');
+  await expect(P.locator('h2')).toHaveText('Thames Water');
+  await expect(P.locator('.hero .big')).toHaveText('135,99l');
+  await expect(P).toContainText('570,57');
+  await expect(P.locator('.srcs')).toContainText('Open Government Licence');
+  await expect(page).toHaveURL(/#internacional\/eTWS$/);
+  expect(await page.locator('#intLayer [data-it="eDCW"]').evaluate(e=>e.style.fill)).toBe('var(--nodata)');
+  await page.evaluate(()=>pin('eDCW'));
+  await expect(P).toContainText('La Environment Agency solo publica las compañías de Inglaterra');
+  await page.click('#segINT button[data-c="it"]');await settle(page);
+  await expect(page.locator('#legend')).toContainText('Italia · perdite idriche totali');
+});
+test('un enlace a una compañía de Inglaterra abre la vista con Inglaterra elegida y la ficha fijada',async({page})=>{
+  await page.setViewportSize({width:1360,height:1300});await open(page,'dist','#internacional/eCAM');
+  await expect(page.locator('#segINT button[data-c="en"]')).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('#panel h2')).toHaveText('Cambridge Water');
+  await expect(page.locator('#panel .hero .big')).toHaveText('71,42l');
 });
