@@ -164,7 +164,7 @@ const gesOf=id=>{const r=GES[id];return r&&GCAT[r[0]]&&r[0]!=="N"?r[0]:null;};
 const gesColor=k=>k?`var(--g-${k.toLowerCase()})`:"";
 const GSRC={f:"ESF / Aigua és Vida",e:"EIEL, gestión declarada de la red de distribución",s:"SINAC, operador principal clasificado por su nombre",p:"Operador que distribuye el agua según su propia fuente (el SINAC no lo identifica)"};
 const EIEL_GES={MU:"Municipal",EM:"Empresa municipal",EP:"Empresa pública no municipal",MA:"Mancomunidad",CO:"Consorcio",PV:"Privada",VE:"Vecinal",OT:"Otros"};
-const OPTYPE={P:"Municipalizado",M:"Mixto",V:"Privado (utility)","":"Sin clasificar"};
+const OPTYPE={P:"Municipalizado",M:"Mixto",V:"Privado (utility)",C:"Cooperativa o comunidad de usuarios","":"Sin clasificar"};
 const FC_BINS=[[10,"#9fd3c0","< 10 %"],[20,"#f1d98a","10–20 %"],[30,"#eba25a","20–30 %"],[50,"#cf5b33","30–50 %"],[Infinity,"#8a1e2c","≥ 50 %"]];
 const binColor=(v,bins)=>bins.find(b=>v<b[0])[1];
 // Color de un municipio en la vista España según la capa elegida

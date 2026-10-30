@@ -113,6 +113,12 @@ test('País Vasco: si nada más da el modelo, el operador en baja que nombra su 
   assert.deepEqual(model('48020',{ops:[['AYUNTAMIENTO DE BILBAO',100,1]]},undefined,CLS,undefined),{gm:'N',gs:null});
   assert.equal(model('48020',{gd:'PV',ops:[]},undefined,CLS,'SERVICIOS DE TXINGUDI').gs,'eiel'); // la EIEL va antes
 });
+test('una cooperativa o comunidad de usuarios clasificada con fuente da el modelo vecinal / cooperativa (C) sin EIEL (FWG-1871, D4)',()=>{
+  const C=loadClassifier([{patron:'COOPERATIVA DE PRUEBA',tipo:'Cooperativa',grupo:'',nota:''}]);
+  assert.equal(C('Cooperativa de Prueba, Coop. V.').t,'C');
+  assert.deepEqual(model('46001',{ops:[['COOPERATIVA DE PRUEBA',100]]},undefined,C,undefined),{gm:'C',gs:'sinac'});
+  assert.throws(()=>loadClassifier([{patron:'X',tipo:'Vecinal',grupo:'',nota:''}]),/tipo desconocido "Vecinal"/);
+});
 test('sin EIEL, el tipo del operador SINAC; sin clasificar o responsable, sin dato',()=>{
   assert.equal(m('28079',{ops:[['CANAL DE ISABEL II, S.A.M.P.',97]]}),'P');
   assert.equal(m('41091',{ops:[['EMASESA',100]]}),'P'); // clasificado con fuente en FWG-1870
