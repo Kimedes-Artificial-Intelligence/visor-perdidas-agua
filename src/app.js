@@ -121,7 +121,8 @@ const A63_REASON={
   bloqueado:d=>`No se ha podido comprobar si el operador publica el indicador del art. 63.2 del RD 3/2023: su web no admite consultas automatizadas (${d}). Pendiente de revisión manual.`,
   no_verificado:d=>`No se ha podido completar la búsqueda del indicador del art. 63.2 del RD 3/2023 a fecha ${d}.`,
   excluido_aviso_legal:d=>`El operador publica el indicador, pero su aviso legal prohíbe expresamente extraer y reutilizar sus contenidos: no se incorpora (${d}).`};
-function umReason(id){const c=umCC(id);if(UM_REASON[c])return UM_REASON[c];
+function umReason(id){return umReason0(id)+" "+mitecoReason(A63.mt.sol);}
+function umReason0(id){const c=umCC(id);if(UM_REASON[c])return UM_REASON[c];
   const st=A63.e[id];if(st&&A63_REASON[st[0]])return A63_REASON[st[0]](A63_DATE(st[2]))+(st[1]?" "+st[1]+".":"");
   if(EIEL_LAW.has(id.slice(0,2)))return "País Vasco y Navarra quedan fuera de la EIEL por ley y no publican pérdidas por municipio.";
   if(isIdem(id))return "La EIEL de la Comunidad de Madrid (fase 2023, IDEM) publica la red de distribución pero no las pérdidas por núcleo, y no hay otro registro público de pérdidas por municipio.";
@@ -525,6 +526,10 @@ function sparkIB(id){const b=IB[id];const W=320,H=120,L=30,Rr=8,T=10,B=22;const 
   return `<svg class="spark" viewBox="0 0 ${W} ${H}" role="img" aria-label="Serie 2000-2024 de ${esc(MUD[id][0])}">${ticks}${xt}<path class="l1" d="${d}"></path>${v[n]==null?"":`<circle class="cur" cx="${x(2000+n)}" cy="${yy(v[n])}" r="3.5"></circle>`}</svg>
   <div class="keyrow"><span><i></i>Agua no contabilizada %</span></div>`;}
 // Indicadores publicados por el operador o el ayuntamiento (art. 63.2 RD 3/2023), con su nombre exacto, año, página y enlace
+// Tabla de MITECO por municipio (Parte 5), si llega: se muestra aparte; su precedencia en el mapa se decidirá con los datos
+function mitBlock(id){const r=A63.mt.m[id];if(!r)return "";
+  return `<div><h3>MITECO, evaluación de fugas 2024 (${r[3]==="detallada"?"detallada":"básica"})</h3><dl>${row("Agua no registrada",r[0]==null?null:es(r[0],2),"%")}${row("Índice de fugas estructurales (IFE)",r[1]==null?null:es(r[1],2))}${row("Rendimiento",r[2]==null?null:es(r[2],2),"%")}</dl>
+  <p class="srcline">Respuesta de MITECO a la solicitud de acceso a la información (${esc(r[5])}, recibida el ${A63_DATE(r[6])}).</p></div>`;}
 function a63Block(id){const R=A63.m[id];if(!R)return "";
   return `<div><h3>Publicado por el operador (art. 63.2 RD 3/2023)</h3><dl>${R.map(r=>row(`${A63_IND[r[0]]} ${r[3]}`,r[2]==="%"?es(r[1],2).replace(/,?0+$/,""):es(r[1],2),r[2]==="%"?"%":esc(r[2]))).join("")}</dl>
   <p class="srcline">${esc(R[0][4])} · ${R.map(r=>esc(r[6])).filter((x,i,a)=>a.indexOf(x)===i).join(" · ")} · <a href="${esc(R[0][5])}" target="_blank" rel="noopener">documento del operador</a>. Cifras transcritas tal como se publican; no se calcula ninguna.</p></div>`;}
@@ -536,7 +541,7 @@ function panelUM(P,id,chip){const r=MUD[id];if(!r){P.innerHTML="";return;}const 
   const head=`<div class="ph"><div><h2>${esc(r[0])}</h2><span class="code">INE ${id} · ${esc(prov===ccName(c)?prov:prov+" · "+ccName(c))} · ${grp(r[1])} hab. (INE 2025)</span></div>${chip}</div>`;
   const muni=`<div><h3>Municipio</h3><dl>${row("Código INE",id)}${row("Provincia",esc(prov))}${row("Comunidad",esc(ccName(c)))}${row("Población (INE, 1/1/2025)",grp(r[1]))}</dl></div>`;
   // Gestión, operadores y red: en todas las comunidades; en Catalunya, además, la ficha de ESF
-  const rest=muni+(MU[id]?gesBlock(id):gesBlockES(id))+opsBlock(id)+redBlock(id)+priBlock(id)+srcList(umSources(id,L),id);
+  const rest=muni+mitBlock(id)+(MU[id]?gesBlock(id):gesBlockES(id))+opsBlock(id)+redBlock(id)+priBlock(id)+srcList(umSources(id,L),id);
   if(!L&&A63.m[id]){const r=A63.m[id][0];
     P.innerHTML=head+`<div class="hero"><span class="lbl">Indicador publicado por el operador</span><span class="big">${es(r[1],2).replace(/,?0+$/,"")}<small>${r[2]==="%"?"%":""}</small></span><span class="src">${esc(A63_IND[r[0]])} · ${r[3]} · ${esc(r[4])} · <a href="${esc(r[5])}" target="_blank" rel="noopener">documento</a></span></div>
     <p class="note warn">El indicador «${esc(A63_IND[r[0]])}» no es un porcentaje de pérdidas: no se pinta en la escala de pérdidas ni se convierte (100 menos el rendimiento sería un valor calculado por Kimedes, no publicado).</p>${a63Block(id)}`+rest;return;}

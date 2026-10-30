@@ -4,7 +4,7 @@
 // Ningún valor se calcula: se transcribe lo publicado. Lo que no se encuentra queda sin dato, con el estado de la búsqueda.
 const fs=require('fs');const path=require('path');
 const ROOT=path.resolve(__dirname,'..');
-const F={a63:'raw/operadores_art63_2026-10.psv',estado:'raw/art63_estado_2026-10-30.psv',sys:'raw/operadores_sistema_2026-10.psv',cls:'data/operadores_clasificacion.csv'};
+const F={a63:'raw/operadores_art63_2026-10.psv',estado:'raw/art63_estado_2026-10-30.psv',sys:'raw/operadores_sistema_2026-10.psv',miteco:'raw/miteco_fugas_2024.psv',cls:'data/operadores_clasificacion.csv'};
 const SYS_COLS=['patron','operador','ambito','indicador','valor','unidad','año_dato','url','fecha_consulta','pagina_o_seccion','licencia_o_aviso_legal','nota'];
 const COLS=['ine','operador','indicador','valor','unidad','año_dato','url','fecha_consulta','pagina_o_seccion','licencia_o_aviso_legal','nota'];
 const IND=new Set(['ANR','PERDIDAS_REALES','IFE','ILI','RENDIMIENTO']);
@@ -36,6 +36,26 @@ function checkA63(rows,padron){
     const k=r.ine+'|'+r.indicador;if(seen.has(k))err.push(`${at(r)}: ${k} repetido`);seen.add(k);}
   return err;
 }
+// MITECO, tabla por municipio del Informe nacional de fugas 2024 (Parte 5): vacía hasta que llegue la respuesta a la solicitud
+const MIT_COLS=['ine','anr_pct','ife','rendimiento_pct','tipo_evaluacion','año_dato','documento','fecha_recepcion','nota'];
+function parseMiteco(text){
+  const sol=(/^solicitud_presentada:(.*)$/m.exec(text)||['',''])[1].trim();
+  const body=text.split('\n').filter(l=>!/^solicitud_presentada:/.test(l)).join('\n');
+  return {sol,rows:psv(body,MIT_COLS,F.miteco)};
+}
+function checkMiteco({sol,rows},padron){
+  const err=[];const at=r=>`${F.miteco}, línea ${r._line}`;const seen=new Set();const num=v=>v===''||/^\d+(\.\d+)?$/.test(v);
+  if(sol&&!/^\d{4}-\d{2}-\d{2}$/.test(sol))err.push(`${F.miteco}: solicitud_presentada "${sol}" no es AAAA-MM-DD`);
+  for(const r of rows){
+    if(!padron.has(r.ine))err.push(`${at(r)}: código INE "${r.ine}" fuera del padrón`);
+    for(const c of ['anr_pct','ife','rendimiento_pct'])if(!num(r[c]))err.push(`${at(r)}: ${c} "${r[c]}" no es un número con punto decimal`);
+    if(r.anr_pct===''&&r.ife===''&&r.rendimiento_pct==='')err.push(`${at(r)}: ningún indicador`);
+    if(!/^(basica|detallada)$/.test(r.tipo_evaluacion))err.push(`${at(r)}: tipo_evaluacion "${r.tipo_evaluacion}"`);
+    if(r['año_dato']!=='2024')err.push(`${at(r)}: año "${r['año_dato']}"`);
+    if(!r.documento||!/^\d{4}-\d{2}-\d{2}$/.test(r.fecha_recepcion))err.push(`${at(r)}: falta el documento o la fecha de recepción`);
+    if(seen.has(r.ine))err.push(`${at(r)}: ${r.ine} repetido`);seen.add(r.ine);}
+  return err;
+}
 // Cifras de todo el sistema de un operador: mismas reglas que las municipales, con el patrón y el ámbito en lugar del código INE
 function checkSys(rows){
   const err=checkA63(rows.map(r=>Object.assign({},r,{ine:r.patron})),new Set(rows.map(r=>r.patron))).map(e=>e.replace(F.a63,F.sys));
@@ -63,8 +83,8 @@ function build(read=f=>fs.readFileSync(path.join(ROOT,f),'utf8')){
   const EM=JSON.parse(read('data/espmun.json')),ES=JSON.parse(read('data/es_mun.json')).mun,M=JSON.parse(read('data/muni.json')).muni;
   const padron=new Set(Object.keys(EM.mun));
   const a63=psv(read(F.a63),COLS,F.a63),est=psv(read(F.estado),ESTADO_COLS,F.estado);
-  const sys=psv(read(F.sys),SYS_COLS,F.sys);
-  const err=[...checkA63(a63,padron),...checkEstado(est,padron,a63),...checkSys(sys)];if(err.length)throw new Error(err.join('\n'));
+  const sys=psv(read(F.sys),SYS_COLS,F.sys),mit=parseMiteco(read(F.miteco));
+  const err=[...checkA63(a63,padron),...checkEstado(est,padron,a63),...checkSys(sys),...checkMiteco(mit,padron)];if(err.length)throw new Error(err.join('\n'));
   const mun={};for(const r of a63)(mun[r.ine]??=[]).push({ind:r.indicador,v:+r.valor,unit:r.unidad,y:+r['año_dato'],op:r.operador,url:r.url,
     page:r.pagina_o_seccion,legal:r.licencia_o_aviso_legal,date:r.fecha_consulta});
   const estado=Object.fromEntries(est.map(r=>[r.ine,{e:r.estado,date:r.fecha_consulta,motivo:r.motivo}]));
@@ -77,14 +97,15 @@ function build(read=f=>fs.readFileSync(path.join(ROOT,f),'utf8')){
       return [id,name,pop,top?top[0]+(top[2]?' (responsable)':''):'',c?(c.grupo||c.p.trim()):'',estado[id]?estado[id].e:'',
         (mun[id]||[]).map(r=>`${r.ind} ${r.v}${r.unit==='%'?' %':''} (${r.y})`).join(' · '),p?'sí':'no'];});
   const sysOut=sys.map(r=>({pat:r.patron,op:r.operador,amb:r.ambito,ind:r.indicador,v:+r.valor,unit:r.unidad,y:+r['año_dato'],url:r.url,page:r.pagina_o_seccion,legal:r.licencia_o_aviso_legal,date:r.fecha_consulta,nota:r.nota}));
-  return {mun,estado,cities,sys:sysOut};
+  const miteco={sol:mit.sol,mun:Object.fromEntries(mit.rows.map(r=>[r.ine,{anr:r.anr_pct===''?null:+r.anr_pct,ife:r.ife===''?null:+r.ife,rend:r.rendimiento_pct===''?null:+r.rendimiento_pct,tipo:r.tipo_evaluacion,y:2024,doc:r.documento,rec:r.fecha_recepcion}]))};
+  return {mun,estado,cities,sys:sysOut,miteco};
 }
 
-module.exports={psv,checkA63,checkEstado,checkSys,paintable,build,F,COLS,ESTADO_COLS,SYS_COLS};
+module.exports={psv,checkA63,checkEstado,checkSys,parseMiteco,checkMiteco,paintable,build,F,COLS,ESTADO_COLS,SYS_COLS,MIT_COLS};
 
 if(require.main===module){
-  const {mun,estado,cities,sys}=build();
-  fs.writeFileSync(path.join(ROOT,'data/art63.json'),JSON.stringify({meta:{src:F.a63,estado:F.estado,sys:F.sys},mun,estado,sys}));
+  const {mun,estado,cities,sys,miteco}=build();
+  fs.writeFileSync(path.join(ROOT,'data/art63.json'),JSON.stringify({meta:{src:F.a63,estado:F.estado,sys:F.sys,miteco:F.miteco},mun,estado,sys,miteco}));
   fs.writeFileSync(path.join(ROOT,'data/ciudades_50k_sin_perdidas.csv'),
     ['ine;nombre;poblacion_ine_2025;operador_sinac;operador_agrupado;estado_art63;indicadores_publicados;se_pinta',...cities.map(r=>r.join(';'))].join('\n')+'\n');
   const n={};for(const o of Object.values(estado))n[o.e]=(n[o.e]||0)+1;

@@ -195,6 +195,14 @@ FCC AQUALIA;Privado;;
 
 `npm run build` regenera `data/operadores_sin_clasificar.csv`, ordenado por población abastecida: es la lista de trabajo para completar la tabla.
 
+## Cargar la tabla de MITECO por municipio
+
+MITECO solo publica el resumen de la evaluación de fugas estructurales de 2024 (RD 3/2023). La tabla por municipio se pide por solicitud de acceso a la información. `raw/miteco_fugas_2024.psv` ya tiene la estructura:
+
+1. Cuando se presente la solicitud, pon la fecha en la línea `solicitud_presentada:AAAA-MM-DD`. El motivo de los municipios en gris pasa de "pendiente de presentar" a "presentada el DD/MM/AAAA".
+2. Cuando llegue la respuesta, añade una fila por municipio: `ine|anr_pct|ife|rendimiento_pct|tipo_evaluacion|año_dato|documento|fecha_recepcion|nota`, con el código INE de 5 cifras, decimales con punto, `basica` o `detallada`, año 2024, la referencia de la resolución y la fecha en que se recibió. Las pruebas comprueban el formato y que el código está en el padrón.
+3. La ficha del municipio la muestra en un bloque propio. Antes de pintarla en el mapa hay que decidir su lugar en la precedencia de `src/loss.js` (hoy ACA > operador > EIEL > Govern IB).
+
 ## Añadir un país a la vista internacional
 
 La vista `#internacional` solo admite fuentes oficiales con licencia abierta y granularidad por región, ciudad, servicio o compañía. Para añadir un país:

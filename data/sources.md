@@ -395,3 +395,9 @@ Vista nueva `#internacional`. La vista Europa sigue dando el dato por país (Eur
 | Oriente Medio | Sin capa | No hay fuente pública con granularidad subnacional |
 
 No se ha incluido la cifra nacional de Jordania que citaba el ticket (41 %, MWI): no se ha verificado la fuente.
+
+## Añadido el 30 oct 2026: estructura para la tabla de MITECO (FWG-1870, Parte 5)
+
+- La solicitud de acceso a MITECO la presenta David. MITECO publica el Informe nacional de fugas 2024 solo de forma resumida (art. 63.1, Phweb), aunque la unidad de reporte de 2024 es el municipio (informe, p. 35).
+- `raw/miteco_fugas_2024.psv`: estructura vacía, con el mismo índice INE, para cargar la tabla si llega. Se valida en `scripts/build_art63.js` (código en el padrón, números, tipo de evaluación, año 2024, documento y fecha de recepción) y se muestra en la ficha en un bloque propio. Su precedencia en el mapa se decidirá cuando llegue.
+- Motivo en gris de todo municipio sin pérdidas, añadido al que ya tenía: "MITECO no publica por municipio la evaluación de fugas estructurales de 2024 (RD 3/2023), solo un resumen; la solicitud de acceso a la tabla municipal está pendiente de presentar." Con la fecha en `solicitud_presentada:`, termina en "presentada el DD/MM/AAAA".

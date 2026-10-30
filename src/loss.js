@@ -11,4 +11,8 @@ function pickLoss(c){for(const k of LOSS_ORDER)if(c[k])return c[k];return null;}
 // Fila del art. 63.2 que se pinta: agua no registrada antes que pérdidas reales; ninguna si solo hay otros indicadores
 const A63_PAINT=["ANR","PERDIDAS_REALES"];
 function a63Paint(rows){for(const k of A63_PAINT){const r=(rows||[]).find(x=>x[0]===k);if(r)return r;}return null;}
-if(typeof module!=="undefined")module.exports={LOSS_ORDER,pickLoss,A63_PAINT,a63Paint};
+// Motivo común a todo municipio sin pérdidas: MITECO no publica por municipio la evaluación de fugas 2024 (Parte 5).
+// sol: fecha AAAA-MM-DD de la solicitud de acceso a la información, o vacía mientras no se presente
+function mitecoReason(sol){return "MITECO no publica por municipio la evaluación de fugas estructurales de 2024 (RD 3/2023), solo un resumen"+
+  (sol?`; solicitud de acceso a la tabla municipal presentada el ${sol.split("-").reverse().join("/")}.`:"; la solicitud de acceso a la tabla municipal está pendiente de presentar.");}
+if(typeof module!=="undefined")module.exports={LOSS_ORDER,pickLoss,A63_PAINT,a63Paint,mitecoReason};
