@@ -26,6 +26,7 @@
         <button data-g="ges" aria-pressed="false">Modelo de gestión</button>
         <button data-g="fc" aria-pressed="false" class="esonly">Fibrocemento</button>
         <button data-g="est" aria-pressed="false" class="esonly">Estado de la red</button>
+        <button data-g="pri" aria-pressed="false" class="esonly">Prioridad comercial</button>
       </div>
       <label class="yearsel" id="yearsel" hidden>Año <select id="year" aria-label="Año del dato INE"></select></label>
       <label class="yearsel" id="ccsel" hidden>Ir a comunidad <select id="ccgo" aria-label="Ir a comunidad autónoma"></select></label>
@@ -88,7 +89,10 @@
       <label id="onlyWrap"><input type="checkbox" id="onlyData" checked> Solo municipios con dato</label>
       <label id="rankCcWrap" hidden>Comunidad <select id="rankCc" aria-label="Filtrar por comunidad"></select></label>
       <span id="rankEs" class="rankes" hidden>
+        <label>Provincia <select id="rankPv" aria-label="Filtrar por provincia"></select></label>
+        <label>Municipio <input id="muq" type="search" autocomplete="off" placeholder="nombre" aria-label="Buscar municipio por nombre"></label>
         <label>Modelo <select id="rankGm" aria-label="Filtrar por modelo de gestión"></select></label>
+        <label>Calidad del dato <select id="rankQ" aria-label="Filtrar por calidad del dato de pérdidas"></select></label>
         <label>Operador <input id="opq" type="search" list="opl" autocomplete="off" placeholder="p. ej. FCC AQUALIA" aria-label="Filtrar por operador (SINAC)"></label>
         <datalist id="opl"></datalist>
         <span id="opCount" aria-live="polite"></span>

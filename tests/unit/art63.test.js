@@ -38,7 +38,8 @@ test('las 126 ciudades de 50.000 hab. o más sin pérdidas previas tienen dato p
 });
 test('data/art63.json y data/ciudades_50k_sin_perdidas.csv coinciden con lo que se genera desde raw/',()=>{
   const {mun,estado,cities}=build();
-  assert.deepEqual(JSON.parse(read('data/art63.json')),{meta:{src:F.a63,estado:F.estado},mun,estado});
+  const {sys}=build();
+  assert.deepEqual(JSON.parse(read('data/art63.json')),{meta:{src:F.a63,estado:F.estado,sys:F.sys},mun,estado,sys});
   assert.equal(read('data/ciudades_50k_sin_perdidas.csv').trim().split('\n').length,cities.length+1);
 });
 
@@ -55,4 +56,18 @@ test('del art. 63.2 solo se pinta el agua no registrada y, si no hay, las pérdi
   assert.equal(a63Paint([['RENDIMIENTO',80],['IFE',2],['ILI',3]]),null);
   assert.equal(a63Paint(undefined),null);
   assert.equal(paintable([{indicador:'RENDIMIENTO'}]),null);
+});
+
+// ---- Cifras de todo el sistema de un operador (ficha de operador, Parte 6)
+const {checkSys,SYS_COLS}=require('../../scripts/build_art63.js');
+const SYS=psv(read(F.sys),SYS_COLS,F.sys);
+test('cada cifra de sistema tiene patrón, ámbito, indicador admitido, año, URL y aviso legal',()=>{
+  assert.deepEqual(checkSys(SYS),[]);
+  assert.ok(checkSys([Object.assign({},SYS[0],{ambito:''})]).length>0);
+});
+test('cada patrón de las cifras de sistema casa con algún operador del SINAC',()=>{
+  const {csv,normOp,F:FE}=require('../../scripts/build_es_mun.js');
+  const pv=read(FE.pvnav).trim().split('\n').filter(l=>/^\d{5}\|/.test(l)).map(l=>l.split('|')[1]); // operadores en baja del País Vasco
+  const names=new Set([...csv(read(FE.sinac)).map(r=>r.gestor),...pv].map(n=>' '+normOp(n)+' '));
+  assert.deepEqual(SYS.filter(r=>![...names].some(n=>n.includes(' '+normOp(r.patron)+' '))).map(r=>r.patron),[]);
 });

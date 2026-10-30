@@ -4,7 +4,8 @@
 // Ningún valor se calcula: se transcribe lo publicado. Lo que no se encuentra queda sin dato, con el estado de la búsqueda.
 const fs=require('fs');const path=require('path');
 const ROOT=path.resolve(__dirname,'..');
-const F={a63:'raw/operadores_art63_2026-10.psv',estado:'raw/art63_estado_2026-10-30.psv',cls:'data/operadores_clasificacion.csv'};
+const F={a63:'raw/operadores_art63_2026-10.psv',estado:'raw/art63_estado_2026-10-30.psv',sys:'raw/operadores_sistema_2026-10.psv',cls:'data/operadores_clasificacion.csv'};
+const SYS_COLS=['patron','operador','ambito','indicador','valor','unidad','año_dato','url','fecha_consulta','pagina_o_seccion','licencia_o_aviso_legal','nota'];
 const COLS=['ine','operador','indicador','valor','unidad','año_dato','url','fecha_consulta','pagina_o_seccion','licencia_o_aviso_legal','nota'];
 const IND=new Set(['ANR','PERDIDAS_REALES','IFE','ILI','RENDIMIENTO']);
 const PCT=new Set(['ANR','PERDIDAS_REALES','RENDIMIENTO']);
@@ -35,6 +36,12 @@ function checkA63(rows,padron){
     const k=r.ine+'|'+r.indicador;if(seen.has(k))err.push(`${at(r)}: ${k} repetido`);seen.add(k);}
   return err;
 }
+// Cifras de todo el sistema de un operador: mismas reglas que las municipales, con el patrón y el ámbito en lugar del código INE
+function checkSys(rows){
+  const err=checkA63(rows.map(r=>Object.assign({},r,{ine:r.patron})),new Set(rows.map(r=>r.patron))).map(e=>e.replace(F.a63,F.sys));
+  for(const r of rows)for(const c of ['patron','ambito'])if(!r[c])err.push(`${F.sys}, línea ${r._line}: ${c} vacío`);
+  return [...new Set(err)];
+}
 function checkEstado(rows,padron,a63){
   const err=[];const at=r=>`${F.estado}, línea ${r._line}`;const seen=new Set();const pub=new Set(a63.map(r=>r.ine));
   for(const r of rows){
@@ -56,7 +63,8 @@ function build(read=f=>fs.readFileSync(path.join(ROOT,f),'utf8')){
   const EM=JSON.parse(read('data/espmun.json')),ES=JSON.parse(read('data/es_mun.json')).mun,M=JSON.parse(read('data/muni.json')).muni;
   const padron=new Set(Object.keys(EM.mun));
   const a63=psv(read(F.a63),COLS,F.a63),est=psv(read(F.estado),ESTADO_COLS,F.estado);
-  const err=[...checkA63(a63,padron),...checkEstado(est,padron,a63)];if(err.length)throw new Error(err.join('\n'));
+  const sys=psv(read(F.sys),SYS_COLS,F.sys);
+  const err=[...checkA63(a63,padron),...checkEstado(est,padron,a63),...checkSys(sys)];if(err.length)throw new Error(err.join('\n'));
   const mun={};for(const r of a63)(mun[r.ine]??=[]).push({ind:r.indicador,v:+r.valor,unit:r.unidad,y:+r['año_dato'],op:r.operador,url:r.url,
     page:r.pagina_o_seccion,legal:r.licencia_o_aviso_legal,date:r.fecha_consulta});
   const estado=Object.fromEntries(est.map(r=>[r.ine,{e:r.estado,date:r.fecha_consulta,motivo:r.motivo}]));
@@ -68,14 +76,15 @@ function build(read=f=>fs.readFileSync(path.join(ROOT,f),'utf8')){
       const p=paintable(mun[id]||[]);
       return [id,name,pop,top?top[0]+(top[2]?' (responsable)':''):'',c?(c.grupo||c.p.trim()):'',estado[id]?estado[id].e:'',
         (mun[id]||[]).map(r=>`${r.ind} ${r.v}${r.unit==='%'?' %':''} (${r.y})`).join(' · '),p?'sí':'no'];});
-  return {mun,estado,cities};
+  const sysOut=sys.map(r=>({pat:r.patron,op:r.operador,amb:r.ambito,ind:r.indicador,v:+r.valor,unit:r.unidad,y:+r['año_dato'],url:r.url,page:r.pagina_o_seccion,legal:r.licencia_o_aviso_legal,date:r.fecha_consulta,nota:r.nota}));
+  return {mun,estado,cities,sys:sysOut};
 }
 
-module.exports={psv,checkA63,checkEstado,paintable,build,F,COLS,ESTADO_COLS};
+module.exports={psv,checkA63,checkEstado,checkSys,paintable,build,F,COLS,ESTADO_COLS,SYS_COLS};
 
 if(require.main===module){
-  const {mun,estado,cities}=build();
-  fs.writeFileSync(path.join(ROOT,'data/art63.json'),JSON.stringify({meta:{src:F.a63,estado:F.estado},mun,estado}));
+  const {mun,estado,cities,sys}=build();
+  fs.writeFileSync(path.join(ROOT,'data/art63.json'),JSON.stringify({meta:{src:F.a63,estado:F.estado,sys:F.sys},mun,estado,sys}));
   fs.writeFileSync(path.join(ROOT,'data/ciudades_50k_sin_perdidas.csv'),
     ['ine;nombre;poblacion_ine_2025;operador_sinac;operador_agrupado;estado_art63;indicadores_publicados;se_pinta',...cities.map(r=>r.join(';'))].join('\n')+'\n');
   const n={};for(const o of Object.values(estado))n[o.e]=(n[o.e]||0)+1;

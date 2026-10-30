@@ -375,6 +375,66 @@ test('el filtro por operador "FCC AQUALIA" resalta sus municipios, da el recuent
   await expect(page.locator('#muLayer')).not.toHaveClass(/opf/);
 });
 
+// ---- Herramientas de venta (FWG-1870, Parte 6)
+test('ficha de operador "FCC AQUALIA": municipios, población, pérdidas medias por fuente sin mezclar indicadores y exportación',async({page})=>{
+  await openMu(page);
+  await page.fill('#opq','FCC AQUALIA');
+  await expect(page.locator('#opCount')).toHaveText(/^\d{3} municipios/);
+  const n=(await page.locator('#opCount').innerText()).split(' ')[0];
+  const P=page.locator('#panel');
+  await expect(P.locator('h2')).toHaveText('FCC AQUALIA');
+  await expect(P).toContainText('Ficha de operador');
+  await expect(P).toContainText('Municipios donde opera'+n);
+  await expect(P).toContainText('Tipo'+'Privado (utility)');
+  await expect(P).toContainText('calculada por Kimedes por separado para cada fuente');
+  await expect(P.locator('#opCsv')).toBeVisible();
+});
+test('ficha de operador "CANAL DE ISABEL II": da las cifras de todo su sistema, sin asignarlas a un municipio',async({page})=>{
+  await openMu(page);
+  await page.fill('#opq','CANAL DE ISABEL II');
+  const P=page.locator('#panel');
+  await expect(P).toContainText('Pérdidas reales 2025 · Toda la empresa: Comunidad de Madrid y Delegación de Cáceres');
+  await expect(P).toContainText('Agua no registrada 2024 · Toda la empresa');
+  await expect(P).toContainText('13,44');
+  await expect(P.locator('a[href*="canaldeisabelsegunda.es"]').first()).toBeVisible();
+});
+test('filtro de calidad del dato: filtra ranking y mapa, y aparece en el ranking',async({page})=>{
+  await openMu(page);
+  await page.selectOption('#rankQ','art63');
+  await expect(page.locator('#rankCount')).toHaveText('2 municipios con dato de pérdidas publicado · publicado por el operador (art. 63.2 rd 3/2023)');
+  await expect(page.locator('#muLayer')).toHaveClass(/opf/);
+  await expect(page.locator('#rank button')).toHaveCount(2);
+  await expect(page.locator('#rank')).toContainText('operador');
+  await page.selectOption('#rankQ','eiel5');
+  const n=+(await page.locator('#rankCount').innerText()).split(' ')[0].replace('.','');
+  expect(n).toBeGreaterThan(1000);
+  await expect(page.locator('#rank .yr').first()).toContainText('EIEL ×5');
+});
+test('filtro de provincia y búsqueda por nombre: la provincia depende de la comunidad y un solo resultado se fija',async({page})=>{
+  await openMu(page);
+  await page.selectOption('#rankCc','01');
+  await page.selectOption('#rankPv','11');
+  await expect(page.locator('#rankCount')).toContainText('provincia de Cádiz');
+  await page.fill('#muq','Alcalá del Valle');
+  await expect(page.locator('#panel h2')).toHaveText('Alcalá del Valle');
+  await expect(page.locator('#muLayer .um.opm')).toHaveCount(1);
+});
+test('capa de prioridad comercial: quintiles, leyenda que dice que es un cálculo, ficha con sus factores y CSV con las entradas',async({page})=>{
+  await openMu(page);
+  await layer(page,'pri');
+  await expect(page.locator('#legend')).toContainText('Índice Kimedes, calculado a partir de fuentes citadas');
+  await expect(page.locator('#legend')).toContainText('No es un dato publicado');
+  await expect(page.locator('#rankTitle')).toContainText('Prioridad comercial');
+  await expect(page.locator('#rank button').first().locator('.v')).toHaveText(/^Q5 · \d,\d{3}$/);
+  await page.evaluate(()=>pin('28079'));
+  await expect(page.locator('#panel')).toContainText('Prioridad comercial (Índice Kimedes)');
+  await expect(page.locator('#panel')).toContainText('Pérdidas (sin dato publicado)');
+  const [dl]=await Promise.all([page.waitForEvent('download'),page.click('#csvBtn')]);
+  const csv=require('fs').readFileSync(await dl.path(),'utf8');
+  expect(csv.split('\r\n')[0]).toContain('indice_prioridad_kimedes;quintil_prioridad;factor_poblacion;factor_perdidas;factor_fibrocemento;factor_antiguedad_eiel;factor_modelo');
+  expect(csv.split('\r\n').length).toBe(8132);
+});
+
 test('Exportar CSV descarga el ranking filtrado completo',async({page})=>{
   await openMu(page);
   await page.selectOption('#rankCc','04');

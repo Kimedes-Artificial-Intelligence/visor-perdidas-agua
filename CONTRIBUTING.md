@@ -195,6 +195,10 @@ FCC AQUALIA;Privado;;
 
 `npm run build` regenera `data/operadores_sin_clasificar.csv`, ordenado por población abastecida: es la lista de trabajo para completar la tabla.
 
+## Cambiar los pesos del índice de prioridad comercial
+
+La capa "Prioridad comercial" de la vista España por municipio es un índice calculado por Kimedes, no un dato publicado: población × pérdidas (o ausencia de dato) × fibrocemento × antigüedad de la fase EIEL × modelo de gestión. La fórmula está en `src/prioridad.js` y los pesos en `data/prioridad_pesos.json`, que se puede editar sin tocar código: tope de pérdidas, valor sin dato de cada factor, base y pendiente del fibrocemento y de la antigüedad, año de referencia y peso de cada modelo (V privado, M mixto, P municipalizado, C vecinal, O otros, N sin dato). Después, `npm run build` y `npm run reference:update`.
+
 ## Volver a extraer la EIEL de la Comunidad de Madrid
 
 La Comunidad de Madrid no está en el visor nacional de la EIEL: publica su fase 2023 en la IDEM con licencia CC BY 4.0. La red de distribución se extrae del servicio WFS, sin navegador:

@@ -349,3 +349,24 @@ No asignados:
 | Consorcio de Aguas Bilbao Bizkaia | Rendimiento de la red primaria "superior al 95%" | 2024 | Solo red en alta |
 
 Estado en `raw/art63_estado_2026-10-30.psv`: Vitoria, Irun, Pamplona, Bilbao, Barakaldo y Getxo con "solo cifra de todo su sistema"; Donostia "no verificado".
+
+## Añadido el 30 oct 2026: herramientas de venta (FWG-1870, Parte 6)
+
+- **Filtro de calidad del dato** (vista España por municipio): auditoría publicada (ACA), publicado por el operador (art. 63.2 RD 3/2023), EIEL con todos los valores múltiplos de 5, EIEL con valores no redondeados y estimación del Govern IB. Filtra el ranking y resalta el mapa; el ranking muestra la etiqueta y el CSV la columna `calidad_dato`. Por decisión de David (30/10/2026) no se usa la palabra "medido" para la EIEL.
+- **Prioridad comercial**: índice calculado por Kimedes, en quintiles. La fórmula está en `src/prioridad.js`, los pesos en `data/prioridad_pesos.json` (valores iniciales aprobados por David el 30/10/2026) y la explicación, en la leyenda, la ficha y el CSV, que incluye el índice, el quintil, los cinco factores y la fase EIEL. No es un dato publicado y la página lo dice siempre. Para cruzarlo con el ranking B2G de diputaciones (Confluence 380534822) basta el CSV.
+- **Ficha de operador**: al filtrar por operador sin municipio elegido, el panel muestra municipios, población, % con dato de pérdidas, tipo, grupo y modelo de sus municipios. Las pérdidas medias se ponderan por población y se calculan por separado para cada fuente, porque son indicadores distintos y no se suman. También muestra las cifras publicadas para todo su sistema (`raw/operadores_sistema_2026-10.psv`) y un botón para exportar sus municipios.
+- **Filtro de provincia** (depende de la comunidad elegida) y **búsqueda por nombre**: si queda un solo municipio, se fija.
+
+Cifras de sistema incorporadas (verificadas en el documento; ninguna se asigna a un municipio):
+
+| Operador | Indicador | Año | Ámbito |
+|---|---|---|---|
+| Canal de Isabel II | Pérdidas reales 4 % · ANR 13,44 % | 2025 · 2024 | Toda la empresa (Madrid y Cáceres) |
+| Aguas de Alicante | Rendimiento 86,22 % | 2025 | Red de Aguas de Alicante |
+| EMASAGRA | Rendimiento 76,4 % | 2025 | Sistema gestionado por EMASAGRA |
+| EMALCSA | ANR 8,74 % · rendimiento 91,26 % | 2025 | A Coruña y venta en alta a 7 municipios |
+| AMVISA | Rendimiento 88,4 % (p.29; la p.7 da 88,2 %) | 2023 | Ciudad, juntas y municipios vecinos |
+| Servicios de Txingudi | Rendimiento 82 % | 2024 | Irun y Hondarribia |
+| Mancomunidad de la Comarca de Pamplona | ANR 9,46 % (provisional) | 2025 | 50 municipios |
+
+No incorporadas: Hidralia (83,42 %) e Hidraqua, Aigües de l'Horta y Aigües de Paterna (75,64 %, 72,24 %, 87,47 %). Sus tablas se extraen del PDF sin los encabezados de columna y no se puede atribuir cada cifra con seguridad. EMASESA (86,33 %, IFE 3,24) y Viaqua (80,2 %) no dan el año del dato. CABB solo da "superior al 95%" para su red primaria.
