@@ -120,8 +120,31 @@ test('las extracciones tienen 33.413 núcleos, 46.842 claves de red y 18.939 red
 });
 const {mun,unk}=build();
 test('la agregación reproduce la referencia del 30/10/2026: 4.972 con pérdidas, 5.653 con gestión EIEL, 7.637 con operador',()=>{
-  const n=k=>Object.values(mun).filter(o=>o[k]!=null).length;
+  // Visor nacional de la EIEL; la Comunidad de Madrid (IDEM, FWG-1870) se cuenta aparte
+  const n=k=>Object.values(mun).filter(o=>o[k]!=null&&!(k==='gd'&&o.rs==='idem')).length;
   assert.deepEqual([n('per'),n('gd'),n('ops')],[4972,5653,7637]);
+});
+
+// ---- EIEL de la Comunidad de Madrid (IDEM, fase 2023; FWG-1870, Parte 3)
+const {idemToRd,IDEM_CODE}=require('../../scripts/build_es_mun.js');
+const idem=rows=>csv('fase;prov;mun;ent;nucleo;tipo;transporte;estado;titular;gestion;tramos;len_m\n'+rows.join('\n'));
+test('los dominios de la IDEM se traducen a las claves de tramo del visor nacional',()=>{
+  assert.deepEqual(idemToRd(idem(['2023;28;001;0001;01;FIBROCEMENTO;NO EXISTE;BUENO;MUNICIPAL;EMPRESA PUBLICA NO MUNICIPAL;13;111'])),
+    [{key:'2023-RD-28-001-0001-01-FC-NO-B-MU-EP',len_m:'111'}]);
+  assert.equal(IDEM_CODE.tipo.PVC,'PC');assert.equal(IDEM_CODE.gestion.PRIVADA,'PV');
+});
+test('una palabra de la IDEM sin código EIEL para la generación',()=>{
+  assert.throws(()=>idemToRd(idem(['2023;28;001;0001;01;ACERO;NO EXISTE;BUENO;MUNICIPAL;MUNICIPAL;1;10'])),/tipo "ACERO" sin código EIEL/);
+});
+test('Madrid: 155 municipios con red de la IDEM, todos de la provincia 28 y de menos de 50.000 hab.; Madrid capital no está',()=>{
+  const ids=Object.keys(mun).filter(k=>mun[k].rs==='idem');const pad=JSON.parse(fs.readFileSync(path.join(ROOT,'data/espmun.json'))).mun;
+  assert.equal(ids.length,155);assert.deepEqual(ids.filter(k=>!k.startsWith('28')||pad[k][1]>=50000),[]);
+  assert.equal(mun['28079'].rs,undefined);assert.equal(mun['28079'].per,undefined);
+});
+test('Madrid: el % de fibrocemento de un municipio se calcula como en el resto, por longitud de tramo',()=>{
+  const rows=csv(fs.readFileSync(path.join(ROOT,F.idem),'utf8')).filter(r=>r.mun==='001');
+  const L=t=>rows.filter(r=>!t||r.tipo===t).reduce((a,r)=>a+ +r.len_m,0);
+  assert.equal(mun['28001'].fc,Math.round(100*L('FIBROCEMENTO')/L()));assert.equal(mun['28001'].ry,2023);
 });
 test('ningún código INE queda fuera del padrón 2025',()=>{
   const pad=new Set(R('raw/ine_padron2025.psv').filter(l=>!l.startsWith('#')).map(l=>l.split('|')[0]));

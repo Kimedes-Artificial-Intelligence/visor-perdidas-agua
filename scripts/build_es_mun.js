@@ -5,7 +5,7 @@
 const fs=require('fs');const path=require('path');
 const ROOT=path.resolve(__dirname,'..');
 const F={nu:'raw/eiel_nucleos_2026-10-30.csv',rd:'raw/eiel_rd_2026-10-30.csv',prov:'raw/eiel_provincias_2026-10-30.csv',
-  sinac:'raw/sinac_redes_2026-10-30.csv',esf:'raw/esf_gestio_aigua_cat_2026-07-10.psv',cls:'data/operadores_clasificacion.csv'};
+  sinac:'raw/sinac_redes_2026-10-30.csv',idem:'raw/idem_eiel_rd_2026-10-30.csv',esf:'raw/esf_gestio_aigua_cat_2026-07-10.psv',cls:'data/operadores_clasificacion.csv'};
 
 // CSV con ';' y cabecera; sin comillas en estas fuentes
 const csv=text=>{const L=text.replace(/\r/g,'').trim().split('\n');const H=L[0].split(';');
@@ -50,6 +50,19 @@ function eielNetwork(rows){
     const te=sum(A.est);if(te){o.em=Math.round(100*(A.est.M||0)/te);o.er=Math.round(100*(A.est.R||0)/te);}
     o.km=round(A.L/1000,1);o.ry=A.y;out[ine]=o;}
   return out;
+}
+
+// ---------- EIEL de la Comunidad de Madrid (IDEM, fase 2023) -> mismas claves de tramo que el visor nacional ----------
+// La IDEM publica los dominios con palabras; se traducen a los códigos del diccionario EIEL. Una palabra desconocida para la generación.
+const IDEM_CODE={
+  tipo:{FIBROCEMENTO:'FC',FUNDICION:'FU',POLIETILENO:'PE',PVC:'PC',HORMIGON:'HO',PLOMO:'PL',OTROS:'OT'},
+  transporte:{'SI EXISTE':'SI','NO EXISTE':'NO'},
+  estado:{BUENO:'B',REGULAR:'R',MALO:'M','EN EJECUCION':'E'},
+  gestion:{MUNICIPAL:'MU','EMPRESA MUNICIPAL':'EM','EMPRESA PUBLICA NO MUNICIPAL':'EP',MANCOMUNIDAD:'MA',CONSORCIO:'CO',VECINAL:'VE',PRIVADA:'PV',OTROS:'OT'}};
+IDEM_CODE.titular=IDEM_CODE.gestion;
+function idemToRd(rows){
+  return rows.map((r,i)=>{const c=k=>{const v=IDEM_CODE[k][r[k]];if(!v)throw new Error(`${F.idem}, fila ${i+2}: ${k} "${r[k]}" sin código EIEL`);return v;};
+    return {key:[r.fase,'RD',r.prov,r.mun,r.ent,r.nucleo,c('tipo'),c('transporte'),c('estado'),c('titular'),c('gestion')].join('-'),len_m:r.len_m};});
 }
 
 // ---------- Clasificación de operadores ----------
@@ -106,6 +119,8 @@ function build(read=f=>fs.readFileSync(path.join(ROOT,f),'utf8')){
   const classify=loadClassifier(csv(read(F.cls)));
   const mun=eielLosses(csv(read(F.nu)));
   for(const [ine,o] of Object.entries(eielNetwork(csv(read(F.rd)))))Object.assign(mun[ine]??={},o);
+  // Comunidad de Madrid: red de la EIEL 2023 de la IDEM (no está en el visor nacional); sin pérdidas por núcleo
+  for(const [ine,o] of Object.entries(eielNetwork(idemToRd(csv(read(F.idem))))))Object.assign(mun[ine]??={},o,{rs:'idem'});
   const S=sinac(csv(read(F.sinac)),classify);
   for(const [ine,o] of Object.entries(S.mun))Object.assign(mun[ine]??={},o);
   const esf={};for(const l of read(F.esf).trim().split('\n')){if(l.startsWith('#'))continue;const a=l.split('|');esf[a[0]]=a[1];}
@@ -118,12 +133,13 @@ function build(read=f=>fs.readFileSync(path.join(ROOT,f),'utf8')){
   return {mun:sorted,prov,unk};
 }
 
-module.exports={csv,num,normOp,eielLosses,eielNetwork,loadClassifier,sinac,model,build,F};
+module.exports={csv,num,normOp,eielLosses,eielNetwork,idemToRd,IDEM_CODE,loadClassifier,sinac,model,build,F};
 
 if(require.main===module){
   const {mun,prov,unk}=build();
   const meta={eiel:'Secretaría de Estado de Política Territorial, EIEL (visor GEO-EIEL, eiel.redsara.es). Extracción 29-30/10/2026. CC BY-NC-SA 4.0',
     sinac:'Ministerio de Sanidad, SINAC, consulta ciudadana (sinac.sanidad.gob.es). Extracción 30/10/2026',
+    idem:'Comunidad de Madrid, IDEM, EIEL fase 2023, capa IDEM_EIEL_RED_DISTRIBUCION_23 (WFS). Extracción 30/10/2026. CC BY 4.0',
     esf:"Enginyeria Sense Fronteres / Aigua és Vida, La Gestió de l'Aigua a Catalunya per Municipi, Datawrapper F298j v45 (10/07/2026)",prov};
   fs.writeFileSync(path.join(ROOT,'data/es_mun.json'),JSON.stringify({meta,mun}));
   fs.writeFileSync(path.join(ROOT,'data/operadores_sin_clasificar.csv'),['gestor;poblacion_abastecida;redes;municipios;ejemplo_ine',...unk.map(r=>r.join(';'))].join('\n')+'\n');
