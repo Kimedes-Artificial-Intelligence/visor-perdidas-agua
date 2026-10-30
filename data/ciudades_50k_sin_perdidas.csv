@@ -7,12 +7,12 @@ ine;nombre;poblacion_ine_2025;operador_sinac;operador_agrupado;estado_art63;indi
 30030;Murcia;479405;EMUASA;Veolia;publica;RENDIMIENTO 85.74 % (2024);no
 35016;Las Palmas de Gran Canaria;381868;EMALSA;Saur y Nuinsa;no_publica;;no
 03014;Alacant/Alicante;366221;AGUAS MUNICIPALIZADAS DE ALICANTE EMPRESA MIXTA (AMAEM);EMPRESA MIXTA;publica;RENDIMIENTO 88.55 % (2024);no
-48020;Bilbao;351124;AYUNTAMIENTO DE BILBAO (responsable);;;;no
+48020;Bilbao;351124;AYUNTAMIENTO DE BILBAO (responsable);;solo_sistema;;no
 14021;Córdoba;323262;EMPRESA MUNICIPAL DE AGUAS DE CÓRDOBA;EMPRESA MUNICIPAL;publica;IFE 2.02 (2025) · ANR 8.45 % (2025);no
 47186;Valladolid;302614;AQUAVALL;AQUAVALL;no_publica;;no
 36057;Vigo;294489;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 33024;Gijón;269894;EMPRESA MUNICIPAL DE AGUAS DE GIJON, S.A.;EMPRESA MUNICIPAL;no_publica;;no
-01059;Vitoria-Gasteiz;260699;AYUNTAMIENTO DE VITORIA-GASTEIZ (responsable);;;;no
+01059;Vitoria-Gasteiz;260699;AYUNTAMIENTO DE VITORIA-GASTEIZ (responsable);;solo_sistema;;no
 15030;A Coruña;251543;EMALCSA;EMALCSA;publica;IFE 7.3 (2025);no
 03065;Elx/Elche;245557;AIGÜES I SANEJAMENT D'ELX, S.A.;Hidraqua;publica;RENDIMIENTO 88.3 % (2025) · ANR 11.71 % (2025);no
 18087;Granada;233975;EMASAGRA;Hidralia (Veolia y Unicaja);publica;RENDIMIENTO 80.98 % (2025);no
@@ -21,13 +21,13 @@ ine;nombre;poblacion_ine_2025;operador_sinac;operador_agrupado;estado_art63;indi
 28092;Móstoles;214817;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
 11020;Jerez de la Frontera;213634;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 38038;Santa Cruz de Tenerife;211957;EMMASA (EMPRESA MIXTA DE AGUAS DE SANTA CRUZ DE TENERIFE S.A.);EMMASA;no_publica;;no
-31201;Pamplona/Iruña;209094;SERVICIOS DE LA COMARCA DE PAMPLONA, S.A.;COMARCA;;;no
+31201;Pamplona/Iruña;209094;SERVICIOS DE LA COMARCA DE PAMPLONA, S.A.;COMARCA;solo_sistema;;no
 04013;Almería;205468;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 28005;Alcalá de Henares;203208;AGUAS DE ALCALÁ UTE;;bloqueado;;no
 28074;Leganés;195734;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
 28065;Getafe;193238;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
 28058;Fuenlabrada;190076;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
-20069;Donostia/San Sebastián;189866;AYUNTAMIENTO DE DONOSTIA/SAN SEBASTIÁN (responsable);;;;no
+20069;Donostia/San Sebastián;189866;AYUNTAMIENTO DE DONOSTIA/SAN SEBASTIÁN (responsable);;no_verificado;;no
 12040;Castelló de la Plana;183711;FACSA;FACSA;no_publica;;no
 09059;Burgos;177402;AGUAS DE BURGOS;AGUAS DE BURGOS;no_publica;;no
 28007;Alcorcón;175719;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
@@ -51,7 +51,7 @@ ine;nombre;poblacion_ine_2025;operador_sinac;operador_agrupado;estado_art63;indi
 32054;Ourense;105769;VIAQUA S.A;VIAQUA;solo_sistema;;no
 35026;Telde;104168;AGUAS DE TELDE GESTIÓN INTEGRAL DEL SERVICIO, S.A.;;no_publica;;no
 28123;Rivas-Vaciamadrid;103148;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
-48013;Barakaldo;102986;AYUNTAMIENTO DE BARAKALDO (responsable);;;;no
+48013;Barakaldo;102986;AYUNTAMIENTO DE BARAKALDO (responsable);;solo_sistema;;no
 15078;Santiago de Compostela;100965;VIAQUA S.A;VIAQUA;solo_sistema;;no
 27028;Lugo;100143;GESTIÓN Y TÉCNICAS DEL AGUA S.A. (GESTAGUA);GESTAGUA;no_publica;;no
 28127;Las Rozas de Madrid;99037;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
@@ -88,7 +88,7 @@ ine;nombre;poblacion_ine_2025;operador_sinac;operador_agrupado;estado_art63;indi
 03031;Benidorm;77327;HIDRAQUA;HIDRAQUA;solo_sistema;;no
 13034;Ciudad Real;76217;AQUONA, S.A.;AQUONA;no_publica;;no
 46190;Paterna;76019;AIGÜES MUNICIPALS DE PATERNA, S.A.;Hidraqua;solo_sistema;;no
-48044;Getxo;75752;AYUNTAMIENTO DE GETXO (responsable);;;;no
+48044;Getxo;75752;AYUNTAMIENTO DE GETXO (responsable);;solo_sistema;;no
 33004;Avilés;75517;AGUAS DE AVILÉS S.L;Asturagua;publica;RENDIMIENTO 81 % (2023);no
 28080;Majadahonda;73625;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
 46220;Sagunt/Sagunto;73031;GLOBAL OMNIUM;GLOBAL OMNIUM;no_publica;;no
@@ -99,7 +99,7 @@ ine;nombre;poblacion_ine_2025;operador_sinac;operador_agrupado;estado_art63;indi
 28022;Boadilla del Monte;66349;SUMINISTRADORA DE AGUAS LOMAS BOSQUE S.A.;;no_publica;;no
 11022;La Línea de la Concepción;64499;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 15036;Ferrol;64367;EMPRESA MIXTA DE AUGAS DE FERROL, SA;EMPRESA MIXTA;no_publica;;no
-20045;Irun;63835;AYUNTAMIENTO DE IRUN (responsable);;;;no
+20045;Irun;63835;AYUNTAMIENTO DE IRUN (responsable);;solo_sistema;;no
 24115;Ponferrada;63186;AQUONA, S.A.;AQUONA;no_publica;;no
 28013;Aranjuez;63040;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
 03009;Alcoi/Alcoy;61468;FCC AQUALIA;FCC AQUALIA;bloqueado;;no

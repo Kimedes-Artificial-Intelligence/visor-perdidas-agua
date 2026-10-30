@@ -31,11 +31,10 @@ test('el estado de la búsqueda es coherente con las cifras publicadas y cada fi
 });
 
 // ---- Cobertura de la Parte 1
-const PV_NAV=new Set(['01','20','48','31']); // País Vasco y Navarra: Parte 4
-test('todas las ciudades de 50.000 hab. o más sin pérdidas previas, salvo País Vasco y Navarra, tienen dato publicado o estado de la búsqueda',()=>{
+test('las 126 ciudades de 50.000 hab. o más sin pérdidas previas tienen dato publicado o estado de la búsqueda (País Vasco y Navarra incluidos, Parte 4)',()=>{
   const {cities}=build();assert.equal(cities.length,126);
   const est=new Set(EST.map(r=>r.ine));
-  assert.deepEqual(cities.map(c=>c[0]).filter(id=>!PV_NAV.has(id.slice(0,2))&&!est.has(id)),[]);
+  assert.deepEqual(cities.map(c=>c[0]).filter(id=>!est.has(id)),[]);
 });
 test('data/art63.json y data/ciudades_50k_sin_perdidas.csv coinciden con lo que se genera desde raw/',()=>{
   const {mun,estado,cities}=build();

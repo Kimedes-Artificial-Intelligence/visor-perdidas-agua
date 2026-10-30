@@ -5,7 +5,7 @@
 const fs=require('fs');const path=require('path');
 const ROOT=path.resolve(__dirname,'..');
 const F={nu:'raw/eiel_nucleos_2026-10-30.csv',rd:'raw/eiel_rd_2026-10-30.csv',prov:'raw/eiel_provincias_2026-10-30.csv',
-  sinac:'raw/sinac_redes_2026-10-30.csv',idem:'raw/idem_eiel_rd_2026-10-30.csv',esf:'raw/esf_gestio_aigua_cat_2026-07-10.psv',cls:'data/operadores_clasificacion.csv'};
+  sinac:'raw/sinac_redes_2026-10-30.csv',idem:'raw/idem_eiel_rd_2026-10-30.csv',pvnav:'raw/gestion_pv_nav_2026-10-30.psv',esf:'raw/esf_gestio_aigua_cat_2026-07-10.psv',cls:'data/operadores_clasificacion.csv'};
 
 // CSV con ';' y cabecera; sin comillas en estas fuentes
 const csv=text=>{const L=text.replace(/\r/g,'').trim().split('\n');const H=L[0].split(';');
@@ -105,13 +105,15 @@ function sinac(rows,classify){
 const EIEL_GROUP={MU:'P',EM:'P',EP:'P',MA:'P',CO:'P',PV:'V',VE:'C',OT:'O'};
 const ESF_GROUP={'Pública':'P','Privada':'V','Empresa mixta privada – pública':'M','Cooperativa / associació':'C'};
 const CAT_PROV=new Set(['08','17','25','43']);
-function model(ine,o,esfTipus,classify){
+// pvOp: operador en baja del País Vasco y Navarra según su propia fuente (raw/gestion_pv_nav_*.psv); solo si nada de lo anterior da el modelo
+function model(ine,o,esfTipus,classify,pvOp){
   const eg=o.gd?EIEL_GROUP[o.gd]:null;const top=o.ops&&o.ops[0];const c=top&&!top[2]&&classify(top[0]);const st=c?c.t:null;
   if(eg)o.eg=eg;if(st)o.st=st;
   if(CAT_PROV.has(ine.slice(0,2))&&ESF_GROUP[esfTipus])return {gm:ESF_GROUP[esfTipus],gs:'esf'};
   if(st==='M')return {gm:'M',gs:'sinac'};
   if(eg)return {gm:eg,gs:'eiel'};
   if(st==='P'||st==='V')return {gm:st,gs:'sinac'};
+  const pc=pvOp&&classify(pvOp);if(pc&&pc.t!=='X')return {gm:pc.t,gs:'pv'};
   return {gm:'N',gs:null};
 }
 
@@ -125,7 +127,8 @@ function build(read=f=>fs.readFileSync(path.join(ROOT,f),'utf8')){
   for(const [ine,o] of Object.entries(S.mun))Object.assign(mun[ine]??={},o);
   const esf={};for(const l of read(F.esf).trim().split('\n')){if(l.startsWith('#'))continue;const a=l.split('|');esf[a[0]]=a[1];}
   for(const ine of Object.keys(esf))mun[ine]??={};
-  for(const [ine,o] of Object.entries(mun))Object.assign(o,model(ine,o,esf[ine],classify));
+  const pv={};for(const l of read(F.pvnav).trim().split('\n')){if(l.startsWith('#')||l.startsWith('ine|'))continue;const a=l.split('|');pv[a[0]]={op:a[1],url:a[2],cita:a[4]};}
+  for(const [ine,o] of Object.entries(mun)){Object.assign(o,model(ine,o,esf[ine],classify,pv[ine]&&pv[ine].op));if(o.gs==='pv')o.pv=[pv[ine].op,pv[ine].url,pv[ine].cita];}
   const prov=Object.fromEntries(csv(read(F.prov)).map(r=>[r.prov,{fase:r.fase?+r.fase:null,nu_fase:r.nu_fase?+r.nu_fase:null}]));
   const sorted=Object.fromEntries(Object.keys(mun).sort().map(k=>[k,mun[k]]));
   const unk=Object.entries(S.unk).sort((a,b)=>b[1].pob-a[1].pob||b[1].redes-a[1].redes||(a[0]<b[0]?-1:1))

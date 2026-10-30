@@ -267,7 +267,7 @@ test('el selector de capa cambia leyenda, contador y color; fibrocemento y estad
   const fill=()=>page.locator('#muLayer [data-u="11002"]').evaluate(e=>e.style.fill);
   const lossFill=await fill();
   await layer(page,'ges');
-  await expect(page.locator('#maphead')).toHaveText(/^7\.578 de 8\.131 municipios con modelo de gestión/);
+  await expect(page.locator('#maphead')).toHaveText(/^7\.581 de 8\.131 municipios con modelo de gestión/);
   await expect(page.locator('#legend')).toContainText('Vecinal / cooperativa');
   expect(await fill()).toBe('var(--g-p)');
   await layer(page,'fc');
@@ -338,6 +338,18 @@ test('Almonte (20.000-50.000 hab., provincia sin EIEL): la ficha municipal del R
   await expect(P.locator('.srcs a[href*="giahsa.com"]')).toHaveCount(1);
 });
 
+test('Irun: el modelo sale del operador en baja que nombra su propia fuente (Servicios de Txingudi) y la pérdida, del estado de la búsqueda',async({page})=>{
+  await openMu(page);
+  await page.evaluate(()=>pin('20045'));
+  const P=page.locator('#panel');
+  await expect(P.locator('h2')).toHaveText('Irun');
+  await expect(P.locator('.gtag')).toHaveText('Municipalizado');
+  await expect(P).toContainText('Operador que distribuye el agua según su propia fuente');
+  await expect(P).toContainText('SERVICIOS DE TXINGUDI');
+  await expect(P.locator('.srcs a[href="https://txinzer.eus/zer-egiten-dugu/uraren-kudeaketa/"]')).toHaveCount(1);
+  await expect(P).toContainText('Servicios de Txingudi publica el rendimiento de su red conjunta de Irun y Hondarribia');
+});
+
 test('País Vasco: se muestra el responsable en lugar de EKUIS y no se infiere el modelo',async({page})=>{
   await openMu(page);
   await page.evaluate(()=>pin('48020'));
@@ -346,7 +358,7 @@ test('País Vasco: se muestra el responsable en lugar de EKUIS y no se infiere e
   await expect(P).toContainText('responsable');
   await expect(P).not.toContainText('EKUIS');
   await expect(P.locator('.gtag')).toHaveText('Sin dato');
-  await expect(P).toContainText('País Vasco y Navarra quedan fuera de la EIEL por ley');
+  await expect(P).toContainText('El Consorcio de Aguas Bilbao Bizkaia solo publica el rendimiento de su red primaria (en alta)');
 });
 
 test('el filtro por operador "FCC AQUALIA" resalta sus municipios, da el recuento y filtra el ranking',async({page})=>{

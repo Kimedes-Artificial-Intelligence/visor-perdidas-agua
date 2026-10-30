@@ -321,3 +321,31 @@ Se aplica la Parte 1 a los 21 municipios de 20.000 a 50.000 hab. de Albacete, Hu
 - Solo cifra de toda la empresa: los 13 de Madrid (Canal de Isabel II).
 - Web protegida: los 8 de FCC Aqualia (Almansa, Hellín, Cartaya, Lepe, Moguer, Candelaria, Güímar, Puerto de la Cruz), Guía de Isora (ENTEMANSER) y San Miguel de Abona (el robots.txt de TAGUA no admite la consulta).
 - No lo publican: Villarrobledo, San Andrés del Rabanedo, Icod de los Vinos, Los Llanos de Aridane, La Orotava, Los Realejos y Tacoronte.
+
+## Añadido el 30 oct 2026: País Vasco y Navarra (FWG-1870, Parte 4)
+
+Consulta: 30/10/2026. País Vasco y Navarra quedan fuera de la EIEL por ley. En el País Vasco el SINAC da como gestor EKUIS (el sistema de información) y como responsable el ayuntamiento, que no indica quién gestiona la red, así que hasta ahora no tenían modelo de gestión.
+
+**Modelo de gestión**: `raw/gestion_pv_nav_2026-10-30.psv` asigna a cada municipio el operador en baja que nombra su propia fuente (cita literal y URL), y el tipo sale de la tabla de operadores con su fuente. Solo se aplica si ni la EIEL ni el SINAC dan el modelo, y nunca por pertenecer a un consorcio.
+
+| Municipio | Operador en baja | Tipo (fuente) |
+|---|---|---|
+| Vitoria-Gasteiz (01059) | AMVISA | Municipalizado: "Nuestro carácter 100% público" (Memoria de Sostenibilidad 2022) |
+| Irun (20045), Hondarribia (20036) | Servicios de Txingudi | Municipalizado: "kapital guztia Mankomunitatearena da" (estatutos) |
+
+No asignados:
+- Bilbao, Barakaldo y Getxo. El Consorcio de Aguas Bilbao Bizkaia (entidad pública local) dice que abastece en baja a 89 de sus 98 municipios, pero no publica cuáles. La página para ayuntamientos pide usuario y contraseña.
+- Donostia/San Sebastián: no se ha encontrado quién distribuye; la web municipal solo nombra a la empresa que lee los contadores.
+- Gipuzkoako Urak: su robots.txt no admite la consulta automatizada. Servicios de Montejurra: desafío anti-bots. Aguas del Añarbe y Kantauriko Urkidetza: webs no accesibles (certificado o dominio).
+- Navarra: Pamplona (Servicios de la Comarca de Pamplona) y la Mancomunidad de Sakana ya tenían modelo por el SINAC.
+
+**Pérdidas**: ninguna de las 7 ciudades de 50.000 hab. o más tiene una cifra atribuida solo a ella. Las del sistema se reservan para la ficha de operador (Parte 6):
+
+| Operador | Indicador | Año | Ámbito |
+|---|---|---|---|
+| AMVISA | Rendimiento de red 88,2 % (p.7) y 88,4 % (p.29) en la misma memoria; ANR 15,6 %; IFE 3,1 | 2023 | Ciudad, juntas administrativas y municipios vecinos |
+| Servicios de Txingudi | Rendimiento de red 82 % | 2024 | Irun y Hondarribia |
+| Mancomunidad de la Comarca de Pamplona | ANR 9,46 % (datos provisionales) | 2025 | 50 municipios mancomunados |
+| Consorcio de Aguas Bilbao Bizkaia | Rendimiento de la red primaria "superior al 95%" | 2024 | Solo red en alta |
+
+Estado en `raw/art63_estado_2026-10-30.psv`: Vitoria, Irun, Pamplona, Bilbao, Barakaldo y Getxo con "solo cifra de todo su sistema"; Donostia "no verificado".

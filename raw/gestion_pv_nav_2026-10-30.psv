@@ -1,0 +1,7 @@
+# País Vasco y Navarra (FWG-1870, Parte 4): operador que distribuye el agua en baja en el municipio, según la fuente del propio operador.
+# En el País Vasco el SINAC da como gestor EKUIS (sistema de información) y como responsable el ayuntamiento, que no indica quién gestiona.
+# El tipo del operador sale de data/operadores_clasificacion.csv, con su fuente. Solo municipios que la fuente nombra; nunca por pertenecer a un consorcio.
+ine|operador|url|fecha_consulta|cita
+01059|AMVISA|https://www.vitoria-gasteiz.org/docs/wb021/contenidosEstaticos/adjuntos/es/94/11/99411.pdf|2026-10-30|«AMVISA es la empresa pública municipal encargada de la prestación del Servicio Integral del Agua en la ciudad de Vitoria-Gasteiz» (Memoria de Sostenibilidad 2022)
+20036|SERVICIOS DE TXINGUDI|https://txinzer.eus/zer-egiten-dugu/uraren-kudeaketa/|2026-10-30|«Irun eta Hondarribiko etxebizitza, komertzio, industria eta zerbitzu publikoetara banatzen du edateko ura»
+20045|SERVICIOS DE TXINGUDI|https://txinzer.eus/zer-egiten-dugu/uraren-kudeaketa/|2026-10-30|«Irun eta Hondarribiko etxebizitza, komertzio, industria eta zerbitzu publikoetara banatzen du edateko ura»
