@@ -427,14 +427,19 @@ test('ficha de operador "CANAL DE ISABEL II": da las cifras de todo su sistema, 
 test('filtro de calidad del dato: filtra ranking y mapa, y aparece en el ranking',async({page})=>{
   await openMu(page);
   await page.selectOption('#rankQ','art63');
-  await expect(page.locator('#rankCount')).toHaveText('2 municipios con dato de pérdidas publicado · publicado por el operador (art. 63.2 rd 3/2023)');
+  const n63=await page.evaluate(()=>UM_IDS.filter(id=>umQual(id)==='art63').length);
+  expect(n63).toBeGreaterThanOrEqual(4); // Córdoba, Elx, Cádiz, Chiclana
+  await expect(page.locator('#rankCount')).toHaveText(`${n63} municipios con dato de pérdidas publicado · publicado por el operador (art. 63.2 rd 3/2023)`);
   await expect(page.locator('#muLayer')).toHaveClass(/opf/);
-  await expect(page.locator('#rank button')).toHaveCount(2);
+  await expect(page.locator('#rank button')).toHaveCount(n63);
   await expect(page.locator('#rank')).toContainText('operador');
   await page.selectOption('#rankQ','eiel5');
   const n=+(await page.locator('#rankCount').innerText()).split(' ')[0].replace('.','');
   expect(n).toBeGreaterThan(1000);
   await expect(page.locator('#rank .yr').first()).toContainText('EIEL ×5');
+  await page.selectOption('#rankQ','sistema');
+  await expect(page.locator('#rank .yr').first()).toContainText('sistema');
+  await expect(page.locator('#rankCount')).toContainText('dato de todo el sistema del operador, no municipal');
 });
 test('filtro de provincia y búsqueda por nombre: la provincia depende de la comunidad y un solo resultado se fija',async({page})=>{
   await openMu(page);
