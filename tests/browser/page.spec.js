@@ -112,7 +112,9 @@ test('#municipios carga los 8.131 municipios y el contador de cobertura',async({
   expect(errors).toEqual([]);
   await expect(page.locator('#muLayer [data-u]')).toHaveCount(8131);
   await expect(page.locator('.lvl button[data-l="mu"]')).toHaveAttribute('aria-pressed','true');
-  await expect(page.locator('#maphead')).toHaveText(/^5\.178 de 8\.131 municipios con dato de pérdidas publicado · \d+,\d % de la población de España\d+ de \d+ ciudades/);
+  // El recuento sale de los datos (crece con cada fuente nueva); aquí se comprueba el formato y que cuadra con UM_HAS
+  const n=await page.evaluate(()=>grp(UM_HAS.length));
+  await expect(page.locator('#maphead')).toHaveText(new RegExp(`^${n.replace('.','\\.')} de 8\\.131 municipios con dato de pérdidas publicado · \\d+,\\d % de la población de España\\d+ de \\d+ ciudades`));
   await expect(page.locator('#legend')).toContainText('son indicadores distintos');
 });
 
@@ -172,20 +174,41 @@ test('un municipio con dato (Artà) muestra valor, año, fuente y aviso de poca 
   await expect(P.locator('.spark')).toBeVisible();
 });
 
-test('un municipio sin dato (Madrid) muestra el motivo y el valor INE de su comunidad como contexto',async({page})=>{
+test('un municipio sin dato (Sevilla) muestra el motivo y el valor INE de su comunidad como contexto',async({page})=>{
   await openMu(page);
-  await page.selectOption('#ccgo','13');await page.waitForTimeout(800);
-  const c=await centerOf(page,'#muLayer [data-u="28079"]');
+  await page.evaluate(()=>{goMu('01');});await page.waitForTimeout(800);
+  const c=await centerOf(page,'#muLayer [data-u="41091"]');
   await page.mouse.move(c.x,c.y);
   await expect(page.locator('#tip')).toContainText('Sin dato municipal publicado');
   await page.mouse.click(c.x,c.y);await settle(page);
   const P=page.locator('#panel');
-  await expect(P.locator('h2')).toHaveText('Madrid');
+  await expect(P.locator('h2')).toHaveText('Sevilla');
   await expect(P).toContainText('Sin dato municipal publicado. No se estima ningún valor.');
-  await expect(P).toContainText('El operador no publica el indicador del art. 63.2 del RD 3/2023 para este municipio a fecha 30/10/2026: solo da la cifra de todo su sistema');
+  await expect(P).toContainText('El operador no publica el indicador del art. 63.2 del RD 3/2023 para este municipio a fecha 30/10/2026: solo da una cifra de todo su sistema, que no se pinta aquí.');
   await expect(P).toContainText('MITECO no publica por municipio la evaluación de fugas estructurales de 2024 (RD 3/2023), solo un resumen; la solicitud de acceso a la tabla municipal está pendiente de presentar.');
-  await expect(P).toContainText('Agua no registrada, Comunidad de Madrid (INE 2024)');
-  await expect(P).toContainText('3.506.730');
+  await expect(P).toContainText('Agua no registrada, Andalucía (INE 2024)');
+});
+
+// ---- Cifras de sistema en los municipios que la fuente lista como servidos (FWG-1871, decisión D2)
+test('Madrid se pinta con el agua no registrada de todo el sistema de Canal de Isabel II, con trama propia y el aviso de que no es municipal',async({page})=>{
+  await openMu(page);
+  expect(await page.locator('#muLayer [data-u="28079"]').evaluate(e=>e.style.fill)).toBe('rgb(241, 217, 138)'); // 13,44 % -> tramo 10-20 %
+  expect(await page.locator('#muLayer .umsys').getAttribute('d')).not.toBe('');
+  await expect(page.locator('#legend')).toContainText('dato de todo el sistema del operador, no municipal');
+  await page.evaluate(()=>pin('28079'));
+  const P=page.locator('#panel');
+  await expect(P.locator('.hero .lbl')).toHaveText('Agua no registrada del sistema');
+  await expect(P.locator('.hero .big')).toHaveText('13,44%');
+  await expect(P.locator('.hero .src')).toContainText(/Dato del sistema Canal de Isabel II \(\d+ municipios\), no municipal · 2024/);
+  await expect(P).toContainText('No es un dato de este municipio');
+  await expect(P.locator('.srcs')).toContainText('Municipios servidos por el sistema');
+  await expect(P.locator('.srcs a[href*="documents/d/site/convenios"]')).toHaveCount(1);
+});
+test('un municipio al que el sistema solo vende en alta o solo factura no se pinta con la cifra del sistema',async({page})=>{
+  await openMu(page);
+  const k=await page.evaluate(()=>({alta:umLatest('15005'),com:umLatest('28061'),srv:A63.sm['28061'][1]}));
+  expect(k.alta===null||k.alta.kind!=='sistema').toBe(true); // Arteixo: EMALCSA solo vende en alta
+  expect(k.srv).toBe('comercial');expect(k.com===null||k.com.kind!=='sistema').toBe(true); // Galapagar: Canal solo factura
 });
 
 // ---- Pérdidas publicadas por el operador (art. 63.2 RD 3/2023, FWG-1870)
@@ -196,7 +219,7 @@ test('Córdoba: el agua no registrada del operador se pinta con la escala, con t
   await page.evaluate(()=>pin('14021'));
   const P=page.locator('#panel');
   await expect(P.locator('.hero .lbl')).toHaveText('Agua no registrada');
-  await expect(P.locator('.hero .big')).toHaveText('8,5%');
+  await expect(P.locator('.hero .big')).toHaveText('8,45%'); // tal como lo publica EMACSA, sin redondear
   await expect(P.locator('.hero')).toContainText('2025 · Agua no registrada publicada por el operador (art. 63.2 RD 3/2023)');
   await expect(P).toContainText('Índice de fugas estructurales (IFE) 2025');
   await expect(P).toContainText('2,02');
@@ -227,7 +250,8 @@ for(const [ine,name,txt] of [['30027','Molina de Segura','su aviso legal prohíb
 
 test('el ranking nacional se filtra por comunidad y fija el municipio al hacer clic',async({page})=>{
   await openMu(page);
-  await expect(page.locator('#rankCount')).toHaveText('5.178 municipios con dato de pérdidas publicado');
+  const n=await page.evaluate(()=>grp(UM_HAS.length));
+  await expect(page.locator('#rankCount')).toHaveText(`${n} municipios con dato de pérdidas publicado`);
   await page.selectOption('#rankCc','04');
   await expect(page.locator('#rankCount')).toHaveText('67 municipios con dato de pérdidas publicado en Illes Balears');
   await page.click('#moreBtn');
@@ -309,11 +333,10 @@ test('Granada: el operador clasificado con fuente (EMASAGRA, mixta) da el modelo
   await expect(P.locator('.srcs a[href="https://www.emasagra.es/informacion-corporativa"]')).toHaveCount(1);
 });
 
-test('Madrid: sin pérdidas, gestión municipalizada por el operador del SINAC (Canal de Isabel II)',async({page})=>{
+test('Madrid: gestión municipalizada por el operador del SINAC (Canal de Isabel II)',async({page})=>{
   await openMu(page);
   await page.evaluate(()=>pin('28079'));
   const P=page.locator('#panel');
-  await expect(P).toContainText('Sin dato municipal publicado. No se estima ningún valor.');
   await expect(P.locator('.gtag')).toHaveText('Municipalizado');
   await expect(P).toContainText('SINAC, operador principal clasificado por su nombre');
   await expect(P).toContainText('CANAL DE ISABEL II, S.A.M.P.');
@@ -321,9 +344,9 @@ test('Madrid: sin pérdidas, gestión municipalizada por el operador del SINAC (
 
 test('Comunidad de Madrid: la red sale de la EIEL de la IDEM (CC BY 4.0) y la ficha explica que no publica pérdidas',async({page})=>{
   await openMu(page);
-  await page.evaluate(()=>pin('28001'));
+  await page.evaluate(()=>pin('28018'));
   const P=page.locator('#panel');
-  await expect(P.locator('h2')).toHaveText('La Acebeda');
+  await expect(P.locator('h2')).toHaveText('Becerril de la Sierra');
   await expect(P).toContainText('La EIEL de la Comunidad de Madrid (fase 2023, IDEM) publica la red de distribución pero no las pérdidas por núcleo');
   await expect(P).toContainText('Red de distribución (EIEL 2023, Comunidad de Madrid)');
   await expect(P.locator('.srcs')).toContainText('CC BY 4.0 Comunidad de Madrid');
@@ -379,7 +402,7 @@ test('el filtro por operador "FCC AQUALIA" resalta sus municipios, da el recuent
 });
 
 // ---- Herramientas de venta (FWG-1870, Parte 6)
-test('ficha de operador "FCC AQUALIA": municipios, población, pérdidas medias por fuente sin mezclar indicadores y exportación',async({page})=>{
+test('ficha de operador "FCC AQUALIA": municipios, población, pérdidas publicadas por fuente sin mezclar indicadores y exportación',async({page})=>{
   await openMu(page);
   await page.fill('#opq','FCC AQUALIA');
   await expect(page.locator('#opCount')).toHaveText(/^\d{3} municipios/);
@@ -389,7 +412,7 @@ test('ficha de operador "FCC AQUALIA": municipios, población, pérdidas medias 
   await expect(P).toContainText('Ficha de operador');
   await expect(P).toContainText('Municipios donde opera'+n);
   await expect(P).toContainText('Tipo'+'Privado (utility)');
-  await expect(P).toContainText('calculada por Kimedes por separado para cada fuente');
+  await expect(P).toContainText('No se calcula ninguna media');
   await expect(P.locator('#opCsv')).toBeVisible();
 });
 test('ficha de operador "CANAL DE ISABEL II": da las cifras de todo su sistema, sin asignarlas a un municipio',async({page})=>{
@@ -404,14 +427,19 @@ test('ficha de operador "CANAL DE ISABEL II": da las cifras de todo su sistema, 
 test('filtro de calidad del dato: filtra ranking y mapa, y aparece en el ranking',async({page})=>{
   await openMu(page);
   await page.selectOption('#rankQ','art63');
-  await expect(page.locator('#rankCount')).toHaveText('2 municipios con dato de pérdidas publicado · publicado por el operador (art. 63.2 rd 3/2023)');
+  const n63=await page.evaluate(()=>UM_IDS.filter(id=>umQual(id)==='art63').length);
+  expect(n63).toBeGreaterThanOrEqual(4); // Córdoba, Elx, Cádiz, Chiclana
+  await expect(page.locator('#rankCount')).toHaveText(`${n63} municipios con dato de pérdidas publicado · publicado por el operador (art. 63.2 rd 3/2023)`);
   await expect(page.locator('#muLayer')).toHaveClass(/opf/);
-  await expect(page.locator('#rank button')).toHaveCount(2);
+  await expect(page.locator('#rank button')).toHaveCount(n63);
   await expect(page.locator('#rank')).toContainText('operador');
   await page.selectOption('#rankQ','eiel5');
   const n=+(await page.locator('#rankCount').innerText()).split(' ')[0].replace('.','');
   expect(n).toBeGreaterThan(1000);
   await expect(page.locator('#rank .yr').first()).toContainText('EIEL ×5');
+  await page.selectOption('#rankQ','sistema');
+  await expect(page.locator('#rank .yr').first()).toContainText('sistema');
+  await expect(page.locator('#rankCount')).toContainText('dato de todo el sistema del operador, no municipal');
 });
 test('filtro de provincia y búsqueda por nombre: la provincia depende de la comunidad y un solo resultado se fija',async({page})=>{
   await openMu(page);
@@ -429,7 +457,7 @@ test('capa de prioridad comercial: quintiles, leyenda que dice que es un cálcul
   await expect(page.locator('#legend')).toContainText('No es un dato publicado');
   await expect(page.locator('#rankTitle')).toContainText('Prioridad comercial');
   await expect(page.locator('#rank button').first().locator('.v')).toHaveText(/^Q5 · \d,\d{3}$/);
-  await page.evaluate(()=>pin('28079'));
+  await page.evaluate(()=>pin('41091'));
   await expect(page.locator('#panel')).toContainText('Prioridad comercial (Índice Kimedes)');
   await expect(page.locator('#panel')).toContainText('Pérdidas (sin dato publicado)');
   const [dl]=await Promise.all([page.waitForEvent('download'),page.click('#csvBtn')]);
@@ -547,4 +575,55 @@ test('bajo el mapa, la segunda línea cuenta las ciudades de 50.000 hab. o más 
   await expect(page.locator('#maphead .cov50 a')).toHaveAttribute('href',/data\/sources\.md$/);
   await page.click('#segMG button[data-g="ges"]');
   await expect(page.locator('#maphead .cov50')).toContainText('ciudades de 50.000 hab. o más con modelo de gestión');
+});
+// ---- Correcciones de la revisión de FWG-1870 (FWG-1871, Parte B)
+test('con el teclado, el foco se queda en el elemento y Enter lo fija (capital de Italia, país, municipio de Catalunya)',async({page})=>{
+  await page.setViewportSize({width:1360,height:1300});await open(page,'dist','#internacional');
+  await page.focus('#intLayer [data-it="c076063"]');await settle(page);
+  expect(await page.evaluate(()=>document.activeElement.dataset.it)).toBe('c076063');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#panel h2')).toHaveText('Potenza');
+  await open(page,'dist','#catalunya');
+  const k=await page.locator('#catLayer path.mu.has').nth(3).getAttribute('data-m');
+  await page.focus(`#catLayer [data-m="${k}"]`);await settle(page);
+  expect(await page.evaluate(()=>document.activeElement.dataset.m)).toBe(k);
+});
+test('la ficha de operador no calcula medias: da el rango publicado por fuente; su CSV lleva todos sus municipios',async({page})=>{
+  await openMu(page);
+  await page.fill('#opq','FCC AQUALIA');await page.waitForTimeout(400);
+  const P=page.locator('#panel');
+  await expect(P).toContainText('Pérdidas publicadas en sus municipios');
+  await expect(P).not.toContainText('Media ponderada');
+  const n=await page.evaluate(()=>opMatch.size);
+  const [dl]=await Promise.all([page.waitForEvent('download'),page.click('#opCsv')]);
+  const lines=require('fs').readFileSync(await dl.path(),'utf8').replace(/^\ufeff/,'').trim().split('\r\n');
+  expect(lines.length-1).toBe(n);
+});
+test('AMVISA, que el SINAC no nombra, tiene ficha de operador con sus cifras de sistema',async({page})=>{
+  await openMu(page);
+  await page.fill('#opq','AMVISA');await page.waitForTimeout(400);
+  const P=page.locator('#panel');
+  await expect(P.locator('h2')).toHaveText('AMVISA');
+  await expect(P).toContainText('Agua no registrada 2023');
+  await expect(P).toContainText('15,6');
+});
+test('el CSV escribe los números con coma decimal para Excel en español',async({page})=>{
+  await openMu(page,'#municipios');
+  await page.selectOption('#rankCc','04');
+  const [dl]=await Promise.all([page.waitForEvent('download'),page.click('#csvBtn')]);
+  const lines=require('fs').readFileSync(await dl.path(),'utf8').replace(/^\ufeff/,'').trim().split('\r\n');
+  const H=lines[0].split(';'),r=lines.find(l=>l.startsWith('07040;')).split(';');
+  expect(r[H.indexOf('perdidas_pct')]).toBe('17,74');
+  expect(r[H.indexOf('indice_prioridad_kimedes')]).toMatch(/^\d,\d{4}$/);
+});
+test('un municipio de Catalunya con auditoría no muestra el motivo de "sin dato"',async({page})=>{
+  await page.setViewportSize({width:1360,height:1300});await open(page,'dist','#catalunya');
+  await page.evaluate(()=>pin('08019'));
+  await expect(page.locator('#panel')).not.toContainText('MITECO no publica por municipio');
+});
+test('las tramas usan tinta oscura fija, también en modo oscuro, y las líneas no quedan cortadas en el borde de la tesela',async({page})=>{
+  await page.emulateMedia({colorScheme:'dark'});await openMu(page);
+  const ink=await page.evaluate(()=>getComputedStyle(document.querySelector('.umo-ln')).stroke);
+  expect(ink).toBe('rgb(22, 44, 64)');
+  expect(await page.locator('#hatchOp line').getAttribute('y1')).toBe('40');
 });

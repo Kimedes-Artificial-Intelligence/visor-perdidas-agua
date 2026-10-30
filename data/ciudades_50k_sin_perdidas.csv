@@ -1,5 +1,5 @@
 ine;nombre;poblacion_ine_2025;operador_sinac;operador_agrupado;estado_art63;indicadores_publicados;se_pinta
-28079;Madrid;3506730;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
+28079;Madrid;3506730;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 46250;València;840792;GLOBAL OMNIUM;GLOBAL OMNIUM;no_publica;;no
 50297;Zaragoza;693091;AYTO. DE ZARAGOZA_50297_ZARAGOZA;AYTO;no_publica;;no
 41091;Sevilla;689423;EMASESA;EMASESA;solo_sistema;;no
@@ -8,29 +8,29 @@ ine;nombre;poblacion_ine_2025;operador_sinac;operador_agrupado;estado_art63;indi
 35016;Las Palmas de Gran Canaria;381868;EMALSA;Saur y Nuinsa;no_publica;;no
 03014;Alacant/Alicante;366221;AGUAS MUNICIPALIZADAS DE ALICANTE EMPRESA MIXTA (AMAEM);EMPRESA MIXTA;publica;RENDIMIENTO 88.55 % (2024);no
 48020;Bilbao;351124;AYUNTAMIENTO DE BILBAO (responsable);;solo_sistema;;no
-14021;Córdoba;323262;EMPRESA MUNICIPAL DE AGUAS DE CÓRDOBA;EMPRESA MUNICIPAL;publica;IFE 2.02 (2025) · ANR 8.45 % (2025);no
+14021;Córdoba;323262;EMPRESA MUNICIPAL DE AGUAS DE CÓRDOBA;EMPRESA MUNICIPAL;publica;IFE 2.02 (2025) · ANR 8.45 % (2025);sí
 47186;Valladolid;302614;AQUAVALL;AQUAVALL;no_publica;;no
 36057;Vigo;294489;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 33024;Gijón;269894;EMPRESA MUNICIPAL DE AGUAS DE GIJON, S.A.;EMPRESA MUNICIPAL;no_publica;;no
-01059;Vitoria-Gasteiz;260699;AYUNTAMIENTO DE VITORIA-GASTEIZ (responsable);;solo_sistema;;no
-15030;A Coruña;251543;EMALCSA;EMALCSA;publica;IFE 7.3 (2025);no
-03065;Elx/Elche;245557;AIGÜES I SANEJAMENT D'ELX, S.A.;Hidraqua;publica;RENDIMIENTO 88.3 % (2025) · ANR 11.71 % (2025);no
+01059;Vitoria-Gasteiz;260699;AYUNTAMIENTO DE VITORIA-GASTEIZ (responsable);;solo_sistema;;sistema
+15030;A Coruña;251543;EMALCSA;EMALCSA;publica;IFE 7.3 (2025);sistema
+03065;Elx/Elche;245557;AIGÜES I SANEJAMENT D'ELX, S.A.;Hidraqua;publica;RENDIMIENTO 88.3 % (2025) · ANR 11.71 % (2025);sí
 18087;Granada;233975;EMASAGRA;Hidralia (Veolia y Unicaja);publica;RENDIMIENTO 80.98 % (2025);no
 33044;Oviedo;223968;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 30016;Cartagena;220704;HIDROGEA;HIDROGEA;no_publica;;no
-28092;Móstoles;214817;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
+28092;Móstoles;214817;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 11020;Jerez de la Frontera;213634;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
-38038;Santa Cruz de Tenerife;211957;EMMASA (EMPRESA MIXTA DE AGUAS DE SANTA CRUZ DE TENERIFE S.A.);EMMASA;no_publica;;no
+38038;Santa Cruz de Tenerife;211957;EMMASA (EMPRESA MIXTA DE AGUAS DE SANTA CRUZ DE TENERIFE S.A.);EMMASA;publica;RENDIMIENTO 85.82 % (2022);no
 31201;Pamplona/Iruña;209094;SERVICIOS DE LA COMARCA DE PAMPLONA, S.A.;COMARCA;solo_sistema;;no
 04013;Almería;205468;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 28005;Alcalá de Henares;203208;AGUAS DE ALCALÁ UTE;;bloqueado;;no
-28074;Leganés;195734;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
-28065;Getafe;193238;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
-28058;Fuenlabrada;190076;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
-20069;Donostia/San Sebastián;189866;AYUNTAMIENTO DE DONOSTIA/SAN SEBASTIÁN (responsable);;no_verificado;;no
-12040;Castelló de la Plana;183711;FACSA;FACSA;no_publica;;no
+28074;Leganés;195734;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
+28065;Getafe;193238;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
+28058;Fuenlabrada;190076;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
+20069;Donostia/San Sebastián;189866;AYUNTAMIENTO DE DONOSTIA/SAN SEBASTIÁN (responsable);;no_publica;;no
+12040;Castelló de la Plana;183711;FACSA;FACSA;bloqueado;;no
 09059;Burgos;177402;AGUAS DE BURGOS;AGUAS DE BURGOS;no_publica;;no
-28007;Alcorcón;175719;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
+28007;Alcorcón;175719;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 39075;Santander;175425;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 02003;Albacete;175400;AGUAS DE ALBACETE, S.A.;Aquona;no_publica;;no
 38023;San Cristóbal de La Laguna;161108;TEIDAGUA S.A.;TEIDAGUA;no_publica;;no
@@ -38,47 +38,47 @@ ine;nombre;poblacion_ine_2025;operador_sinac;operador_agrupado;estado_art63;indi
 26089;Logroño;152150;AYTO. DE LOGROÑO_26089_LA RIOJA;AYTO;no_publica;;no
 06015;Badajoz;150209;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 37274;Salamanca;146110;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
-28148;Torrejón de Ardoz;143526;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
+28148;Torrejón de Ardoz;143526;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 21041;Huelva;143215;EMAHSA;Hidralia (Veolia y Unicaja);publica;RENDIMIENTO 81.76 % (2025);no
 41038;Dos Hermanas;142519;EMASESA;EMASESA;solo_sistema;;no
-28106;Parla;137471;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
+28106;Parla;137471;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 11004;Algeciras;126589;EMALGESA, EMPRESA MUNICIPAL DE AGUAS DE ALGECIRAS, S.A.;EMPRESA MUNICIPAL;bloqueado;;no
 24089;León;123446;SOCIEDAD MIXTA AGUAS DE LEÓN, S.L.;MIXTA;no_publica;;no
-28006;Alcobendas;123342;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
+28006;Alcobendas;123342;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 23050;Jaén;112235;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 04079;Roquetas de Mar;111240;HIDRALIA;Veolia y Unicaja;no_publica;;no
-11012;Cádiz;109950;AGUAS DE CÁDIZ;AGUAS DE CADIZ;no_publica;;no
+11012;Cádiz;109950;AGUAS DE CÁDIZ;AGUAS DE CADIZ;publica;PERDIDAS_REALES 10.59 % (2022);sí
 32054;Ourense;105769;VIAQUA S.A;VIAQUA;solo_sistema;;no
 35026;Telde;104168;AGUAS DE TELDE GESTIÓN INTEGRAL DEL SERVICIO, S.A.;;no_publica;;no
-28123;Rivas-Vaciamadrid;103148;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
+28123;Rivas-Vaciamadrid;103148;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 48013;Barakaldo;102986;AYUNTAMIENTO DE BARAKALDO (responsable);;solo_sistema;;no
 15078;Santiago de Compostela;100965;VIAQUA S.A;VIAQUA;solo_sistema;;no
 27028;Lugo;100143;GESTIÓN Y TÉCNICAS DEL AGUA S.A. (GESTAGUA);GESTAGUA;no_publica;;no
-28127;Las Rozas de Madrid;99037;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
+28127;Las Rozas de Madrid;99037;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 30024;Lorca;98969;AGUAS DE LORCA, S.A.;Hidrogea;no_publica;;no
 03133;Torrevieja;98533;AGUAS DEL ARCO MEDITERRANEO,S.A. (AGAMED);Hidraqua;publica;RENDIMIENTO 87.45 % (2025);no
-28134;San Sebastián de los Reyes;96992;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
-10037;Cáceres;96651;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
+28134;San Sebastián de los Reyes;96992;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
+10037;Cáceres;96651;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 29070;Mijas;95104;ACOSOL S.A.;ACOSOL;no_publica;;no
 11031;San Fernando;93338;HIDRALIA;Veolia y Unicaja;publica;RENDIMIENTO 90.3 % (2023);no
-19130;Guadalajara;92834;SACYR GUADALAGUA, S.L.U.;Sacyr;no_publica;;no
+19130;Guadalajara;92834;SACYR GUADALAGUA, S.L.U.;Sacyr;bloqueado;;no
 04902;El Ejido;91440;DESARROLLO URBANISTICO DE EL EJIDO SL;DESARROLLO URBANISTICO DE EL EJIDO;bloqueado;;no
 46244;Torrent;90928;EMPRESA MIXTA AIGÜES DE L'HORTA, S.A:;EMPRESA MIXTA;solo_sistema;;no
-11015;Chiclana de la Frontera;90864;CHICLANA NATURAL;CHICLANA NATURAL;no_publica;;no
-11027;El Puerto de Santa María;89983;AGUAS DEL PUERTO EMPRESA MUNICIPAL, S.A.;EMPRESA MUNICIPAL;no_publica;;no
-28115;Pozuelo de Alarcón;89770;REPRESENTACIONES BLÁZQUEZ S.A;;no_publica;;no
+11015;Chiclana de la Frontera;90864;CHICLANA NATURAL;CHICLANA NATURAL;publica;ANR 20.01 % (2019) · RENDIMIENTO 79.99 % (2019);sí
+11027;El Puerto de Santa María;89983;AGUAS DEL PUERTO EMPRESA MUNICIPAL, S.A.;EMPRESA MUNICIPAL;publica;RENDIMIENTO 77.4 % (2025);no
+28115;Pozuelo de Alarcón;89770;REPRESENTACIONES BLÁZQUEZ S.A;;solo_sistema;;sistema
 38006;Arona;87793;CANARAGUA CONCESIONES, S.A.;CANARAGUA;no_publica;;no
 45168;Toledo;87216;TAGUS SERVICIOS INTEGRALES;;no_verificado;;no
-52001;Melilla;86780;AYTO. DE MELILLA_52001_MELILLA;AYTO;no_publica;;no
+52001;Melilla;86780;AYTO. DE MELILLA_52001_MELILLA;AYTO;no_verificado;;no
 29094;Vélez-Málaga;86048;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
-28161;Valdemoro;85972;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
+28161;Valdemoro;85972;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 29054;Fuengirola;85211;GESTIÓN Y TÉCNICAS DEL AGUA S.A. (GESTAGUA);GESTAGUA;no_publica;;no
 03099;Orihuela;84560;HIDRAQUA;HIDRAQUA;solo_sistema;;no
 45165;Talavera de la Reina;83803;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 51001;Ceuta;83595;AGUAS DE CEUTA, EMPRESA MUNICIPAL, S.A. (ACEMSA);EMPRESA MUNICIPAL;bloqueado;;no
 36038;Pontevedra;83316;VIAQUA S.A;VIAQUA;solo_sistema;;no
-46131;Gandia;83135;GLOBAL OMNIUM;GLOBAL OMNIUM;no_publica;;no
-28049;Coslada;80512;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
+46131;Gandia;83135;GLOBAL OMNIUM;GLOBAL OMNIUM;bloqueado;;no
+28049;Coslada;80512;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 29051;Estepona;79621;HIDRALIA;Veolia y Unicaja;publica;RENDIMIENTO 84 % (2024);no
 35022;Santa Lucía de Tirajana;78584;CANARAGUA CONCESIONES, S.A.;CANARAGUA;no_publica;;no
 30027;Molina de Segura;78458;SERCOMOSA;Acciona;excluido_aviso_legal;;no
@@ -90,36 +90,36 @@ ine;nombre;poblacion_ine_2025;operador_sinac;operador_agrupado;estado_art63;indi
 46190;Paterna;76019;AIGÜES MUNICIPALS DE PATERNA, S.A.;Hidraqua;solo_sistema;;no
 48044;Getxo;75752;AYUNTAMIENTO DE GETXO (responsable);;solo_sistema;;no
 33004;Avilés;75517;AGUAS DE AVILÉS S.L;Asturagua;publica;RENDIMIENTO 81 % (2023);no
-28080;Majadahonda;73625;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
+28080;Majadahonda;73625;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 46220;Sagunt/Sagunto;73031;GLOBAL OMNIUM;GLOBAL OMNIUM;no_publica;;no
 29901;Torremolinos;71329;ASTOSAM;Hidralia (Veolia y Unicaja);publica;RENDIMIENTO 79 % (2024);no
 35004;Arrecife;70811;CONSORCIO DEL AGUA DE LANZAROTE;CONSORCIO;no_publica;;no
 11032;Sanlúcar de Barrameda;70012;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
-28047;Collado Villalba;67274;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
-28022;Boadilla del Monte;66349;SUMINISTRADORA DE AGUAS LOMAS BOSQUE S.A.;;no_publica;;no
+28047;Collado Villalba;67274;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
+28022;Boadilla del Monte;66349;SUMINISTRADORA DE AGUAS LOMAS BOSQUE S.A.;;solo_sistema;;sistema
 11022;La Línea de la Concepción;64499;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 15036;Ferrol;64367;EMPRESA MIXTA DE AUGAS DE FERROL, SA;EMPRESA MIXTA;no_publica;;no
 20045;Irun;63835;AYUNTAMIENTO DE IRUN (responsable);;solo_sistema;;no
 24115;Ponferrada;63186;AQUONA, S.A.;AQUONA;no_publica;;no
-28013;Aranjuez;63040;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
+28013;Aranjuez;63040;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 03009;Alcoi/Alcoy;61468;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
-28014;Arganda del Rey;60419;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
+28014;Arganda del Rey;60419;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 03122;Sant Vicent del Raspeig/San Vicente del Raspeig;60247;AGUAS MUNICIPALIZADAS DE ALICANTE EMPRESA MIXTA (AMAEM);EMPRESA MIXTA;publica;RENDIMIENTO 85.99 % (2024);no
 06083;Mérida;60225;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 18140;Motril;59862;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 49275;Zamora;59815;AQUONA, S.A.;AQUONA;no_publica;;no
 05019;Ávila;59107;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 38017;Granadilla de Abona;58752;ENTEMANSER;ENTEMANSER;bloqueado;;no
-28045;Colmenar Viejo;58730;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
-28113;Pinto;56651;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
+28045;Colmenar Viejo;58730;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
+28113;Pinto;56651;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 23055;Linares;55633;LINAQUA, EMPRESA MUNICIPAL DE AGUAS DE LINARES, S.A.;EMPRESA MUNICIPAL;bloqueado;;no
 22125;Huesca;55454;AYTO. DE HUESCA_22125_HUESCA;AYTO;bloqueado;;no
 03066;Elda;55222;HIDRAQUA;HIDRAQUA;solo_sistema;;no
-28903;Tres Cantos;54592;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;no
+28903;Tres Cantos;54592;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 35019;San Bartolomé de Tirajana;54291;CANARAGUA CONCESIONES, S.A.;CANARAGUA;no_publica;;no
-12135;Vila-real;53623;FACSA;FACSA;no_publica;;no
+12135;Vila-real;53623;FACSA;FACSA;publica;RENDIMIENTO 79 % (2024);no
 16078;Cuenca;53600;AYTO. DE CUENCA_16078_CUENCA;AYTO;no_verificado;;no
-33066;Siero;53049;AYTO. DE SIERO_33066_ASTURIAS;AYTO;no_publica;;no
+33066;Siero;53049;AYTO. DE SIERO_33066_ASTURIAS;AYTO;publica;RENDIMIENTO 57.66 % (2025);no
 29082;Rincón de la Victoria;52454;HIDRALIA;Veolia y Unicaja;no_publica;;no
 41095;Utrera;52403;AGUAS DEL HUESNA MP,SLU;AGUAS DEL HUESNA;no_publica;;no
 40194;Segovia;52375;AQUONA, S.A.;AQUONA;no_publica;;no

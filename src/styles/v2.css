@@ -2,6 +2,8 @@
 /* ---- v2 additions ---- */
 [hidden]{display:none!important}
 :root{--nodata:#D4D5D3;--nodata-line:#B3B8BA;--mu-line:#FFFCF4}
+/* Tramas sobre los colores de la escala, que no cambian con el tema: tinta oscura fija para que se lean también en modo oscuro (FWG-1871, revisión) */
+:root{--hatch-ink:#162C40}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--nodata:#1F3447;--nodata-line:#425363;--mu-line:#425363}}
 :root[data-theme="dark"]{--nodata:#1F3447;--nodata-line:#425363;--mu-line:#425363}
 .crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font:500 12px/16px var(--mono);letter-spacing:.04em;color:var(--muted)}
@@ -91,7 +93,7 @@
 #muLayer .um:focus-visible{outline:none;stroke:var(--signal);stroke-width:2.6}
 #muLayer .sh{fill:var(--nodata-line);stroke:var(--mu-line);stroke-width:.3;vector-effect:non-scaling-stroke}
 #muLayer .umlow{fill:url(#hatchMu);pointer-events:none}
-.umh-ln{stroke:var(--fg);stroke-width:36;stroke-opacity:.6}
+.umh-ln{stroke:var(--hatch-ink);stroke-width:18;stroke-opacity:.75}
 #muLayer .prm{fill:none;stroke:var(--edge);stroke-width:.6;stroke-opacity:.55;vector-effect:non-scaling-stroke;pointer-events:none}
 #muLayer .ccm{fill:none;stroke:var(--fg);stroke-width:1.3;stroke-opacity:.7;vector-effect:non-scaling-stroke;pointer-events:none}
 #muLayer .umhl{fill:none;pointer-events:none;stroke:var(--signal);vector-effect:non-scaling-stroke}
@@ -123,9 +125,11 @@
 .srcs li .what{display:block;font:400 10px/14px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
 #muLayer .umdecl{fill:url(#hatchDe);pointer-events:none}
 #muLayer .umop{fill:url(#hatchOp);pointer-events:none}
-.umo-ln{stroke:var(--fg);stroke-width:16;stroke-opacity:.45}
+#muLayer .umsys{fill:url(#hatchSy);pointer-events:none}
+.ums-ln{stroke:var(--hatch-ink);stroke-width:9;stroke-opacity:.7}
+.umo-ln{stroke:var(--hatch-ink);stroke-width:9;stroke-opacity:.7}
 .umt-bg{fill:var(--nodata)}.umt-dot{fill:var(--fg);fill-opacity:.55}
-.umd-ln{stroke:var(--fg);stroke-width:14;stroke-opacity:.35}
+.umd-ln{stroke:var(--hatch-ink);stroke-width:8;stroke-opacity:.55}
 #muLayer.opf .um:not(.opm){fill-opacity:.12}
 #muLayer.opf .um.opm{stroke:var(--fg);stroke-width:.6;stroke-opacity:1}
 .rankes{display:inline-flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
@@ -135,7 +139,10 @@
 .rankes .cta{padding:6px 10px}
 dl.ops2 dt{word-break:break-word}
 dl.ops2 .tag{margin-left:6px}
-#muLayer.opf .umdecl,#muLayer.opf .umlow,#muLayer.opf .umop{display:none}
+#muLayer.opf .umdecl,#muLayer.opf .umlow,#muLayer.opf .umop,#muLayer.opf .umsys{display:none}
+.lgmore{flex-basis:100%}
+.lgmore summary{cursor:pointer;font:500 11px/16px var(--mono);color:var(--signal-ink);letter-spacing:.04em}
+.lgmore summary:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
 /* FWG-1871, Parte E: buscador sobre el mapa, línea de ciudades de 50.000 hab. y ficha imprimible */
 .mapsearch{position:absolute;left:10px;top:10px;z-index:5;width:min(280px,calc(100% - 64px))}
 .mapsearch input{box-sizing:border-box;width:100%;font:500 12px/16px var(--mono);color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:8px 10px}

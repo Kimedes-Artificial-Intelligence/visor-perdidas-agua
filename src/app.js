@@ -99,13 +99,19 @@ const umCache={};
 function umLatest(id){if(id in umCache)return umCache[id];const c={};
   if(MU[id]){const L=muLatest(id);if(L)c.aca={v:L.v,y:L.y,url:L.url,kind:"cat",src:"Agua no registrada, auditoría (ACA, F9)"};}
   const a=a63Paint(A63.m[id]);
-  if(a)c.art63={v:a[1],y:a[3],url:a[5],kind:"art63",ind:a[0],op:a[4],src:`${A63_IND[a[0]]} publicada por el operador (art. 63.2 RD 3/2023)`};
+  if(a)c.art63={v:a[1],dec:a[9],y:a[3],url:a[5],kind:"art63",ind:a[0],op:a[4],src:`${A63_IND[a[0]]} publicada por el operador (art. 63.2 RD 3/2023)`};
   const e=MU[id]?null:esd(id);
   if(e&&e.per!=null)c.eiel={v:e.per,y:e.y,kind:"eiel",src:"Pérdidas declaradas por el ayuntamiento (EIEL)",nrep:e.nrep,nn:e.nn,cov:e.cov,rnd:e.rnd};
+  const sm=A63.sm[id],sy=sm&&SYS_PAINT_SERVICIO.includes(sm[1])?sysPaint(SYS_ROWS[sm[0]]):null;
+  if(sy)c.sistema={v:sy[4],dec:sy[11],y:sy[6],url:sy[7],kind:"sistema",ind:sy[3],op:sy[1],amb:sy[2],pat:sm[0],n:SYS_N[sm[0]],
+    src:`${A63_IND[sy[3]]} del sistema ${sy[1]} (${SYS_N[sm[0]]} municipios), no municipal`};
   const b=IB[id];
   if(b){let i=b[1].length-1;while(i>=0&&b[1][i]==null)i--;
     if(i>=0){const dr=b[2][i];c.ib={v:b[1][i],y:2000+i,i,kind:"ib",src:"Agua no contabilizada, estimación del Govern IB",dr,low:dr==null||dr<50};}}
   return umCache[id]=pickLoss(c);}
+// Cifras de sistema (D2): filas de cada patrón y número de municipios que la fuente lista como servidos y se pintan
+const SYS_ROWS={};for(const r of A63.s)(SYS_ROWS[r[0]]??=[]).push(r);
+const SYS_N={};for(const [,o] of Object.entries(A63.sm))if(SYS_PAINT_SERVICIO.includes(o[1])&&sysPaint(SYS_ROWS[o[0]]))SYS_N[o[0]]=(SYS_N[o[0]]||0)+1;
 // Indicadores del art. 63.2 RD 3/2023 publicados por el operador o el ayuntamiento (raw/operadores_art63_2026-10.psv)
 const A63_IND={ANR:"Agua no registrada",PERDIDAS_REALES:"Pérdidas reales",IFE:"Índice de fugas estructurales (IFE)",ILI:"Índice de pérdidas de infraestructura (ILI)",RENDIMIENTO:"Rendimiento técnico hidráulico"};
 // Municipio con indicador publicado que no es un % de pérdidas (rendimiento, IFE): no se pinta en la escala de pérdidas
@@ -116,7 +122,7 @@ const UM_REASON={"09":"Dato de las auditorías publicadas (ACA). En gris, munici
 // Motivo de la falta de dato de pérdidas, según la cobertura de la EIEL
 // Estado de la búsqueda del indicador del art. 63.2 RD 3/2023 en las ciudades de 50.000 hab. o más (raw/art63_estado_2026-10-30.psv)
 const A63_REASON={
-  solo_sistema:d=>`El operador no publica el indicador del art. 63.2 del RD 3/2023 para este municipio a fecha ${d}: solo da la cifra de todo su sistema, que no se asigna a ningún municipio.`,
+  solo_sistema:d=>`El operador no publica el indicador del art. 63.2 del RD 3/2023 para este municipio a fecha ${d}: solo da una cifra de todo su sistema, que no se pinta aquí.`,
   no_publica:d=>`El operador no publica el indicador del art. 63.2 del RD 3/2023 a fecha ${d}.`,
   bloqueado:d=>`No se ha podido comprobar si el operador publica el indicador del art. 63.2 del RD 3/2023: su web no admite consultas automatizadas (${d}). Pendiente de revisión manual.`,
   no_verificado:d=>`No se ha podido completar la búsqueda del indicador del art. 63.2 del RD 3/2023 a fecha ${d}.`,
@@ -138,9 +144,9 @@ const LAYER={loss:{has:id=>!!umLatest(id),txt:"con dato de pérdidas publicado"}
   fc:{has:id=>umFc(id)!=null,txt:"con material de la red (EIEL)"},est:{has:id=>umRed(id)!=null,txt:"con estado de la red (EIEL)"}};
 // Calidad del dato de pérdidas que se pinta (FWG-1870, Parte 6)
 const QUAL={aca:"Auditoría publicada (ACA)",art63:"Publicado por el operador (art. 63.2 RD 3/2023)",eiel5:"EIEL, declarado por el ayuntamiento: todos los valores múltiplos de 5",
-  eielx:"EIEL, declarado por el ayuntamiento: con valores no redondeados",ib:"Estimación del Govern IB"};
-const QSHORT={aca:"ACA",art63:"operador",eiel5:"EIEL ×5",eielx:"EIEL",ib:"Govern IB"};
-const umQual=id=>{const L=umLatest(id);if(!L)return null;return L.kind==="cat"?"aca":L.kind==="art63"?"art63":L.kind==="ib"?"ib":L.rnd===100?"eiel5":"eielx";};
+  eielx:"EIEL, declarado por el ayuntamiento: con valores no redondeados",sistema:"Dato de todo el sistema del operador, no municipal",ib:"Estimación del Govern IB"};
+const QSHORT={aca:"ACA",art63:"operador",eiel5:"EIEL ×5",eielx:"EIEL",sistema:"sistema",ib:"Govern IB"};
+const umQual=id=>{const L=umLatest(id);if(!L)return null;return L.kind==="cat"?"aca":L.kind==="art63"?"art63":L.kind==="sistema"?"sistema":L.kind==="ib"?"ib":L.rnd===100?"eiel5":"eielx";};
 // Índice Kimedes de prioridad comercial (src/prioridad.js), calculado una vez para todos los municipios
 let PRI=null;
 function priAll(){if(PRI)return PRI;const P=percentiles(UM_IDS.map(id=>MUD[id][1])),m={};
@@ -156,7 +162,9 @@ const umCount=k=>{const ids=UM_IDS.filter(LAYER[k].has);const pop=ids.reduce((a,
 const SRC_MD="https://github.com/Kimedes-Artificial-Intelligence/visor-perdidas-agua/blob/main/data/sources.md";
 const UM_50K=UM_IDS.filter(id=>MUD[id][1]>=50000);
 const umCount50=k=>`${grp(UM_50K.filter(LAYER[k].has).length)} de ${grp(UM_50K.length)} ciudades de 50.000 hab. o más ${LAYER[k].txt}`;
-const UM_NOTE="Catalunya (auditorías, agua no registrada), Baleares (estimación del Govern, agua no contabilizada), las ciudades con dato del operador (agua no registrada o pérdidas reales, art. 63.2 RD 3/2023) y el resto (pérdidas declaradas por los ayuntamientos en la EIEL, no medidas) son indicadores distintos. Se pintan en la misma escala para leer el orden de magnitud, no para comparar municipio a municipio. El rendimiento y el índice de fugas estructurales (IFE) que publican algunos operadores tampoco son el mismo indicador: se muestran en la ficha, no en el mapa.";
+const UM_NOTE="Catalunya (auditorías, agua no registrada), Baleares (estimación del Govern, agua no contabilizada), las ciudades con dato del operador (agua no registrada o pérdidas reales, art. 63.2 RD 3/2023) el resto (pérdidas declaradas por los ayuntamientos en la EIEL, no medidas) y los municipios con la cifra de todo el sistema de su operador (no municipal) son indicadores distintos. Se pintan en la misma escala para leer el orden de magnitud, no para comparar municipio a municipio. El rendimiento y el índice de fugas estructurales (IFE) que publican algunos operadores tampoco son el mismo indicador: se muestran en la ficha, no en el mapa.";
+// Valor de pérdidas tal como se publica: las cifras del operador con sus decimales; el resto, con uno
+const lossTxt=L=>L.dec!=null?es(L.v,L.dec):es(L.v,1);
 const fmt2=v=>es(Math.round(v*100)/100,v*100%10===0?1:2);
 
 let colorBy="loss";
@@ -260,7 +268,7 @@ const muLayer=$("#muLayer"),umEls={};let umHov,umSel;
   const f=MUN.inset.frame;const top=new Set(MUN.top||[]);
   let h=`<rect class="inset" x="${f[0]}" y="${f[1]}" width="${f[2]}" height="${f[3]}"></rect><text class="insetlab" x="${f[0]+f[2]-1}" y="${f[1]+3.2}" text-anchor="end" font-size="2.2">CANARIAS</text><g transform="scale(.01)">`;
   for(const [id,d] of Object.entries(MUN.sh))h+=`<path class="sh" d="${d}" data-sh="${id}"></path>`;
-  const mu=id=>{const L=umLatest(id),r=MUD[id],o=a63Other(id);return `<path class="um${L||o?" has":""}" d="${MUN.mu[id]}" data-u="${id}" ${L?`style="fill:${muColor(L.v)}"`:o?`style="fill:url(#dotsOt)"`:""} tabindex="-1" aria-label="${esc(r[0])}${L?", "+es(L.v,1)+" %, "+L.y:o?", otro indicador publicado por el operador":", sin dato municipal publicado"}"></path>`;};
+  const mu=id=>{const L=umLatest(id),r=MUD[id],o=a63Other(id);return `<path class="um${L||o?" has":""}" d="${MUN.mu[id]}" data-u="${id}" ${L?`style="fill:${muColor(L.v)}"`:o?`style="fill:url(#dotsOt)"`:""} tabindex="-1" aria-label="${esc(r[0])}${L?", "+lossTxt(L)+" %, "+L.y:o?", otro indicador publicado por el operador":", sin dato municipal publicado"}"></path>`;};
   const ids=Object.keys(MUN.mu);
   for(const id of ids)if(!top.has(id))h+=mu(id);
   for(const id of ids)if(top.has(id))h+=mu(id);
@@ -269,6 +277,8 @@ const muLayer=$("#muLayer"),umEls={};let umHov,umSel;
   h+=`<path class="umdecl" d="${ids.filter(id=>{const L=umLatest(id);return L&&L.kind==="eiel";}).map(id=>MUN.mu[id]).join("")}"></path>`;
   // Trama de "dato publicado por el operador (art. 63.2 RD 3/2023)"
   h+=`<path class="umop" d="${ids.filter(id=>{const L=umLatest(id);return L&&L.kind==="art63";}).map(id=>MUN.mu[id]).join("")}"></path>`;
+  // Trama de "dato de todo el sistema del operador, no municipal" (D2)
+  h+=`<path class="umsys" d="${ids.filter(id=>{const L=umLatest(id);return L&&L.kind==="sistema";}).map(id=>MUN.mu[id]).join("")}"></path>`;
   h+=`<path class="prm" d="${MUN.pr}"></path><path class="ccm" d="${MUN.cc}"></path><path class="umhl" id="umHov" d=""></path><path class="umhl" id="umSel" d=""></path></g>`;
   for(const [id,[x,y]] of Object.entries(MUN.dot)){const L=umLatest(id);
     h+=`<circle class="um${L?" has":""}" cx="${x}" cy="${y}" r="${/^5[12]/.test(id)?0.9:0.25}" data-u="${id}" ${L?`style="fill:${muColor(L.v)}"`:""} tabindex="-1" aria-label="${esc(MUD[id][0])}"></circle>`;}
@@ -299,6 +309,8 @@ function paintES(){
   for(const c in rEls){const v=ccVal(c);const k=binOf(v,ESM[esMetric].bins);for(const e of rEls[c]){e.style.fill=k?`var(--c${k})`:"url(#hatchS)";}}
 }
 function binLabels(b,f){return [`< ${f(b[0])}`,...b.slice(0,-1).map((x,i)=>`${f(x)}-${f(b[i+1])}`),`≥ ${f(b[b.length-1])}`];}
+// Nota larga de la leyenda: plegada en pantallas estrechas para que la ficha quede cerca del mapa (FWG-1871, revisión a 390 px)
+const LG_OPEN=()=>window.matchMedia("(min-width:700px)").matches?" open":"";
 function legend(){
   const L=$("#legend");
   if(level==="eu"){const m=M[metric];
@@ -319,7 +331,7 @@ function legend(){
   else if(level==="mu"&&(colorBy==="fc"||colorBy==="est")){const fc=colorBy==="fc";
     L.innerHTML=`<span class="t">${fc?"Red de distribución en fibrocemento":"Red de distribución en estado malo o regular"} (% de la longitud) · EIEL</span>`+FC_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin dato de la EIEL</span><span class="srcnote">EIEL: ${fc?"material":"estado"} declarado de cada tramo de la red de distribución, ponderado por su longitud. Comunidad de Madrid: EIEL fase 2023 de la IDEM (CC BY 4.0), sin las ciudades de 50.000 hab. o más. Sin dato en Catalunya, Baleares, País Vasco, Navarra y las provincias que no están en el visor nacional de la EIEL.</span>`;
     $("#hint").textContent="Rueda, pellizco o doble clic para acercar. En gris: la EIEL no cubre el municipio; no se estima nada.";}
-  else if(level==="mu"){L.innerHTML=`<span class="t">Pérdidas por municipio (%) · último dato</span>`+MU_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin dato municipal publicado</span><span><i style="background:repeating-linear-gradient(45deg,#eba25a 0 3px,var(--fg) 3px 4px)"></i>estimación con poca o ninguna medición real</span><span><i style="background:repeating-linear-gradient(-45deg,#f1d98a 0 3px,var(--fg) 3px 3.6px)"></i>dato declarado por el ayuntamiento, no medido (EIEL)</span><span><i style="background:repeating-linear-gradient(0deg,#9fd3c0 0 3px,var(--fg) 3px 3.8px)"></i>dato publicado por el operador (art. 63.2 RD 3/2023)</span><span><i style="background:radial-gradient(circle,var(--fg) 0 1.3px,transparent 1.6px) 0 0/4px 4px,var(--nodata)"></i>el operador publica otro indicador (rendimiento, IFE), no comparable</span><span class="srcnote">Catalunya: agua no registrada de las auditorías (ACA, F9). Ciudades con dato del operador: agua no registrada o pérdidas reales que publica en cumplimiento del art. 63.2 del RD 3/2023; si solo publica el rendimiento o el IFE, no se pinta en esta escala ni se convierte. Illes Balears: agua no contabilizada, estimación del Govern IB 2024. Resto: pérdidas que declara el ayuntamiento en la EIEL, media de sus núcleos ponderada por consumo; la mediana de los municipios tiene todos sus valores en múltiplos de 5. ${UM_NOTE}</span>`;
+  else if(level==="mu"){L.innerHTML=`<span class="t">Pérdidas por municipio (%) · último dato</span>`+MU_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin dato municipal publicado</span><span><i style="background:repeating-linear-gradient(45deg,#eba25a 0 3px,rgba(22,44,64,.75) 3px 4px)"></i>estimación con poca o ninguna medición real</span><span><i style="background:repeating-linear-gradient(-45deg,#f1d98a 0 3px,rgba(22,44,64,.75) 3px 3.6px)"></i>dato declarado por el ayuntamiento, no medido (EIEL)</span><span><i style="background:repeating-linear-gradient(0deg,#9fd3c0 0 3px,rgba(22,44,64,.75) 3px 3.8px)"></i>dato publicado por el operador (art. 63.2 RD 3/2023)</span><span><i style="background:repeating-linear-gradient(90deg,#9fd3c0 0 3px,rgba(22,44,64,.75) 3px 3.8px)"></i>dato de todo el sistema del operador, no municipal</span><span><i style="background:radial-gradient(circle,var(--fg) 0 1.3px,transparent 1.6px) 0 0/4px 4px,var(--nodata)"></i>el operador publica otro indicador (rendimiento, IFE), no comparable</span><details class="lgmore"${LG_OPEN()}><summary>Cómo leer este mapa</summary><span class="srcnote">Catalunya: agua no registrada de las auditorías (ACA, F9). Ciudades con dato del operador: agua no registrada o pérdidas reales que publica en cumplimiento del art. 63.2 del RD 3/2023; si solo publica el rendimiento o el IFE, no se pinta en esta escala ni se convierte. Sistemas de varios municipios (Canal de Isabel II, Mancomunidad de la Comarca de Pamplona...): su agua no registrada o sus pérdidas reales, sin modificar, solo en los municipios que la propia fuente lista como servidos y solo si ninguna fuente municipal da dato. Illes Balears: agua no contabilizada, estimación del Govern IB 2024. Resto: pérdidas que declara el ayuntamiento en la EIEL, media de sus núcleos ponderada por consumo; la mediana de los municipios tiene todos sus valores en múltiplos de 5. ${UM_NOTE}</span></details>`;
     $("#hint").textContent="Rueda, pellizco o doble clic para acercar; arrastra para desplazar. En gris: sin dato municipal publicado, no se estima nada.";}
   else if(level==="int"){L.innerHTML=`<span class="t">Italia · perdite idriche totali (%) · ISTAT 2022</span>`+MU_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span class="srcnote">${esc(INT_IND)}. Regiones en el mapa; capitales de provincia (comuni capoluogo) en puntos. Misma escala que los municipios de España, pero otro indicador: agua inmessa en red menos agua erogada para usos autorizados. Otros países: ${INT.paises.filter(p=>p.estado!=="datos"&&p.estado!=="sin_capa").map(p=>`${esc(p.pais)} (${INT_ST[p.estado].toLowerCase()})`).join(", ")}. Oriente Medio: no hay fuente pública con granularidad subnacional; no se construye capa. Geometría: ISTAT, límites al 1/1/2026, CC BY 4.0.</span>`;}
   else{L.innerHTML=`<span class="t">Agua no registrada (%) · último dato</span>`+MU_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin auditoría publicada</span><span class="srcnote">Dato 2024 de las auditorías publicadas por cada operador; si no hay, 2022 del anexo de la ACA. Cada valor lleva su año y fuente en el panel.</span>`;
@@ -351,19 +363,21 @@ function paintMun(){
   muLayer.querySelectorAll(".umlow,.umdecl,.umop").forEach(e=>e.style.display=colorBy==="loss"?"":"none");}
 function paint(){paintEU();paintES();paintMun();paintInt();legend();headerCtl();renderRank();renderPanel();marks();}
 
+// Lleva un elemento al frente del SVG. Re-insertar un nodo lo desenfoca, así que el que tiene el foco de teclado no se mueve
+function front(e){if(document.activeElement!==e)e.parentNode.appendChild(e);}
 function marks(){
   for(const c in els)for(const e of els[c]){e.classList.toggle("sel",level==="eu"&&c===pinned.eu);e.classList.toggle("hov",level==="eu"&&c===hovered&&c!==pinned.eu);}
   for(const c in rEls)for(const e of rEls[c]){e.classList.toggle("sel",level==="es"&&c===pinned.es);e.classList.toggle("hov",level==="es"&&c===hovered&&c!==pinned.es);}
   catLayer.querySelectorAll(".mu.act,.mu.hov").forEach(e=>e.classList.remove("act","hov"));
-  if(level==="cat"){if(hovered&&muEls[hovered]&&hovered!==pinned.cat){muEls[hovered].classList.add("hov");muEls[hovered].parentNode.appendChild(muEls[hovered]);}
-    if(pinned.cat&&muEls[pinned.cat]){muEls[pinned.cat].classList.add("act");muEls[pinned.cat].parentNode.appendChild(muEls[pinned.cat]);}}
+  if(level==="cat"){if(hovered&&muEls[hovered]&&hovered!==pinned.cat){muEls[hovered].classList.add("hov");front(muEls[hovered]);}
+    if(pinned.cat&&muEls[pinned.cat]){muEls[pinned.cat].classList.add("act");front(muEls[pinned.cat]);}}
   for(const e of muLayer.querySelectorAll("circle.um.act,circle.um.hov"))e.classList.remove("act","hov");
   for(const [k,e] of Object.entries(intEls)){e.classList.toggle("act",level==="int"&&k===pinned.int);e.classList.toggle("hov",level==="int"&&k===hovered&&k!==pinned.int);}
-  if(level==="int")for(const k of [hovered,pinned.int])if(k&&intEls[k]&&k[0]==="c")intLayer.appendChild(intEls[k]);
+  if(level==="int")for(const k of [hovered,pinned.int])if(k&&intEls[k]&&k[0]==="c")front(intEls[k]);
   const hl=(p,k,cls)=>{const d=level==="mu"&&k&&MUN.mu[k];p.setAttribute("d",d||"");if(level==="mu"&&k&&!d&&umEls[k])umEls[k].classList.add(cls);};
   hl(umHov,hovered!==pinned.mu?hovered:null,"hov");hl(umSel,pinned.mu,"act");
-  if(level==="eu"){if(hovered&&els[hovered])g.appendChild(els[hovered][0]);if(pinned.eu&&els[pinned.eu])g.appendChild(els[pinned.eu][0]);}
-  if(level==="es"){for(const c of [hovered,pinned.es])if(c&&rEls[c])for(const e of rEls[c])e.parentNode.appendChild(e);}
+  if(level==="eu"){if(hovered&&els[hovered])front(els[hovered][0]);if(pinned.eu&&els[pinned.eu])front(els[pinned.eu][0]);}
+  if(level==="es"){for(const c of [hovered,pinned.es])if(c&&rEls[c])for(const e of rEls[c])front(e);}
   document.querySelectorAll("#rank button").forEach(b=>{b.classList.toggle("sel",b.dataset.k===pinned[level]);b.classList.toggle("hov",b.dataset.k===hovered);});
 }
 
@@ -375,8 +389,9 @@ function umFilt(){if(!opMatch&&!rankPv&&!rankQ&&!muQ)return null;
 const opNorm=s=>String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/[^A-Z0-9]+/g," ").trim();
 const OPN_NORM=OPN.map(opNorm);
 // Municipios con el operador entre sus operadores del SINAC (coincidencia por texto, sin acentos ni signos)
+// y, en el País Vasco y Navarra, con el operador en baja que nombra su propia fuente (PVN), que el SINAC no recoge
 function opIds(q){q=opNorm(q);if(q.length<2)return null;const hit=new Set(OPN_NORM.map((n,i)=>n.includes(q)?i:-1).filter(i=>i>=0));
-  return new Set(UM_IDS.filter(id=>{const r=ESD[id];if(!r||!r[16])return false;for(let i=0;i<r[16].length;i+=3)if(hit.has(r[16][i]))return true;return false;}));}
+  return new Set(UM_IDS.filter(id=>{if(PVN[id]&&opNorm(PVN[id][0]).includes(q))return true;const r=ESD[id];if(!r||!r[16])return false;for(let i=0;i<r[16].length;i+=3)if(hit.has(r[16][i]))return true;return false;}));}
 const GSHORT={P:"Público",M:"Mixta",V:"Privada",C:"Vecinal",O:"Otros"};
 const RANK_LAYER={
   loss:{title:"Pérdidas por municipio en España (%, último dato publicado)",note:"Línea vertical: España, INE 2024. "+UM_NOTE,v:id=>umLatest(id).v,avg:null,fmt:()=>x=>es(x,1),extra:id=>`<span class="yr">${umLatest(id).y} · ${QSHORT[umQual(id)]}</span>`},
@@ -397,12 +412,14 @@ function setOp(q){opQuery=q.trim();opMatch=opIds(opQuery);rankAll=false;
   else{const pop=[...opMatch].reduce((a,id)=>a+MUD[id][1],0);C.textContent=opMatch.size?`${grp(opMatch.size)} municipios · ${grp(pop)} hab. (padrón 2025)`:"Ningún municipio";}
   paintMun();renderRank();marks();renderPanel();}
 // CSV del ranking filtrado (todas las filas, no solo las visibles), con punto y coma y BOM para Excel
-function exportCsv(){const ids=umRankIds();
-  const q=v=>{v=v==null?"":String(v);return /[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+function exportCsv(ids=umRankIds()){
+  // Números con coma decimal: el archivo es para Excel en español (separador ; y BOM)
+  const dc=v=>v==null||v===""?"":String(v).replace(".",",");
+  const q=v=>{v=typeof v==="number"?dc(v):v==null?"":String(v);return /[;"\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
   const H=["codigo_ine","municipio","provincia","comunidad","poblacion_ine_2025","perdidas_pct","anio_perdidas","fuente_perdidas","modelo_gestion","origen_modelo","operador_principal_sinac","pct_poblacion_operador","tipo_operador","fibrocemento_pct","estado_malo_regular_pct","km_red_eiel","indicadores_operador_art63","calidad_dato","indice_prioridad_kimedes","quintil_prioridad","factor_poblacion","factor_perdidas","factor_fibrocemento","factor_antiguedad_eiel","factor_modelo","fase_eiel"];
   const rows=ids.map(id=>{const L=umLatest(id),e=esd(id)||{ops:[]},k=umGes(id),o=e.ops&&e.ops[0];
     return [id,MUD[id][0],PROV[id.slice(0,2)][0],ccName(umCC(id)),MUD[id][1],L?L.v:"",L?L.y:"",L?L.src:"",k?GCAT[k][0]:"",k?(MU[id]?GSRC.f:GSRC[e.gs]):"",o?o.n+(o.resp?" (responsable)":""):"",o?o.p:"",o&&!o.resp?OPTYPE[o.t]:"",e.fc??"",umRed(id)??"",e.km??"",(A63.m[id]||[]).map(r=>`${A63_IND[r[0]]} ${r[1]}${r[2]==="%"?" %":""} (${r[3]})`).join(" · "),umQual(id)?QUAL[umQual(id)]:"",
-      ...(p=>[p.idx.toFixed(4),"Q"+p.q,p.P.toFixed(4),p.L.toFixed(4),p.F.toFixed(4),p.A.toFixed(4),p.G,p.fase??""])(priAll().m[id])].map(q).join(";");});
+      ...(p=>[dc(p.idx.toFixed(4)),"Q"+p.q,dc(p.P.toFixed(4)),dc(p.L.toFixed(4)),dc(p.F.toFixed(4)),dc(p.A.toFixed(4)),p.G,p.fase??""])(priAll().m[id])].map(q).join(";");});
   const blob=new Blob(["\ufeff"+[H.join(";"),...rows].join("\r\n")],{type:"text/csv;charset=utf-8"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`municipios_${colorBy}${rankCc?"_"+rankCc:""}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
 
@@ -559,10 +576,15 @@ function panelUM(P,id,chip){const r=MUD[id];if(!r){P.innerHTML="";return;}const 
   if(L.kind==="cat"){
     const srcTxt=`${es(L.v,1)} % · ${L.y} · ${L.src}`+(L.url?` · <a href="${esc(L.url)}" target="_blank" rel="noopener">auditoría del operador</a>`:"");
     P.innerHTML=head+`<div class="hero"><span class="lbl">Agua no registrada</span><span class="big">${es(L.v,1)}<small>%</small></span><span class="src">${srcTxt}</span></div>
-    ${cmpBars(items)}<p class="note">${umReason(id)}</p>${rest}<div class="ctas"><button class="cta" data-go="cat">Ver municipios de Catalunya</button></div>`;return;}
+    ${cmpBars(items)}${rest}<div class="ctas"><button class="cta" data-go="cat">Ver municipios de Catalunya</button></div>`;return;}
   if(L.kind==="art63"){
-    P.innerHTML=head+`<div class="hero"><span class="lbl">${esc(A63_IND[L.ind])}</span><span class="big">${es(L.v,1)}<small>%</small></span><span class="src">${es(L.v,1)} % · ${L.y} · ${esc(L.src)} · <a href="${esc(L.url)}" target="_blank" rel="noopener">documento del operador</a></span></div>
+    P.innerHTML=head+`<div class="hero"><span class="lbl">${esc(A63_IND[L.ind])}</span><span class="big">${lossTxt(L)}<small>%</small></span><span class="src">${lossTxt(L)} % · ${L.y} · ${esc(L.src)} · <a href="${esc(L.url)}" target="_blank" rel="noopener">documento del operador</a></span></div>
     ${cmpBars(items)}${a63Block(id)}<p class="note">${esc(UM_NOTE)}</p>${rest}`;return;}
+  if(L.kind==="sistema"){const sm=A63.sm[id];
+    P.innerHTML=head+`<div class="hero"><span class="lbl">${esc(A63_IND[L.ind])} del sistema</span><span class="big">${lossTxt(L)}<small>%</small></span><span class="src">Dato del sistema ${esc(L.op)} (${L.n} municipios), no municipal · ${L.y} · <a href="${esc(L.url)}" target="_blank" rel="noopener">documento del operador</a></span></div>
+    ${cmpBars(items)}
+    <p class="note warn">Cifra que el operador publica para todo su sistema (${esc(L.amb)}), pintada tal como se publica. No es un dato de este municipio: se muestra porque la fuente lo lista como servido por el sistema (${sm[1]==="distribucion"?"distribución en baja":"servicio sin especificar"}: «${esc(sm[5])}», ${esc(sm[3])}) y ninguna fuente municipal da dato.</p>
+    ${a63Block(id)}<p class="note">${esc(UM_NOTE)}</p>${rest}`;return;}
   if(L.kind==="eiel"){
     P.innerHTML=head+`<div class="hero"><span class="lbl">Pérdidas en la red de abastecimiento</span><span class="big">${es(L.v,1)}<small>%</small></span><span class="src">${es(L.v,1)} % · EIEL fase ${L.y} · ${L.src}</span></div>
     ${cmpBars(items)}
@@ -592,29 +614,33 @@ function panelInt(P,k){
   <p class="srcline">${esc(INT_IND)}. ${o.kind==="c"?"Total de los comuni capoluogo: "+es(INT.tc[2],1)+" %. ":""}No es el mismo indicador que el agua no registrada de España: se compara el orden de magnitud.</p></div>`+src;}
 // Ficha de operador (FWG-1870, Parte 6): los municipios donde el filtro de operador casa con alguno de sus operadores del SINAC
 function panelOp(P){const ids=[...opMatch],pop=ids.reduce((a,id)=>a+MUD[id][1],0);
-  const q=opNorm(opQuery),names=OPN.map((n,i)=>[n,i]).filter(([,i])=>OPN_NORM[i].includes(q));
-  const grupos=[...new Set(names.map(([,i])=>OPC[i]&&OPC[i][0]).filter(Boolean))],tipos=[...new Set(names.map(([,i])=>OPT[i]).filter(t=>t!=="-"))];
+  const q=opNorm(opQuery),names=[...OPN.map((n,i)=>[n,i]).filter(([,i])=>OPN_NORM[i].includes(q)),
+    ...[...new Set(Object.values(PVN).map(p=>p[0]))].filter(n=>opNorm(n).includes(q)&&!OPN_NORM.includes(opNorm(n))).map(n=>[n,-1])];
+  const grupos=[...new Set(names.map(([,i])=>i>=0&&OPC[i]&&OPC[i][0]).filter(Boolean))],tipos=[...new Set(names.map(([,i])=>i>=0?OPT[i]:"-").filter(t=>t!=="-"))];
   const withL=ids.filter(id=>umLatest(id));
-  // Media de pérdidas ponderada por población, por separado para cada fuente: no se mezclan indicadores distintos
-  const by={};for(const id of withL){const k=umQual(id);(by[k]??=[0,0,0]);by[k][0]+=umLatest(id).v*MUD[id][1];by[k][1]+=MUD[id][1];by[k][2]++;}
+  // Por fuente: cuántos municipios tienen dato y entre qué valores publicados están. No se calcula ninguna media (FWG-1871, revisión)
+  const by={};for(const id of withL){const k=umQual(id),v=umLatest(id).v;const b=by[k]??=[Infinity,-Infinity,0];b[0]=Math.min(b[0],v);b[1]=Math.max(b[1],v);b[2]++;}
   const gm={};for(const id of ids){const k=umGes(id)||"N";gm[k]=(gm[k]||0)+1;}
   const sys=A63.s.filter(r=>names.some(([n])=>(" "+opNorm(n)+" ").includes(" "+opNorm(r[0])+" ")));
   P.innerHTML=`<div class="ph"><div><h2>${esc(opQuery)}</h2><span class="code">Ficha de operador · ${grp(names.length)} nombre${names.length===1?"":"s"} del SINAC</span></div></div>
   <div><h3>Municipios</h3><dl>${row("Municipios donde opera",grp(ids.length))}${row("Población (INE 2025)",grp(pop))}${row("Con dato de pérdidas",`${grp(withL.length)} (${es(100*withL.length/ids.length,0)} %)`)}
    ${tipos.length?row("Tipo",tipos.map(t=>OPTYPE[t]).join(" · ")):""}${grupos.length?row("Grupo",esc(grupos.join(" · "))):""}
    ${row("Modelo de gestión de sus municipios",Object.entries(gm).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${GCAT[k][0]} ${grp(n)}`).join(" · "))}</dl></div>
-  <div><h3>Pérdidas medias de sus municipios</h3>${Object.keys(by).length?`<dl>${Object.entries(by).map(([k,[s,p,n]])=>row(`${QUAL[k]} (${grp(n)} mun.)`,es(s/p,1),"%")).join("")}</dl>`:`<p class="note">Ninguno de sus municipios tiene dato de pérdidas publicado.</p>`}
-   <p class="srcline">Media ponderada por población, calculada por Kimedes por separado para cada fuente: son indicadores distintos y no se suman.</p></div>
+  <div><h3>Pérdidas publicadas en sus municipios</h3>${Object.keys(by).length?`<dl>${Object.entries(by).map(([k,[lo,hi,n]])=>row(`${QUAL[k]} (${grp(n)} mun.)`,n>1&&lo!==hi?`de ${es(lo,1)} a ${es(hi,1)}`:es(lo,1),"%")).join("")}</dl>`:`<p class="note">Ninguno de sus municipios tiene dato de pérdidas publicado.</p>`}
+   <p class="srcline">Valor mínimo y máximo publicados, por separado para cada fuente: son indicadores distintos. No se calcula ninguna media; el detalle está en el ranking y en el CSV.</p></div>
   <div><h3>Publicado para todo su sistema (art. 63.2 RD 3/2023)</h3>${sys.length?`<dl>${sys.map(r=>row(`${A63_IND[r[3]]} ${r[6]} · ${esc(r[2])}`,r[5]==="%"?es(r[4],2).replace(/,?0+$/,""):es(r[4],2),r[5]==="%"?"%":esc(r[5]))).join("")}</dl>
-   <p class="srcline">${sys.map(r=>`${esc(r[1])}, ${esc(r[8])}: <a href="${esc(r[7])}" target="_blank" rel="noopener">documento</a>`).filter((x,i,a)=>a.indexOf(x)===i).join(" · ")}. Cifras de todo el sistema: no se asignan a ningún municipio.</p>`:`<p class="note">No se ha encontrado ninguna cifra publicada para todo su sistema.</p>`}</div>
+   <p class="srcline">${sys.map(r=>`${esc(r[1])}, ${esc(r[8])}: <a href="${esc(r[7])}" target="_blank" rel="noopener">documento</a>`).filter((x,i,a)=>a.indexOf(x)===i).join(" · ")}. Cifras de todo el sistema: el agua no registrada y las pérdidas reales se pintan, sin modificar, en los municipios que la propia fuente lista como servidos y sin dato municipal (${grp(ids.filter(id=>{const L=umLatest(id);return L&&L.kind==="sistema";}).length)} de los de este filtro).</p>`:`<p class="note">No se ha encontrado ninguna cifra publicada para todo su sistema.</p>`}</div>
   <div class="ctas"><button class="cta" id="opCsv" type="button">Exportar sus municipios (CSV)</button></div>`;
-  $("#opCsv").addEventListener("click",exportCsv);}
+  $("#opCsv").addEventListener("click",()=>exportCsv([...opMatch].sort((a,b)=>MUD[b][1]-MUD[a][1])));}
 // Todas las fuentes que alimentan la ficha, en el orden en que aparecen
 function umSources(id,L){const e=esd(id);const out=[];
   if(MU[id])out.push(...catSources(id,L).filter(x=>x[1]!=="idescat"));
   else{if(A63.m[id]){const R=A63.m[id];
       out.push([L&&L.kind==="art63"?"Pérdidas publicadas por el operador":"Indicador publicado por el operador",{n:`${R[0][4]}, indicadores del art. 63.2 del RD 3/2023`,u:R[0][5],
         d:`${R.map(r=>A63_IND[r[0]]+" "+r[3]).join(", ")}. Consulta ${A63_DATE(R[0][8])}. Aviso legal: ${R[0][7]}. Dato de hecho citado; derechos del operador`}]);}
+    if(L&&L.kind==="sistema"){const sm=A63.sm[id],R=SYS_ROWS[L.pat].find(r=>r[3]===L.ind);
+      out.push(["Pérdidas del sistema (no municipales)",{n:`${R[1]}, ${A63_IND[R[3]]} ${R[6]} de todo el sistema`,u:R[7],d:`${R[8]}. Ámbito: ${R[2]}. Consulta ${A63_DATE(R[10])}. Aviso legal: ${R[9]}. Dato de hecho citado; derechos del operador`}]);
+      out.push(["Municipios servidos por el sistema",{n:`${R[1]}, lista de municipios servidos`,u:sm[2],d:`${sm[3]}. Figura como «${sm[5]}». Consulta ${A63_DATE(sm[4])}`}]);}
     if(L&&L.kind==="ib")out.push(["Pérdidas (agua no contabilizada)","caib"]);if(L&&L.kind==="eiel")out.push(["Pérdidas declaradas","eiel"]);
     if(e&&e.gm!=="N")out.push(["Modelo de gestión",e.gs==="p"&&PVN[id]?{n:`${PVN[id][0]}, operador del abastecimiento en baja`,u:PVN[id][1],d:`${PVN[id][2]}. Consulta 30/10/2026`}:e.gs==="e"?(isIdem(id)?"idem":"eiel"):"sinac"]);}
   if(e&&e.ops.length)out.push(["Operadores, dotación y población abastecida","sinac"]);
@@ -641,7 +667,7 @@ function tipFor(k){
     const ol=op?`<span>${op.resp?"Responsable":"Operador"}: ${esc(op.n)}${op.p<100?` (${op.p<1?"< 1":op.p} %)`:""}</span>`:"";
     const lyr=colorBy==="fc"?`<span>Fibrocemento: ${e&&e.fc!=null?e.fc+" % de la red · EIEL "+e.ry:"sin dato"}</span>`:colorBy==="est"?`<span>Estado malo o regular: ${umRed(k)!=null?umRed(k)+" % de la red · EIEL "+e.ry:"sin dato"}</span>`:"";
     const a0=!L&&A63.m[k]?A63.m[k][0]:null;
-    const loss=L?`<span>${L.kind==="cat"?"ANR":L.kind==="ib"?"No contabilizada":L.kind==="art63"?(L.ind==="ANR"?"ANR":"Pérdidas reales"):"Pérdidas declaradas"}: ${L.kind==="ib"?fmt2(L.v):es(L.v,1)} % · ${L.kind==="cat"?(L.y==2024?"auditoría 2024":"ACA "+L.y):L.kind==="ib"?"Govern IB "+L.y:L.kind==="art63"?"operador, art. 63.2 RD 3/2023, "+L.y:"EIEL "+L.y}</span>`+(L.low?`<span class="tn">Valor estimado por el Govern, con poca o ninguna medición real</span>`:"")+(L.kind==="eiel"?`<span class="tn">Dato declarado por el ayuntamiento, no medido</span>`:""):a0?`<span>${esc(A63_IND[a0[0]])}: ${es(a0[1],2).replace(/,?0+$/,"")}${a0[2]==="%"?" %":""} · operador ${a0[3]}</span><span class="tn">Otro indicador, no comparable con las pérdidas</span>`:`<span>Sin dato municipal publicado</span>${colorBy==="loss"?`<span class="tn">${umReason(k)}</span>`:""}`;
+    const loss=L?`<span>${L.kind==="cat"?"ANR":L.kind==="ib"?"No contabilizada":L.kind==="art63"||L.kind==="sistema"?(L.ind==="ANR"?"ANR":"Pérdidas reales"):"Pérdidas declaradas"}: ${L.kind==="ib"?fmt2(L.v):lossTxt(L)} % · ${L.kind==="cat"?(L.y==2024?"auditoría 2024":"ACA "+L.y):L.kind==="ib"?"Govern IB "+L.y:L.kind==="art63"?"operador, art. 63.2 RD 3/2023, "+L.y:L.kind==="sistema"?esc(L.op)+", "+L.y:"EIEL "+L.y}</span>`+(L.kind==="sistema"?`<span class="tn">Dato del sistema ${esc(L.op)} (${L.n} municipios), no municipal</span>`:"")+(L.low?`<span class="tn">Valor estimado por el Govern, con poca o ninguna medición real</span>`:"")+(L.kind==="eiel"?`<span class="tn">Dato declarado por el ayuntamiento, no medido</span>`:""):a0?`<span>${esc(A63_IND[a0[0]])}: ${es(a0[1],2).replace(/,?0+$/,"")}${a0[2]==="%"?" %":""} · operador ${a0[3]}</span><span class="tn">Otro indicador, no comparable con las pérdidas</span>`:`<span>Sin dato municipal publicado</span>${colorBy==="loss"?`<span class="tn">${umReason(k)}</span>`:""}`;
     return `<b>${esc(r[0])}</b><span>${esc(pv===ccName(c)?pv:pv+" · "+ccName(c))} · ${grp(r[1])} hab.</span>`+(colorBy==="loss"?loss+gl+ol:colorBy==="ges"?gl+ol+loss:lyr+gl+ol);}
   const r=MU[k],L=muLatest(k),u=muUnit(k);
   return `<b>${esc(r[0])}</b><span>${esc(COMS[r[1]])} · ${grp(r[2])} hab.</span>`+(L?`<span>ANR: ${es(L.v,1)} % · ${L.y==2024?"auditoría 2024":L.src+" "+L.y}</span>`+(r[3]&&r[3][1]!=null?`<span>Pérdidas reales: ${es(r[3][1],1)} % · 2024</span>`:""):`<span>Sin dato publicado</span>`)+(u?`<span class="tn">Unidad: ${esc(u)}</span>`:"")+(gesOf(k)?`<span>Gestión: ${GCAT[gesOf(k)][0]} · ${esc(GES[k][1])}</span>`:"");}
@@ -651,9 +677,9 @@ const FULL=[0,0,760,700];let curVB=FULL.slice(),anim=null;
 const reduce=()=>window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const VB={eu:FULL,es:ESP.vb,mu:MUN.vb,cat:CAT.vb,int:INT.vb};
 function sizeLabels(){const s=svg.getBoundingClientRect().width/curVB[2];const fs=(10/s).toFixed(3);catLayer.querySelectorAll(".mlab").forEach(e=>e.setAttribute("font-size",fs));}
-const hatchMu=$("#hatchMu"),hatchDe=$("#hatchDe"),hatchOp=$("#hatchOp"),dotsOt=$("#dotsOt");
+const hatchMu=$("#hatchMu"),hatchDe=$("#hatchDe"),hatchOp=$("#hatchOp"),hatchSy=$("#hatchSy"),dotsOt=$("#dotsOt");
 // El rayado de la vista por municipio mantiene el mismo grosor en pantalla con cualquier zoom
-function setVB(v){curVB=v;svg.setAttribute("viewBox",v.map(n=>n.toFixed(3)).join(" "));const k=(v[2]/MUN.vb[2]).toFixed(4);hatchMu.setAttribute("patternTransform",`rotate(45) scale(${k})`);hatchOp.setAttribute("patternTransform",`scale(${k})`);dotsOt.setAttribute("patternTransform",`scale(${k})`);hatchDe.setAttribute("patternTransform",`rotate(-45) scale(${k})`);}
+function setVB(v){curVB=v;svg.setAttribute("viewBox",v.map(n=>n.toFixed(3)).join(" "));const k=(v[2]/MUN.vb[2]).toFixed(4);hatchMu.setAttribute("patternTransform",`rotate(45) scale(${k})`);hatchOp.setAttribute("patternTransform",`scale(${k})`);hatchSy.setAttribute("patternTransform",`scale(${k})`);dotsOt.setAttribute("patternTransform",`scale(${k})`);hatchDe.setAttribute("patternTransform",`rotate(-45) scale(${k})`);}
 function layerVis(o){for(const [L,v] of [[espLayer,o.es],[muLayer,o.mu||0],[catLayer,o.cat],[intLayer,o.int||0]]){L.toggleAttribute("hidden",v<=0);L.setAttribute("opacity",v.toFixed(3));}}
 function setLevel(l,animate=true,vb=null){
   if(!VB[l])l="eu";level=l;if(l==="cat"&&(colorBy==="fc"||colorBy==="est"||colorBy==="pri"))colorBy="loss";hovered=null;hideTip();rankAll=false;
@@ -721,7 +747,7 @@ $("#rankCc").addEventListener("change",()=>{fillPv();paintMun();});
 // Autocompletado: los operadores con más municipios primero (OPN ya viene ordenado así)
 $("#opl").innerHTML=OPN.slice(0,400).map(n=>`<option value="${esc(n)}"></option>`).join("");
 {let t=null;$("#opq").addEventListener("input",e=>{clearTimeout(t);t=setTimeout(()=>setOp(e.target.value),200);});}
-$("#csvBtn").addEventListener("click",exportCsv);
+$("#csvBtn").addEventListener("click",()=>exportCsv());
 
 // ================= enlaces para compartir (FWG-1871, E.1) =================
 // #<vista>[/<clave>][/<capa>]: la vista, el elemento fijado por el usuario y la capa activa (p. ej. #municipios/46250/perdidas),
