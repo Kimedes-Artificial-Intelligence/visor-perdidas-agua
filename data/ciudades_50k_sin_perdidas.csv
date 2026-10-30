@@ -49,7 +49,7 @@ ine;nombre;poblacion_ine_2025;operador_sinac;operador_agrupado;estado_art63;indi
 04079;Roquetas de Mar;111240;HIDRALIA;Veolia y Unicaja;no_publica;;no
 11012;Cádiz;109950;AGUAS DE CÁDIZ;AGUAS DE CADIZ;publica;PERDIDAS_REALES 10.59 % (2022);sí
 32054;Ourense;105769;VIAQUA S.A;VIAQUA;solo_sistema;;no
-35026;Telde;104168;AGUAS DE TELDE GESTIÓN INTEGRAL DEL SERVICIO, S.A.;;no_publica;;no
+35026;Telde;104168;AGUAS DE TELDE GESTIÓN INTEGRAL DEL SERVICIO, S.A.;AGUAS DE TELDE;no_publica;;no
 28123;Rivas-Vaciamadrid;103148;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
 48013;Barakaldo;102986;AYUNTAMIENTO DE BARAKALDO (responsable);;solo_sistema;;no
 15078;Santiago de Compostela;100965;VIAQUA S.A;VIAQUA;solo_sistema;;no
@@ -68,7 +68,7 @@ ine;nombre;poblacion_ine_2025;operador_sinac;operador_agrupado;estado_art63;indi
 11027;El Puerto de Santa María;89983;AGUAS DEL PUERTO EMPRESA MUNICIPAL, S.A.;EMPRESA MUNICIPAL;publica;RENDIMIENTO 77.4 % (2025);no
 28115;Pozuelo de Alarcón;89770;REPRESENTACIONES BLÁZQUEZ S.A;;solo_sistema;;sistema
 38006;Arona;87793;CANARAGUA CONCESIONES, S.A.;CANARAGUA;no_publica;;no
-45168;Toledo;87216;TAGUS SERVICIOS INTEGRALES;;no_verificado;;no
+45168;Toledo;87216;TAGUS SERVICIOS INTEGRALES;TAGUS SERVICIOS INTEGRALES;no_verificado;;no
 52001;Melilla;86780;AYTO. DE MELILLA_52001_MELILLA;AYTO;no_verificado;;no
 29094;Vélez-Málaga;86048;FCC AQUALIA;FCC AQUALIA;bloqueado;;no
 28161;Valdemoro;85972;CANAL DE ISABEL II, S.A.M.P.;CANAL DE ISABEL II;solo_sistema;;sistema
