@@ -365,7 +365,7 @@ Cifras de sistema incorporadas (verificadas en el documento; ninguna se asigna a
 | Aguas de Alicante | Rendimiento 86,22 % | 2025 | Red de Aguas de Alicante |
 | EMASAGRA | Rendimiento 76,4 % | 2025 | Sistema gestionado por EMASAGRA |
 | EMALCSA | ANR 8,74 % · rendimiento 91,26 % | 2025 | A Coruña y venta en alta a 7 municipios |
-| AMVISA | Rendimiento 88,4 % (p.29; la p.7 da 88,2 %) | 2023 | Ciudad, juntas y municipios vecinos |
+| AMVISA | Rendimiento 88,4 % (p.29; la p.7 da 88,2 %) · ANR 15,6 % · IFE 3,1 | 2023 | Ciudad, juntas y municipios vecinos |
 | Servicios de Txingudi | Rendimiento 82 % | 2024 | Irun y Hondarribia |
 | Mancomunidad de la Comarca de Pamplona | ANR 9,46 % (provisional) | 2025 | 50 municipios |
 
