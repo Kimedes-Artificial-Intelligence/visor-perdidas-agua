@@ -147,7 +147,7 @@ const GCAT={P:["Municipalizado","Gestión pública: ayuntamiento, empresa o ente
 const GORD=["P","M","V","C","O"];
 const gesOf=id=>{const r=GES[id];return r&&GCAT[r[0]]&&r[0]!=="N"?r[0]:null;};
 const gesColor=k=>k?`var(--g-${k.toLowerCase()})`:"";
-const GSRC={f:"ESF / Aigua és Vida",e:"EIEL, gestión declarada de la red de distribución",s:"SINAC, operador principal clasificado por su nombre"};
+const GSRC={f:"ESF / Aigua és Vida",e:"EIEL, gestión declarada de la red de distribución",s:"SINAC, operador principal clasificado por su nombre",p:"Operador que distribuye el agua según su propia fuente (el SINAC no lo identifica)"};
 const EIEL_GES={MU:"Municipal",EM:"Empresa municipal",EP:"Empresa pública no municipal",MA:"Mancomunidad",CO:"Consorcio",PV:"Privada",VE:"Vecinal",OT:"Otros"};
 const OPTYPE={P:"Municipalizado",M:"Mixto",V:"Privado (utility)","":"Sin clasificar"};
 const FC_BINS=[[10,"#9fd3c0","< 10 %"],[20,"#f1d98a","10–20 %"],[30,"#eba25a","20–30 %"],[50,"#cf5b33","30–50 %"],[Infinity,"#8a1e2c","≥ 50 %"]];
@@ -187,7 +187,7 @@ function gesBlockES(id){const e=esd(id);const k=e?e.gm:"N";
   if(!e||k==="N")return `<div><h3>Modelo de gestión</h3><p><span class="gtag N">${GCAT.N[0]}</span></p><p class="note">Ni la EIEL ni un operador clasificado del SINAC dan el modelo de gestión. No se infiere ningún valor.</p></div>`;
   const both=e.eg&&e.st&&e.eg!==e.st;
   return `<div><h3>Modelo de gestión del abastecimiento</h3><p><span class="gtag ${k}">${GCAT[k][0]}</span></p><p class="note" style="margin-top:6px">${esc(GCAT[k][1])}.</p>
-  <dl>${row("Origen",esc(GSRC[e.gs]))}${e.g.length?row("Gestión de la red (EIEL)",e.g.map(([c,p])=>`${esc(EIEL_GES[c]||c)} ${p} %`).join(" · ")):""}</dl>
+  <dl>${row("Origen",esc(GSRC[e.gs]))}${e.gs==="p"&&PVN[id]?row("Operador",esc(PVN[id][0])):""}${e.g.length?row("Gestión de la red (EIEL)",e.g.map(([c,p])=>`${esc(EIEL_GES[c]||c)} ${p} %`).join(" · ")):""}</dl>
   ${both?`<p class="note warn">Las fuentes discrepan: la EIEL declara gestión ${GCAT[e.eg][0].toLowerCase()} y el operador principal del SINAC es ${OPTYPE[e.st].toLowerCase()}.${e.gs==="s"?" Prevalece el SINAC porque el operador es una empresa mixta.":" Prevalece la EIEL."}</p>`:""}</div>`;}
 function opsBlock(id){const e=esd(id);if(!e||!e.ops.length)return `<div><h3>Operadores (SINAC)</h3><p class="note">Sin redes de distribución de este municipio en el SINAC.</p></div>`;
   const resp=e.ops.some(o=>o.resp);
@@ -517,7 +517,7 @@ function umSources(id,L){const e=esd(id);const out=[];
       out.push([L&&L.kind==="art63"?"Pérdidas publicadas por el operador":"Indicador publicado por el operador",{n:`${R[0][4]}, indicadores del art. 63.2 del RD 3/2023`,u:R[0][5],
         d:`${R.map(r=>A63_IND[r[0]]+" "+r[3]).join(", ")}. Consulta ${A63_DATE(R[0][8])}. Aviso legal: ${R[0][7]}. Dato de hecho citado; derechos del operador`}]);}
     if(L&&L.kind==="ib")out.push(["Pérdidas (agua no contabilizada)","caib"]);if(L&&L.kind==="eiel")out.push(["Pérdidas declaradas","eiel"]);
-    if(e&&e.gm!=="N")out.push(["Modelo de gestión",e.gs==="e"?(isIdem(id)?"idem":"eiel"):"sinac"]);}
+    if(e&&e.gm!=="N")out.push(["Modelo de gestión",e.gs==="p"&&PVN[id]?{n:`${PVN[id][0]}, operador del abastecimiento en baja`,u:PVN[id][1],d:`${PVN[id][2]}. Consulta 30/10/2026`}:e.gs==="e"?(isIdem(id)?"idem":"eiel"):"sinac"]);}
   if(e&&e.ops.length)out.push(["Operadores, dotación y población abastecida","sinac"]);
   // Fuente que confirma el tipo (y el grupo) de cada operador clasificado
   if(e)for(const o of e.ops)if(!o.resp&&o.u)out.push([`Tipo de operador: ${o.n}`,{n:`Clasificación de ${o.n}`,u:o.u,d:`${OPTYPE[o.t]}${o.g?", grupo "+o.g:""}, según la fuente citada en data/operadores_clasificacion.csv`}]);

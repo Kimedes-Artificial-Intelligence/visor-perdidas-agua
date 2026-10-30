@@ -89,7 +89,9 @@ test('ningún patrón está repetido',()=>{
 });
 test('cada patrón nuevo casa con algún gestor o responsable del SINAC',()=>{
   const {normOp}=require('../../scripts/build_es_mun.js');
-  const names=new Set(csv(fs.readFileSync(path.join(ROOT,F.sinac),'utf8')).flatMap(r=>[r.gestor,r.responsable]).filter(Boolean).map(n=>' '+normOp(n)+' '));
+  // Nombres del SINAC y de los operadores en baja del País Vasco y Navarra (raw/gestion_pv_nav_*.psv)
+  const pv=fs.readFileSync(path.join(ROOT,F.pvnav),'utf8').trim().split('\n').filter(l=>/^\d{5}\|/.test(l)).map(l=>l.split('|')[1]);
+  const names=new Set([...csv(fs.readFileSync(path.join(ROOT,F.sinac),'utf8')).flatMap(r=>[r.gestor,r.responsable]),...pv].filter(Boolean).map(n=>' '+normOp(n)+' '));
   const dead=CLS_ROWS.filter(r=>!LEGACY.has(r.patron)).filter(r=>{const p=' '+normOp(r.patron)+' ';return ![...names].some(n=>n.includes(p));});
   assert.deepEqual(dead.map(r=>r.patron),[]);
 });
@@ -105,6 +107,11 @@ test('fuera de Catalunya, un operador SINAC mixto prevalece sobre la EIEL',()=>{
 test('si el operador no es mixto, manda la gestión dominante de la EIEL agrupada',()=>{
   assert.equal(m('11002',{gd:'MA',ops:[['FCC AQUALIA',100]]}),'P');
   assert.equal(m('11002',{gd:'VE'}),'C');
+});
+test('País Vasco: si nada más da el modelo, el operador en baja que nombra su propia fuente, clasificado con fuente',()=>{
+  assert.deepEqual(model('20045',{ops:[['AYUNTAMIENTO DE IRUN',100,1]]},undefined,CLS,'SERVICIOS DE TXINGUDI'),{gm:'P',gs:'pv'});
+  assert.deepEqual(model('48020',{ops:[['AYUNTAMIENTO DE BILBAO',100,1]]},undefined,CLS,undefined),{gm:'N',gs:null});
+  assert.equal(model('48020',{gd:'PV',ops:[]},undefined,CLS,'SERVICIOS DE TXINGUDI').gs,'eiel'); // la EIEL va antes
 });
 test('sin EIEL, el tipo del operador SINAC; sin clasificar o responsable, sin dato',()=>{
   assert.equal(m('28079',{ops:[['CANAL DE ISABEL II, S.A.M.P.',97]]}),'P');

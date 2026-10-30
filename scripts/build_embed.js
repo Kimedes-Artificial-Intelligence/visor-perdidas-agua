@@ -35,7 +35,7 @@ const GES={};for(const l of GL){const a=l.split('|');GES[a[0]]=[GK[a[1]],...a.sl
 const ES=JSON.parse(fs.readFileSync('data/es_mun.json'));
 const opCount={};for(const o of Object.values(ES.mun))for(const x of o.ops||[])opCount[x[0]]=(opCount[x[0]]||0)+1;
 const OPN=Object.keys(opCount).sort((a,b)=>opCount[b]-opCount[a]||(a<b?-1:1));const opIdx=Object.fromEntries(OPN.map((n,i)=>[n,i]));
-const GS={esf:'f',eiel:'e',sinac:'s'};const n=v=>v??null;
+const GS={esf:'f',eiel:'e',sinac:'s',pv:'p'};const n=v=>v??null;
 const ESD={};for(const [k,o] of Object.entries(ES.mun))ESD[k]=[n(o.per),n(o.y),n(o.nrep),n(o.nn),n(o.cov),n(o.rnd),o.gm,GS[o.gs]||'',o.eg||'',o.st||'',
   o.g?Object.entries(o.g).flat():0,n(o.fc),n(o.em),n(o.er),n(o.km),n(o.ry),o.ops?o.ops.flatMap(x=>[opIdx[x[0]],x[1],x[2]||0]):0,n(o.nred),n(o.spop),n(o.dot)];
 // Tipo de cada operador según data/operadores_clasificacion.csv, una letra por operador ('-' = sin clasificar)
@@ -43,6 +43,8 @@ const {csv,loadClassifier}=require('./build_es_mun.js');const classify=loadClass
 const OPT=OPN.map(x=>{const c=classify(x);return c&&c.t!=='X'?c.t:'-';}).join('');
 // Grupo y fuente de la clasificación de cada operador que la tiene (FWG-1870): {índice en OPN: [grupo, URL de la fuente]}
 const OPC={};OPN.forEach((x,i)=>{const c=classify(x);if(!c||c.t==='X')return;const u=(/https:\/\/\S+/.exec(c.nota)||[''])[0];if(c.grupo||u)OPC[i]=[c.grupo,u];});
+// País Vasco y Navarra: operador en baja según su propia fuente, cuando da el modelo de gestión: {INE: [operador, URL, cita]}
+const PVN=Object.fromEntries(Object.entries(ES.mun).filter(([,o])=>o.pv).map(([k,o])=>[k,o.pv]));
 // Municipios cuya red sale de la EIEL de la Comunidad de Madrid (IDEM) y no del visor nacional
 const RSI=Object.keys(ES.mun).filter(k=>ES.mun[k].rs==='idem');
 const EPROV=Object.fromEntries(Object.entries(ES.meta.prov).map(([p,o])=>[p,[o.fase,o.nu_fase]]));
@@ -51,5 +53,5 @@ const EPROV=Object.fromEntries(Object.entries(ES.meta.prov).map(([p,o])=>[p,[o.f
 const AR=JSON.parse(fs.readFileSync('data/art63.json'));
 const A63={m:Object.fromEntries(Object.entries(AR.mun).map(([k,R])=>[k,R.map(r=>[r.ind,r.v,r.unit,r.y,r.op,r.url,r.page,r.legal,r.date])])),
   e:Object.fromEntries(Object.entries(AR.estado).filter(([,o])=>o.e!=='publica').map(([k,o])=>[k,[o.e,o.motivo,o.date]]))};
-const out2=`const A63=${JSON.stringify(A63)};\nconst GES=${JSON.stringify(GES)};\nconst ESD=${JSON.stringify(ESD)};\nconst OPN=${JSON.stringify(OPN)};\nconst OPT=${JSON.stringify(OPT)};\nconst OPC=${JSON.stringify(OPC)};\nconst EPROV=${JSON.stringify(EPROV)};\nconst RSI=${JSON.stringify(RSI)};\n`;
+const out2=`const A63=${JSON.stringify(A63)};\nconst GES=${JSON.stringify(GES)};\nconst ESD=${JSON.stringify(ESD)};\nconst OPN=${JSON.stringify(OPN)};\nconst OPT=${JSON.stringify(OPT)};\nconst OPC=${JSON.stringify(OPC)};\nconst EPROV=${JSON.stringify(EPROV)};\nconst RSI=${JSON.stringify(RSI)};\nconst PVN=${JSON.stringify(PVN)};\n`;
 fs.mkdirSync('.build',{recursive:true});fs.writeFileSync('.build/data.js',out+out2);console.log('data.js',out.length,'urls',urls.length,'units',units);

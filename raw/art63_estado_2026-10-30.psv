@@ -1,8 +1,9 @@
 # Búsqueda del indicador del art. 63.2 del RD 3/2023 en las ciudades de 50.000 hab. o más sin pérdidas en la EIEL, la ACA ni el Govern IB (FWG-1870).
 # estado: publica (ver raw/operadores_art63_2026-10.psv), solo_sistema, no_publica, bloqueado, no_verificado, excluido_aviso_legal. motivo: detalle que se muestra en la ficha.
-# País Vasco y Navarra (Bilbao, Vitoria, Donostia, Pamplona, Barakaldo, Getxo, Irun) van en la Parte 4.
+# País Vasco y Navarra (Bilbao, Vitoria, Donostia, Pamplona, Barakaldo, Getxo, Irun): Parte 4.
 # Parte 3: también los municipios de 20.000 a 50.000 hab. de las provincias sin EIEL con pérdidas (Albacete, Huelva, Huesca, León, Madrid, Santa Cruz de Tenerife).
 ine|estado|fecha_consulta|urls_revisadas|motivo
+01059|solo_sistema|2026-10-30|https://www.vitoria-gasteiz.org/docs/wb021/contenidosEstaticos/adjuntos/es/26/28/102628.pdf|AMVISA publica el rendimiento de toda su red (ciudad, juntas administrativas y municipios vecinos), no el de la ciudad
 02003|no_publica|2026-10-30|https://www.aguasdealbacete.com/informacion-de-transparencia|Aguas de Albacete: el último documento es una auditoría de 2021, sin el indicador
 02009|bloqueado|2026-10-30|https://www.aqualia.com/|FCC Aqualia: aqualia.com responde con un desafío anti-bots (Incapsula)
 02037|bloqueado|2026-10-30|https://www.aqualia.com/|FCC Aqualia: aqualia.com responde con un desafío anti-bots (Incapsula)
@@ -42,6 +43,8 @@ ine|estado|fecha_consulta|urls_revisadas|motivo
 18087|publica|2026-10-30|https://www.emasagra.es/documents/d/emasagra/memoria-de-sostenibilidad-digital-2025-alta-29-09-pdf|
 18140|bloqueado|2026-10-30|https://www.aqualia.com/ (y portales de transparencia de cada ayuntamiento)|FCC Aqualia: aqualia.com responde con un desafío anti-bots (Incapsula); el ayuntamiento no publica el indicador
 19130|no_publica|2026-10-30|https://guadalagua.es/ https://guadalagua.es/calidad-y-medio-ambiente|Guadalagua no publica el indicador
+20045|solo_sistema|2026-10-30|https://txinzer.eus/wp-content/uploads/memoria-txinzer-2024-eu.pdf|Servicios de Txingudi publica el rendimiento de su red conjunta de Irun y Hondarribia
+20069|no_verificado|2026-10-30|https://www.donostia.eus/es/espacios-publicos/saneamiento|No se ha podido determinar quién distribuye el agua: la web municipal solo nombra a la empresa que lee los contadores, y la de Aguas del Añarbe no es accesible (certificado no válido)
 21002|publica|2026-10-30|https://www.giahsa.com/documents/d/giahsa/aljaraque-ficha-abastecimiento-etap-de-aljaraque|
 21005|publica|2026-10-30|https://www.giahsa.com/documents/d/giahsa/almonte-ficha-abastecimiento-etap-condado|
 21010|publica|2026-10-30|https://www.giahsa.com/documents/d/giahsa/ayamonte-ficha-abastecimiento-etap-de-lepe|
@@ -108,6 +111,7 @@ ine|estado|fecha_consulta|urls_revisadas|motivo
 30024|no_publica|2026-10-30|https://www.aguasdelorca.com/control-calidad-del-agua|Aguas de Lorca no publica el indicador
 30027|excluido_aviso_legal|2026-10-30|https://www.sercomosa.es/wp-content/uploads/2026/07/EINF-2025-SERCOMOSA.pdf https://www.sercomosa.es/aviso-legal/|SERCOMOSA publica el rendimiento de la red de Molina de Segura (EINF 2025, p.39), pero su aviso legal prohíbe expresamente la «estracción, reutilización» de sus contenidos
 30030|publica|2026-10-30|https://www.emuasa.es/documents/d/emuasa/ids-emuasa-24-multimedia-p1-3-|
+31201|solo_sistema|2026-10-30|https://recursos-prod.mcp.es/transparencia/indicadores-de-actividad-2025-12_0.pdf|La Mancomunidad de la Comarca de Pamplona publica el agua no registrada de sus 50 municipios mancomunados, no por municipio
 32054|solo_sistema|2026-10-30|https://viaqua.veolia.gal/es/informe-de-desarrollo-sostenible|Viaqua publica el rendimiento de toda la empresa (48 municipios), no por municipio
 33004|publica|2026-10-30|https://www.aguasdeaviles.es/documents/d/aguas-de-aviles/ids-aviles-2023|
 33024|no_publica|2026-10-30|https://drupal.gijon.es/sites/default/files/2024-11/EMA_%20Memoria%20Responsabilidad%20Corporativa%202023.pdf|La EMA de Gijón publica en su memoria 2023 el «% agua no controlada por contador» (14,77 %), que no es uno de los indicadores admitidos; pendiente de decisión
@@ -152,6 +156,9 @@ ine|estado|fecha_consulta|urls_revisadas|motivo
 46244|solo_sistema|2026-10-30|https://hidraqua.veolia.es/documents/d/hidraqua/hidraqua-ids-2024-final https://aigueshorta.portaltransparencia.es|Aigües de l'Horta: solo el rendimiento de toda la empresa
 46250|no_publica|2026-10-30|https://www.emivasa.es/Empresa/Compromiso/Nuestro-trabajo/Actividades/Mejora-del-Rendimiento/|EMIVASA solo describe la mejora del rendimiento, sin cifras
 47186|no_publica|2026-10-30|https://www.aquavall.es/memorias-de-sostenibilidad-aquavall/|AQUAVALL: sus memorias 2023 y 2024 no dan el indicador
+48013|solo_sistema|2026-10-30|https://www.consorciodeaguas.eus/wp-content/uploads/2026/02/Memoria-medioambiental-2024-WEB.pdf|El Consorcio de Aguas Bilbao Bizkaia solo publica el rendimiento de su red primaria (en alta) y no dice qué municipios abastece en baja
+48020|solo_sistema|2026-10-30|https://www.consorciodeaguas.eus/wp-content/uploads/2026/02/Memoria-medioambiental-2024-WEB.pdf|El Consorcio de Aguas Bilbao Bizkaia solo publica el rendimiento de su red primaria (en alta) y no dice qué municipios abastece en baja
+48044|solo_sistema|2026-10-30|https://www.consorciodeaguas.eus/wp-content/uploads/2026/02/Memoria-medioambiental-2024-WEB.pdf|El Consorcio de Aguas Bilbao Bizkaia solo publica el rendimiento de su red primaria (en alta) y no dice qué municipios abastece en baja
 49275|no_publica|2026-10-30|https://aquona.veolia.es/es/informe-de-desarrollo-sostenible https://aquona.veolia.es/es/indicadores-de-sostenibilidad-ambiental|Aquona solo publica informes de toda la empresa, sin el indicador
 50297|no_publica|2026-10-30|https://www.zaragoza.es/sede/portal/infraestructuras/agua/|La página de indicadores del agua del ayuntamiento no da el rendimiento ni el IFE
 51001|bloqueado|2026-10-30|https://www.acemsa.org/robots.txt|El robots.txt de ACEMSA no admite la consulta automatizada
