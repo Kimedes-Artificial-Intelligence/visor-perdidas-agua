@@ -298,3 +298,26 @@ Pendiente de decisión: la EMA de Gijón publica el "% agua no controlada por co
 - No están en la capa Madrid capital ni las 23 ciudades de 50.000 hab. o más: la EIEL cubre los municipios de menos de 50.000 hab. Sus pérdidas siguen el estado de la Parte 1.
 - Pérdidas: ni el `GetCapabilities` del servicio (todas las capas EIEL fase 2023: aliviadero, captación, depósito, potabilización, red de distribución, tramo de conducción...) ni los metadatos tienen una capa de núcleos con pérdidas. Los 155 municipios siguen en gris con el motivo "La EIEL de la Comunidad de Madrid (fase 2023, IDEM) publica la red de distribución pero no las pérdidas por núcleo". El catálogo de la IDEM (`/catalogocartografia/srv/search?keyword=EIEL`) es una aplicación JavaScript cuya API responde 403: queda en la lista de revisión manual.
 - La ficha cita la IDEM y su licencia (CC BY 4.0) en lugar del visor nacional (CC BY-NC-SA 4.0) en estos municipios (constante `RSI`).
+
+### Provincias fuera del visor nacional de la EIEL (Parte 3, punto 2)
+
+Consulta 30/10/2026. Por el ticket, solo se incorpora la EIEL que tenga descarga con una licencia que permita el uso con cita.
+
+| Provincia | ¿Publica su EIEL? | Qué publica | Pérdidas por núcleo | Licencia | Decisión |
+|---|---|---|---|---|---|
+| León (24) | Sí. Diputación: https://www.dipuleon.es/municipios/encuesta-de-infraestructura-y-equipamientos-locales/ | Fases 2023, 2024 y 2025 (publicadas el 22/01/2026), un ZIP por fase con 209 PDF, uno por municipio, con los cuadros normalizados (red de distribución por núcleo; servicio por núcleo con consumos y "Pérdidas %", cuadro 22). Síntesis 2022 en PDF. Sin visor, WFS ni CSV | Sí, en PDF | No declarada: el aviso legal (https://www.dipuleon.es/legal/aviso-legal/) no tiene cláusula de reutilización | **No se incorpora**: sin licencia. Es la única que publica pérdidas por núcleo; si la Diputación autoriza el uso con cita, se puede extraer de los PDF |
+| Santa Cruz de Tenerife (38) | Sí, a través del Gobierno de Canarias (UNIFICA): https://www3.gobiernodecanarias.org/aplicaciones/unifica/Transparencia/ExportShape/Index · catálogo https://datos.canarias.es/catalogos/general/dataset/encuestas-de-infraestructuras-y-equipamientos-locales-eiel-de-canarias | Exportador de shapefiles por isla y año: Tenerife 2005-2017 (último, 2017), La Palma hasta 2023, La Gomera hasta 2011, El Hierro 2013-2014. Capas de captación, depósitos, red de abastecimiento, conducción y núcleos | Desconocido: el modelo de datos (`ModelodeDatos.pdf`) está excluido por el robots.txt | Contradictoria: el portal de datos abiertos dice CC BY 4.0, la página del exportador "© 2016 Unifica, Todos los derechos reservados" | **No se incorpora**: licencia por confirmar y datos de 2017 |
+| Albacete (02) | La encuesta existe; la Diputación no la publica (https://web.dipualba.es/energia-y-medioambiente/cartografia-y-eiel/, solo texto) | Nada descargable | No | No aplica | Nada que incorporar |
+| Huesca (22) | No encontrada en dphuesca.es ni en IDEAragon (WMS/WFS sin capas EIEL). El robots.txt de dphuesca.es excluye `/documents/` | | | | Nada que incorporar |
+| Huelva (21) | No encontrada en diphuelva.es ni en IDEAndalucía | | | | Nada que incorporar |
+
+La búsqueda web de los agentes se agotó durante esta revisión: para Albacete, Huesca y Huelva el "no" se apoya en la revisión directa de sus webs, no en búsquedas. Queda en la lista de revisión manual.
+
+### Municipios de 20.000 a 50.000 hab. de esas provincias (Parte 3, punto 3)
+
+Se aplica la Parte 1 a los 21 municipios de 20.000 a 50.000 hab. de Albacete, Huelva, León y Santa Cruz de Tenerife (Huesca no tiene ninguno) y a los 13 de la Comunidad de Madrid, cuya EIEL no da pérdidas. El resultado está en `raw/art63_estado_2026-10-30.psv`:
+
+- Publican el indicador (ficha municipal del anexo XI B.1 de GIAHSA, año 2025): Aljaraque (rendimiento 97,06 %, IFE 0,15), Almonte (65,87 %, 2,98), Ayamonte (85,08 %, 1,59) e Isla Cristina (83,39 %, 1,91). Rendimiento e IFE: en la ficha y con punteado en el mapa.
+- Solo cifra de toda la empresa: los 13 de Madrid (Canal de Isabel II).
+- Web protegida: los 8 de FCC Aqualia (Almansa, Hellín, Cartaya, Lepe, Moguer, Candelaria, Güímar, Puerto de la Cruz), Guía de Isora (ENTEMANSER) y San Miguel de Abona (el robots.txt de TAGUA no admite la consulta).
+- No lo publican: Villarrobledo, San Andrés del Rabanedo, Icod de los Vinos, Los Llanos de Aridane, La Orotava, Los Realejos y Tacoronte.

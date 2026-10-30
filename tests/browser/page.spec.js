@@ -327,6 +327,17 @@ test('Comunidad de Madrid: la red sale de la EIEL de la IDEM (CC BY 4.0) y la fi
   await expect(P.locator('.srcs')).not.toContainText('CC BY-NC-SA');
 });
 
+test('Almonte (20.000-50.000 hab., provincia sin EIEL): la ficha municipal del RD 3/2023 de GIAHSA da rendimiento e IFE, sin pintar pérdidas',async({page})=>{
+  await openMu(page);
+  expect(await page.locator('#muLayer [data-u="21005"]').evaluate(e=>e.style.fill)).toContain('dotsOt');
+  await page.evaluate(()=>pin('21005'));
+  const P=page.locator('#panel');
+  await expect(P.locator('.hero .big')).toHaveText('65,87%');
+  await expect(P).toContainText('Índice de fugas estructurales (IFE) 2025');
+  await expect(P).toContainText('2,98');
+  await expect(P.locator('.srcs a[href*="giahsa.com"]')).toHaveCount(1);
+});
+
 test('País Vasco: se muestra el responsable en lugar de EKUIS y no se infiere el modelo',async({page})=>{
   await openMu(page);
   await page.evaluate(()=>pin('48020'));
