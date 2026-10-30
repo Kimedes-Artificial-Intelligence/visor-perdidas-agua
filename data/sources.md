@@ -253,11 +253,11 @@ Palanca legal: art. 63.2 y anexo XI parte B.1 del RD 3/2023. El ayuntamiento o e
 
 | Estado | Ciudades | Texto en la ficha |
 |---|---|---|
-| publica | 12 | El indicador, con su nombre exacto, año, página y enlace |
+| publica | 14 | El indicador, con su nombre exacto, año, página y enlace |
 | solo_sistema | 33 | "El operador no publica el indicador del art. 63.2 del RD 3/2023 para este municipio a fecha 30/10/2026: solo da la cifra de todo su sistema..." |
-| no_publica | 34 | "El operador no publica el indicador del art. 63.2 del RD 3/2023 a fecha 30/10/2026." |
-| bloqueado | 19 | "No se ha podido comprobar si el operador publica el indicador...: su web no admite consultas automatizadas... Pendiente de revisión manual." |
-| no_verificado | 20 | "No se ha podido completar la búsqueda..." y el detalle |
+| no_publica | 45 | "El operador no publica el indicador del art. 63.2 del RD 3/2023 a fecha 30/10/2026." |
+| bloqueado | 24 | "No se ha podido comprobar si el operador publica el indicador...: su web no admite consultas automatizadas... Pendiente de revisión manual." |
+| no_verificado | 2 (Cuenca, Toledo: la web del operador falla) | "No se ha podido completar la búsqueda..." y el detalle |
 | excluido_aviso_legal | 1 (Molina de Segura) | "El operador publica el indicador, pero su aviso legal prohíbe expresamente extraer y reutilizar sus contenidos: no se incorpora." |
 
 Cifras incorporadas (todas comprobadas descargando el documento y leyendo la página citada; las infografías, renderizadas):
@@ -276,10 +276,14 @@ Cifras incorporadas (todas comprobadas descargando el documento y leyendo la pá
 | 03014 | Alicante | Aguas de Alicante | Rendimiento 88,55 % | 2024 | No |
 | 03122 | Sant Vicent del Raspeig | Aguas de Alicante | Rendimiento 85,99 % | 2024 | No |
 | 03133 | Torrevieja | AGAMED | Rendimiento 87,45 % | 2025 | No |
+| 15030 | A Coruña | EMALCSA | IFE 7,3 (zona de abastecimiento ZA–A Coruña) | 2025 | No |
+| 29901 | Torremolinos | ASTOSAM | Rendimiento 79 % | 2024 | No |
 
 Reglas aplicadas (decisiones de David del 30/10/2026):
 - Solo el agua no registrada y las pérdidas reales en % se pintan con `MU_BINS`, con una trama horizontal propia. El rendimiento, el IFE y el ILI se muestran en la ficha y en el mapa con un punteado, "el operador publica otro indicador, no comparable". No se calcula 100 menos el rendimiento.
 - Precedencia (`src/loss.js`): auditoría ACA > operador (art. 63.2) > EIEL > Govern IB. La EIEL da un solo valor por municipio, así que "medido" y "declarado" no compiten. La ficha dice qué parte de sus valores son múltiplos de 5.
 - Avisos legales: se cita el dato de hecho aunque el aviso reserve los derechos. Se excluye SERCOMOSA (Molina de Segura), cuyo aviso prohíbe la "estracción, reutilización" de sus contenidos: rendimiento 87,65 % en 2025 en su EINF, p.39, no incorporado.
 
-Cobertura de pérdidas en España por municipio: 5.176 → 5.178 municipios (43,1 → 44,2 % de la población). Ciudades de 50.000 hab. o más con pérdidas en el mapa: 27 → 29; con algún indicador del operador en la ficha: 12.
+Cobertura de pérdidas en España por municipio: 5.176 → 5.178 municipios (43,1 → 44,2 % de la población). Ciudades de 50.000 hab. o más con pérdidas en el mapa: 27 → 29; con algún indicador del operador en la ficha: 14.
+
+Pendiente de decisión: la EMA de Gijón publica el "% agua no controlada por contador" (14,77 %, memoria 2023), que no es uno de los indicadores admitidos. Gandia: una noticia municipal del 14/04/2025 cita un rendimiento del 85 % sin año del dato. Ninguno se incorpora.
