@@ -293,9 +293,18 @@ const intLayer=$("#intLayer"),intEls={};
 (function buildInt(){let h="";
   for(const [k,r] of Object.entries(INT.reg))h+=`<path class="ir" d="${r[0]}" data-it="r${k}" tabindex="0" role="button" aria-label="${esc(r[1])}, ${es(r[4],1)} %"></path>`;
   for(const [k,c] of Object.entries(INT.cap))h+=`<circle class="ic" cx="${c[0]}" cy="${c[1]}" r="1.6" data-it="c${k}" tabindex="0" role="button" aria-label="${esc(c[2])}, ${es(c[5],1)} %"></circle>`;
+  // Inglaterra (FWG-1871, Parte D): zonas de cada compañía de agua, con sus fugas por propiedad y día
+  for(const [k,c] of Object.entries(INT.en.cia))h+=`<path class="ie" d="${c[0]}" data-it="e${k}" tabindex="0" role="button" aria-label="${esc(c[1])}, ${c[4]==null?"sin dato publicado por la Environment Agency":es(c[4],2)+" litros por propiedad y día"}"></path>`;
   intLayer.innerHTML=h;intLayer.querySelectorAll("[data-it]").forEach(e=>intEls[e.dataset.it]=e);})();
-const intRow=k=>k[0]==="r"?{kind:"r",r:INT.reg[k.slice(1)]}:{kind:"c",c:INT.cap[k.slice(1)]};
-function paintInt(){for(const [k,e] of Object.entries(intEls)){const o=intRow(k);e.style.fill=muColor(o.kind==="r"?o.r[4]:o.c[5]);}}
+const intRow=k=>k[0]==="r"?{kind:"r",r:INT.reg[k.slice(1)]}:k[0]==="e"?{kind:"e",e:INT.en.cia[k.slice(1)],code:k.slice(1)}:{kind:"c",c:INT.cap[k.slice(1)]};
+// Inglaterra: escala propia en litros por propiedad y día (otro indicador que el % de pérdidas); sin dato, gris
+const EN_BINS=[[70,"#9fd3c0","< 70"],[85,"#f1d98a","70-85"],[100,"#eba25a","85-100"],[115,"#cf5b33","100-115"],[Infinity,"#8a1e2c","≥ 115"]];
+const enColor=v=>v==null?"var(--nodata)":EN_BINS.find(b=>v<b[0])[1];
+// País de la vista internacional: Italia o Inglaterra
+let intC="it";
+function paintInt(){for(const [k,e] of Object.entries(intEls)){const o=intRow(k);e.style.fill=o.kind==="e"?enColor(o.e[4]):muColor(o.kind==="r"?o.r[4]:o.c[5]);}}
+const EN_WALES=new Set(["DCW","HDD"]);
+const INT_EN_IND="Fugas totales (leakage) en litros por propiedad y día, 2024-25, de cada compañía de agua de Inglaterra (Environment Agency)";
 const INT_IND="Perdite idriche totali: % del agua inmessa en la red de distribución (ISTAT, Censimento delle acque per uso civile, 2022)";
 const INT_ST={datos:"Con datos",licencia:"Sin licencia de reutilización verificada",descarga_manual:"Pendiente de descarga manual",sin_capa:"Sin fuente subnacional: no se construye capa"};
 
@@ -333,24 +342,26 @@ function legend(){
     $("#hint").textContent="Rueda, pellizco o doble clic para acercar. En gris: la EIEL no cubre el municipio; no se estima nada.";}
   else if(level==="mu"){L.innerHTML=`<span class="t">Pérdidas por municipio (%) · último dato</span>`+MU_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin dato municipal publicado</span><span><i style="background:repeating-linear-gradient(45deg,#eba25a 0 3px,rgba(22,44,64,.75) 3px 4px)"></i>estimación con poca o ninguna medición real</span><span><i style="background:repeating-linear-gradient(-45deg,#f1d98a 0 3px,rgba(22,44,64,.75) 3px 3.6px)"></i>dato declarado por el ayuntamiento, no medido (EIEL)</span><span><i style="background:repeating-linear-gradient(0deg,#9fd3c0 0 3px,rgba(22,44,64,.75) 3px 3.8px)"></i>dato publicado por el operador (art. 63.2 RD 3/2023)</span><span><i style="background:repeating-linear-gradient(90deg,#9fd3c0 0 3px,rgba(22,44,64,.75) 3px 3.8px)"></i>dato de todo el sistema del operador, no municipal</span><span><i style="background:radial-gradient(circle,var(--fg) 0 1.3px,transparent 1.6px) 0 0/4px 4px,var(--nodata)"></i>el operador publica otro indicador (rendimiento, IFE), no comparable</span><details class="lgmore"${LG_OPEN()}><summary>Cómo leer este mapa</summary><span class="srcnote">Catalunya: agua no registrada de las auditorías (ACA, F9). Ciudades con dato del operador: agua no registrada o pérdidas reales que publica en cumplimiento del art. 63.2 del RD 3/2023; si solo publica el rendimiento o el IFE, no se pinta en esta escala ni se convierte. Sistemas de varios municipios (Canal de Isabel II, Mancomunidad de la Comarca de Pamplona...): su agua no registrada o sus pérdidas reales, sin modificar, solo en los municipios que la propia fuente lista como servidos y solo si ninguna fuente municipal da dato. Illes Balears: agua no contabilizada, estimación del Govern IB 2024. Resto: pérdidas que declara el ayuntamiento en la EIEL, media de sus núcleos ponderada por consumo; la mediana de los municipios tiene todos sus valores en múltiplos de 5. ${UM_NOTE}</span></details>`;
     $("#hint").textContent="Rueda, pellizco o doble clic para acercar; arrastra para desplazar. En gris: sin dato municipal publicado, no se estima nada.";}
+  else if(level==="int"&&intC==="en"){L.innerHTML=`<span class="t">Inglaterra · fugas por propiedad y día (litros) · Environment Agency 2024-25</span>`+EN_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin dato publicado</span><span class="srcnote">${esc(INT_EN_IND)}. Escala propia: no es un porcentaje y no se compara con la de España ni con la de Italia. Zonas de recursos hídricos de cada compañía (Environment Agency, OGL v3). Gales (Dŵr Cymru, Hafren Dyfrdwy) no está en los datos de la Environment Agency y la licencia de los de Ofwat no se ha podido verificar: queda en gris.</span>`;}
   else if(level==="int"){L.innerHTML=`<span class="t">Italia · perdite idriche totali (%) · ISTAT 2022</span>`+MU_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span class="srcnote">${esc(INT_IND)}. Regiones en el mapa; capitales de provincia (comuni capoluogo) en puntos. Misma escala que los municipios de España, pero otro indicador: agua inmessa en red menos agua erogada para usos autorizados. Otros países: ${INT.paises.filter(p=>p.estado!=="datos"&&p.estado!=="sin_capa").map(p=>`${esc(p.pais)} (${INT_ST[p.estado].toLowerCase()})`).join(", ")}. Oriente Medio: no hay fuente pública con granularidad subnacional; no se construye capa. Geometría: ISTAT, límites al 1/1/2026, CC BY 4.0.</span>`;}
   else{L.innerHTML=`<span class="t">Agua no registrada (%) · último dato</span>`+MU_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin auditoría publicada</span><span class="srcnote">Dato 2024 de las auditorías publicadas por cada operador; si no hay, 2022 del anexo de la ACA. Cada valor lleva su año y fuente en el panel.</span>`;
     $("#hint").textContent="Todos los municipios responden al ratón y al clic. En gris: no consta auditoría publicada, no se estima nada.";}
 }
 function headerCtl(){
   document.querySelectorAll(".lvl button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.l===level));
-  $("#segEU").hidden=level!=="eu";$("#segES").hidden=level!=="es";$("#yearsel").hidden=level!=="es";$("#ccsel").hidden=level!=="mu";$("#segMG").hidden=level!=="mu"&&level!=="cat";document.querySelectorAll("#segMG .esonly").forEach(b=>b.hidden=level!=="mu");document.querySelectorAll("#segMG button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.g===colorBy));$("#zoomCtl").hidden=level!=="mu";$("#mapSearch").hidden=level!=="mu";svg.classList.toggle("zoomable",level==="mu");
+  $("#segEU").hidden=level!=="eu";$("#segES").hidden=level!=="es";$("#yearsel").hidden=level!=="es";$("#ccsel").hidden=level!=="mu";$("#segMG").hidden=level!=="mu"&&level!=="cat";$("#segINT").hidden=level!=="int";document.querySelectorAll("#segINT button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.c===intC));document.querySelectorAll("#segMG .esonly").forEach(b=>b.hidden=level!=="mu");document.querySelectorAll("#segMG button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.g===colorBy));$("#zoomCtl").hidden=level!=="mu";$("#mapSearch").hidden=level!=="mu";svg.classList.toggle("zoomable",level==="mu");
   document.querySelectorAll("#segEU button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===metric));
   document.querySelectorAll("#segES button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===esMetric));
   const A=$("#avg");
   if(level==="eu"){const m=M[metric];A.innerHTML=`Media EUR* <b>${m.fmt(m.avg)} ${m.unit}</b> · UE-27 <b>${m.fmt(m.eu)} ${m.unit}</b>`;}
   else if(level==="es"){const v=ccVal("ES");A.innerHTML=`España ${YRS[yi]} <b>${pc(v)}</b> · INE`;}
   else if(level==="mu"){A.innerHTML=`España 2024 <b>${pc(ccINE("ES"))}</b> ANR · INE`;}
+  else if(level==="int"&&intC==="en"){A.innerHTML=`Inglaterra 2024-25 · Environment Agency`;}
   else if(level==="int"){A.innerHTML=`Italia 2022 <b>${pc(INT.it[2])}</b> perdite totali · ISTAT`;}
   else{A.innerHTML=`Cataluña 2024 <b>${pc(CAT_INE24)}</b> ANR · INE`;}
   const C=$("#crumbs");const T={eu:"Europa",es:"España",mu:"Municipios",cat:"Catalunya",int:"Internacional"};const chain={eu:["eu"],es:["eu","es"],mu:["eu","es","mu"],cat:["eu","es","cat"],int:["eu","int"]}[level];
   C.innerHTML=chain.map(l=>[l,T[l]]).map(([l,t],i)=>`${i?'<span class="sep">/</span>':''}<button data-l="${l}" ${l===level?'aria-current="page"':''}>${t}</button>`).join("");
-  $("#maphead").textContent=level==="eu"?"ETRS89-LAEA · EurEau 2026":level==="es"?`Comunidades autónomas · INE ${YRS[yi]}`:level==="mu"?umCount(colorBy):level==="int"?"Italia · 20 regiones y 109 capitales de provincia · ISTAT 2022":"947 municipios · auditorías 2022-2024 (ACA y operadores)";
+  $("#maphead").textContent=level==="eu"?"ETRS89-LAEA · EurEau 2026":level==="es"?`Comunidades autónomas · INE ${YRS[yi]}`:level==="mu"?umCount(colorBy):level==="int"?(intC==="en"?`Inglaterra · ${Object.values(INT.en.cia).filter(c=>c[4]!=null).length} compañías de agua con dato · Environment Agency 2024-25`:"Italia · 20 regiones y 109 capitales de provincia · ISTAT 2022"):"947 municipios · auditorías 2022-2024 (ACA y operadores)";
   if(level==="mu")$("#maphead").innerHTML=`${esc(umCount(colorBy))}<span class="cov50">${esc(umCount50(colorBy))} · <a href="${SRC_MD}" target="_blank" rel="noopener">fuentes y cobertura</a></span>`;
 }
 function paintMun(){
@@ -441,6 +452,9 @@ function renderRank(){
     const max=Math.max(...rows.map(c=>ccVal(c)||0),ccVal("ES")||0);let n=0;
     $("#rankTitle").textContent=`${m.lbl} por comunidad autónoma (% · INE ${YRS[yi]})`;$("#rankNote").textContent="Línea vertical: España";
     R.innerHTML=rows.map(c=>{const v=ccVal(c);if(v!=null)n++;return rankRow(c,v==null?"·":String(n).padStart(2,"0"),CC.r[c].n,v,max,ccVal("ES"),`var(--c${Math.max(binOf(v,m.bins),2)})`,x=>es(x,1));}).join("");}
+  else if(level==="int"&&intC==="en"){const ids=Object.keys(INT.en.cia).filter(k=>INT.en.cia[k][4]!=null).sort((a,b)=>INT.en.cia[b][4]-INT.en.cia[a][4]);const max=Math.max(...ids.map(k=>INT.en.cia[k][4]));
+    $("#rankTitle").textContent="Inglaterra: fugas por compañía de agua (litros por propiedad y día, Environment Agency 2024-25)";$("#rankNote").textContent="Escala propia; no es un porcentaje";
+    R.innerHTML=ids.map((k,i)=>rankRow("e"+k,String(i+1).padStart(2,"0"),INT.en.cia[k][1],INT.en.cia[k][4],max,null,enColor(INT.en.cia[k][4]),x=>es(x,2))).join("");}
   else if(level==="int"){const ids=Object.keys(INT.cap).sort((a,b)=>INT.cap[b][5]-INT.cap[a][5]);const max=Math.max(...ids.map(k=>INT.cap[k][5]));
     $("#rankTitle").textContent="Italia: perdite idriche totali por capital de provincia (%, ISTAT 2022)";$("#rankNote").textContent=`Línea vertical: Italia, ${es(INT.it[2],1)} %`;
     const LIM=40;const show=rankAll?ids:ids.slice(0,LIM);
@@ -602,16 +616,29 @@ function panelInt(P,k){
   const src=`<div><h3>Fuentes</h3><ol class="srcs"><li><span class="what">Pérdidas</span><b>ISTAT, Censimento delle acque per uso civile, anno 2022</b>. Tavole «Le statistiche dell'Istat sull'acqua. Anni 2020-2023» (22/03/2024), Tav 3 (regiones) y Tav 5 (capoluoghi). CC BY 4.0. <a href="https://www.istat.it/comunicato-stampa/le-statistiche-dellistat-sullacqua-anni-2020-2023/" target="_blank" rel="noopener">Abrir fuente</a></li>
     <li><span class="what">Geometría</span><b>${esc(INT.geo.src)}</b>. ${esc(INT.geo.licencia)}. <a href="${esc(INT.geo.url)}" target="_blank" rel="noopener">Abrir fuente</a></li></ol></div>`;
   if(!k){P.innerHTML=`<div class="ph"><div><h2>Internacional</h2><span class="code">Fuentes subnacionales con licencia abierta</span></div></div>
-    <p class="note">La vista Europa da el dato por país (EurEau). Aquí solo entran países con una fuente oficial abierta por ciudad, región o compañía. Selecciona una región o una capital de Italia.</p>
+    <p class="note">La vista Europa da el dato por país (EurEau). Aquí solo entran países con una fuente oficial abierta por ciudad, región o compañía. Elige Italia o Inglaterra arriba y selecciona una región, una capital o una compañía de agua.</p>
     <div><h3>Estado por país (30/10/2026)</h3><dl>${INT.paises.map(p=>row(esc(p.pais),`${INT_ST[p.estado]}`)).join("")}</dl>
     <p class="srcline">${INT.paises.filter(p=>p.estado!=="datos").map(p=>`${esc(p.pais)}: ${esc(p.motivo)}.`).join(" ")}</p></div>`+src;return;}
   const o=intRow(k),chip=`<span class="chip ${k===pinned.int?"pin":""}">${k===pinned.int?"Fijado":"Vista previa"}</span>`;
+  if(o.kind==="e")return panelEn(P,o,chip);
   const v=o.kind==="r"?o.r[4]:o.c[5],name=o.kind==="r"?o.r[1]:o.c[2];
   const items=[[name.length>12?name.slice(0,11)+".":name,v,1],["Italia",INT.it[2],0]];
   P.innerHTML=`<div class="ph"><div><h2>${esc(name)}</h2><span class="code">${o.kind==="r"?"Región":"Capital de provincia · "+esc(Object.values(INT.reg).find((r,i)=>Object.keys(INT.reg)[i]===o.c[7])[1])} · Italia</span></div>${chip}</div>
   <div class="hero"><span class="lbl">Perdite idriche totali</span><span class="big">${es(v,1)}<small>%</small></span><span class="src">${es(v,1)} % · 2022 · ISTAT, Censimento delle acque per uso civile</span></div>${cmpBars(items)}
   <div><h3>Indicadores 2022</h3><dl>${o.kind==="r"?row("Agua inmessa en red",es(o.r[2],1),"millones de m³")+row("Agua erogada para usos autorizados",es(o.r[3],1),"millones de m³"):row("Agua inmessa en red",grp(o.c[3]),"miles de m³")+row("Agua erogada para usos autorizados",grp(o.c[4]),"miles de m³")+row("Pérdidas lineales (clase)",o.c[6]?esc(o.c[6]):null)}</dl>
   <p class="srcline">${esc(INT_IND)}. ${o.kind==="c"?"Total de los comuni capoluogo: "+es(INT.tc[2],1)+" %. ":""}No es el mismo indicador que el agua no registrada de España: se compara el orden de magnitud.</p></div>`+src;}
+// Ficha de una compañía de agua de Inglaterra (FWG-1871, Parte D): las dos cifras tal como las publica la Environment Agency
+function panelEn(P,o,chip){const c=o.e,S=INT.en.src;
+  const src=`<div><h3>Fuentes</h3><ol class="srcs">
+    <li><span class="what">Fugas por propiedad y día</span><b>Environment Agency, Water resources 2024 to 2025: analysis of the water industry's annual water resources performance</b>. ${esc(c[6]||"")}. Consulta ${A63_DATE(S.lpd.date)}. ${esc(S.lpd.legal.replace(/^\S+ /,""))} <a href="${esc(S.lpd.url)}" target="_blank" rel="noopener">Abrir fuente</a></li>
+    <li><span class="what">Fugas totales (Ml/d)</span><b>Environment Agency, Water Resource Management Plan Annual Review Data</b>, hoja «24-25 OT». ${esc(c[5]||"")}. Consulta ${A63_DATE(S.mld.date)}. Open Government Licence. <a href="${esc(S.mld.url)}" target="_blank" rel="noopener">Abrir fuente</a></li>
+    <li><span class="what">Geometría</span><b>${esc(INT.en.geo.src)}</b>. ${esc(INT.en.geo.licencia)}. <a href="${esc(INT.en.geo.url)}" target="_blank" rel="noopener">Abrir fuente</a></li></ol></div>`;
+  const head=`<div class="ph"><div><h2>${esc(c[1])}</h2><span class="code">Compañía de agua · ${esc(c[2]||"")} · Inglaterra</span></div>${chip}</div>`;
+  if(c[4]==null){P.innerHTML=head+`<div class="hero"><span class="lbl">Fugas de agua</span><span class="big" style="font-size:24px;line-height:32px">Sin dato publicado</span><span class="src">No se estima ningún valor.</span></div>
+    <p class="note">${EN_WALES.has(o.code)?"La Environment Agency solo publica las compañías de Inglaterra. Para Gales, los datos de Ofwat y de Discover Water no tienen una licencia de reutilización verificada (Ofwat no admite la consulta automatizada; Discover Water no publica licencia).":"El informe 2024-25 de la Environment Agency no da las fugas de esta compañía."}</p>`+src;return;}
+  P.innerHTML=head+`<div class="hero"><span class="lbl">Fugas por propiedad y día</span><span class="big">${es(c[4],2)}<small>l</small></span><span class="src">${es(c[4],2)} litros por propiedad y día · 2024-25 · Environment Agency</span></div>
+  <div><h3>Indicadores 2024-25</h3><dl>${row("Fugas por propiedad y día",es(c[4],2),"litros")}${row("Fugas totales",c[3]==null?null:es(c[3],2),"Ml/d (millones de litros al día)")}</dl>
+  <p class="srcline">${esc(INT_EN_IND)}. Las fugas totales son el valor de la hoja de la Environment Agency, que lo muestra con 2 decimales. Datos anuales de 2024-25, no la media de tres años que publican Ofwat y Discover Water. No es el mismo indicador que el % de pérdidas de España o de Italia.</p></div>`+src;}
 // Ficha de operador (FWG-1870, Parte 6): los municipios donde el filtro de operador casa con alguno de sus operadores del SINAC
 function panelOp(P){const ids=[...opMatch],pop=ids.reduce((a,id)=>a+MUD[id][1],0);
   const q=opNorm(opQuery),names=[...OPN.map((n,i)=>[n,i]).filter(([,i])=>OPN_NORM[i].includes(q)),
@@ -656,7 +683,8 @@ function showTip(html,x,y){tip.innerHTML=html;tip.hidden=false;placeTip(x,y);}
 const hideTip=()=>{tip.hidden=true};
 const rel=e=>{const r=box.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top]};
 function tipFor(k){
-  if(level==="int"){const o=intRow(k);if(o.kind==="r")return `<b>${esc(o.r[1])}</b><span>Perdite totali: ${es(o.r[4],1)} % · ISTAT 2022</span><span class="tn">Región</span>`;
+  if(level==="int"){const o=intRow(k);if(o.kind==="e")return `<b>${esc(o.e[1])}</b><span>${o.e[4]==null?"Sin dato publicado por la Environment Agency":"Fugas: "+es(o.e[4],2)+" l por propiedad y día · EA 2024-25"}</span><span class="tn">Compañía de agua · Inglaterra</span>`;
+    if(o.kind==="r")return `<b>${esc(o.r[1])}</b><span>Perdite totali: ${es(o.r[4],1)} % · ISTAT 2022</span><span class="tn">Región</span>`;
     return `<b>${esc(o.c[2])}</b><span>Perdite totali: ${es(o.c[5],1)} % · ISTAT 2022</span><span class="tn">Capital de provincia (comune capoluogo)</span>`;}
   if(level==="eu"){const v=val(k),m=M[metric];return `<b>${D[k][0]}</b><span>${m.short}: ${v==null?"sin dato":m.fmt(v)+" "+m.unit} · ${(k==="ES"&&metric==="nrw")?"INE 2024":"EurEau 2026"}</span>`;}
   if(level==="es"){const r=CC.r[k],v=ccVal(k);return `<b>${r.n}</b><span>${ESM[esMetric].short}: ${pc(v)} · INE ${YRS[yi]}</span>`;}
@@ -675,7 +703,7 @@ function tipFor(k){
 // ================= zoom y niveles =================
 const FULL=[0,0,760,700];let curVB=FULL.slice(),anim=null;
 const reduce=()=>window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const VB={eu:FULL,es:ESP.vb,mu:MUN.vb,cat:CAT.vb,int:INT.vb};
+const VB={eu:FULL,es:ESP.vb,mu:MUN.vb,cat:CAT.vb,get int(){return intC==="en"?INT.en.vb:INT.vb;}};
 function sizeLabels(){const s=svg.getBoundingClientRect().width/curVB[2];const fs=(10/s).toFixed(3);catLayer.querySelectorAll(".mlab").forEach(e=>e.setAttribute("font-size",fs));}
 const hatchMu=$("#hatchMu"),hatchDe=$("#hatchDe"),hatchOp=$("#hatchOp"),hatchSy=$("#hatchSy"),dotsOt=$("#dotsOt");
 // El rayado de la vista por municipio mantiene el mismo grosor en pantalla con cualquier zoom
@@ -694,7 +722,7 @@ function setLevel(l,animate=true,vb=null){
     layerVis({es:mix("es"),mu:mix("mu"),cat:mix("cat"),int:mix("int")});
     sizeLabels();if(k<1)anim=requestAnimationFrame(step);};
   anim=requestAnimationFrame(step);
-  svg.setAttribute("aria-label",l==="eu"?"Mapa de Europa por pérdidas de agua":l==="es"?"Mapa de España por comunidades autónomas":l==="mu"?"Mapa de España por municipios":l==="int"?"Mapa de Italia por regiones y capitales de provincia":"Mapa de Catalunya por municipios");
+  svg.setAttribute("aria-label",l==="eu"?"Mapa de Europa por pérdidas de agua":l==="es"?"Mapa de España por comunidades autónomas":l==="mu"?"Mapa de España por municipios":l==="int"?(intC==="en"?"Mapa de Inglaterra por compañías de agua":"Mapa de Italia por regiones y capitales de provincia"):"Mapa de Catalunya por municipios");
   syncHash();
   store.set("lv",l);paint();
 }
@@ -756,16 +784,19 @@ const VIEW_SLUG={eu:"europa",es:"espana",mu:"municipios",cat:"catalunya",int:"in
 const LAYER_SLUG={loss:"perdidas",ges:"gestion",fc:"fibrocemento",est:"estado",pri:"prioridad"},SLUG_LAYER=Object.fromEntries(Object.entries(LAYER_SLUG).map(([k,v])=>[v,k]));
 const chosen={};
 const layerOk=(l,g)=>l==="mu"||(l==="cat"&&(g==="loss"||g==="ges"));
-const keyOk=(l,k)=>l==="mu"?!!MUD[k]:l==="cat"?!!MU[k]:l==="es"?!!CC.r[k]:l==="eu"?!!D[k]:l==="int"?!!(k[0]==="r"?INT.reg[k.slice(1)]:k[0]==="c"&&INT.cap[k.slice(1)]):false;
+const keyOk=(l,k)=>l==="mu"?!!MUD[k]:l==="cat"?!!MU[k]:l==="es"?!!CC.r[k]:l==="eu"?!!D[k]:l==="int"?!!(k[0]==="r"?INT.reg[k.slice(1)]:k[0]==="e"?INT.en.cia[k.slice(1)]:k[0]==="c"&&INT.cap[k.slice(1)]):false;
 function hashFor(){const k=chosen[level]&&pinned[level];const p=[VIEW_SLUG[level]];if(k)p.push(encodeURIComponent(k));
   if(layerOk(level,colorBy)&&(k||colorBy!=="loss"))p.push(LAYER_SLUG[colorBy]);
+  if(level==="int"&&intC==="en"&&!k)p.push("inglaterra");
   return level==="eu"&&p.length===1?location.pathname+location.search:"#"+p.join("/");}
 function syncHash(){try{history.replaceState(null,"",hashFor())}catch(e){}}
 // Lee el hash; lo que no se reconoce se ignora y se abre la vista de Europa, como antes
 function parseHash(h){const seg=h.replace(/^#/,"").split("/").map(x=>{try{return decodeURIComponent(x)}catch(e){return ""}});
   const l=SLUG_VIEW[seg[0]]||"eu";let key=null,layer=null;
-  for(const x of seg.slice(1)){if(SLUG_LAYER[x]&&layerOk(l,SLUG_LAYER[x]))layer=SLUG_LAYER[x];else if(x&&keyOk(l,x))key=x;}
-  return {l,key,layer};}
+  let intc=null;
+  for(const x of seg.slice(1)){if(SLUG_LAYER[x]&&layerOk(l,SLUG_LAYER[x]))layer=SLUG_LAYER[x];else if(l==="int"&&x==="inglaterra")intc="en";else if(x&&keyOk(l,x))key=x;}
+  if(l==="int"&&key)intc=key[0]==="e"?"en":"it";
+  return {l,key,layer,intc};}
 // Encuadre de un municipio: su forma (en el grupo escalado a 1/100) o su punto, con margen para ver el entorno
 function muBox(id){const e=umEls[id];if(!e)return null;const b=e.getBBox(),k=e.tagName==="path"?.01:1;
   const w=Math.max(b.width*k,b.height*k,MUN.vb[2]/40)*4,cx=(b.x+b.width/2)*k,cy=(b.y+b.height/2)*k,h=w*MUN.vb[3]/MUN.vb[2];
@@ -826,10 +857,13 @@ document.querySelectorAll("#segMG button").forEach(b=>b.addEventListener("click"
 document.querySelectorAll("#segES button").forEach(b=>b.addEventListener("click",()=>{esMetric=b.dataset.m;store.set("em",esMetric);paint();}));
 const ysel=$("#year");ysel.innerHTML=YRS.map((y,i)=>`<option value="${i}" ${i===yi?"selected":""}>${y}</option>`).join("");
 ysel.addEventListener("change",()=>{yi=+ysel.value;paint();});
-window.addEventListener("hashchange",()=>{const o=parseHash(location.hash);if(o.layer)colorBy=o.layer;if(o.l!==level)setLevel(o.l);else paint();if(o.key)openKey(o.key);});
+window.addEventListener("hashchange",()=>{const o=parseHash(location.hash);if(o.layer)colorBy=o.layer;const ci=o.intc&&o.intc!==intC;if(o.intc)intC=o.intc;if(o.l!==level||ci)setLevel(o.l);else paint();if(o.key)openKey(o.key);});
+// Selector de país de la vista internacional: cambia el encuadre, la leyenda, el ranking y la ficha
+function setIntC(c){if(c===intC)return;intC=c;if(pinned.int&&(pinned.int[0]==="e")!==(c==="en"))pinned.int=null;hovered=null;setLevel("int");}
+document.querySelectorAll("#segINT button").forEach(b=>b.addEventListener("click",()=>setIntC(b.dataset.c)));
 
 // ================= inicio =================
 {const s=store.get("m");if(s&&M[s])metric=s;const t=store.get("em");if(t&&ESM[t])esMetric=t;}
-const h0=parseHash(location.hash),l0=h0.l;if(h0.layer)colorBy=h0.layer;
+const h0=parseHash(location.hash),l0=h0.l;if(h0.layer)colorBy=h0.layer;if(h0.intc)intC=h0.intc;
 setVB(VB[l0]||FULL);layerVis({es:l0==="es"?1:0,mu:l0==="mu"?1:0,cat:l0==="cat"?1:0,int:l0==="int"?1:0});setLevel(l0,false);
 if(h0.key)openKey(h0.key,false);

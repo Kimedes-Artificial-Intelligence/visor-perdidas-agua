@@ -211,7 +211,7 @@ La vista `#internacional` solo admite fuentes oficiales con licencia abierta y g
 2. Geometría de una fuente oficial abierta, proyectada con `src/geometry/proj.json` como la de Italia (`scripts/extract_istat_geo.js`, `scripts/build_int.js`).
 3. Cambia su fila de `raw/internacional_paises.psv` a `datos` y añade una prueba de control en `tests/unit/internacional.test.js` con cifras del informe de la fuente.
 
-Portugal (ERSAR), Francia (SISPEA), Brasil (SNIS/SINISA) y Chile (SISS) están en `descarga_manual`; Inglaterra y Gales, en `licencia`.
+Portugal (ERSAR), Francia (SISPEA), Brasil (SNIS/SINISA) y Chile (SISS) están en `descarga_manual`; Gales, en `licencia`. Inglaterra (Environment Agency, FWG-1871) sigue el mismo patrón con su propia escala: `raw/inglaterra_ea_fugas_2024-25.psv`, `scripts/extract_ea_wrz.js` y `buildEn` en `scripts/build_int.js`.
 
 ## Cambiar los pesos del índice de prioridad comercial
 
