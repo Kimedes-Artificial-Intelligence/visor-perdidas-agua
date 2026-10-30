@@ -216,3 +216,26 @@ Sin incorporar (no se salta ninguna protección):
 | Abrera | Solo balance 2024, sin F9 | https://www.ajuntamentabrera.cat/files/doc6924/balanc-hidric-2024.pdf |
 | Ripoll, Montornès del Vallès | Solo auditoría 2022 publicada | https://somasrsa.cat/wp-content/uploads/2025/09/Auditoria-hidraulica-Ripoll-2022.pdf · https://giacsa.com/wp-content/uploads/2024/05/Annex-Auditoria-Hidraulica-vs-2-1.pdf |
 | el Masnou, Altafulla, la Bisbal d'Empordà | Sin auditoría 2024 en las webs del ayuntamiento y del operador | |
+
+## Añadido el 30 oct 2026: clasificación de operadores del SINAC (FWG-1870, Parte 2)
+
+Consulta: 30/10/2026. Se clasifican 47 operadores nuevos en `data/operadores_clasificacion.csv`, cada uno con la URL, la fecha de consulta y la frase literal que confirma el tipo en la columna `nota`. Además se citan las fuentes de dos patrones existentes (EMUASA, mixta con Veolia; HIDRALIA, participada por Veolia y Unicaja). Cada cita se comprobó descargando la página o el PDF y buscando la frase; las que no aparecían en el texto descargado no se usan (Aguas de Telde, cuya web la genera con JavaScript).
+
+| | Antes | Después |
+|---|---|---|
+| Operadores sin clasificar | 1.272 nombres | 1.225 nombres |
+| Municipios con modelo de gestión | 7.528 (83,0 % de la población) | 7.576 (93,5 %) |
+| Ciudades de 50.000 hab. o más con modelo | 116 de 153 | 142 de 153 |
+| Municipios en Mixta | 108 | 163 |
+
+Hallazgos que corrigen supuestos del ticket: EMASAGRA (51 % Granada, 49 % Hidralia), EMAHSA (51 % Huelva, 49 % Hidralia), EMALSA (34 % Las Palmas, 33 % Nuinsa, 33 % Saur), ASTOSAM (5 % Torremolinos, 95 % Hidralia), SERCOMOSA (51,396 % Molina de Segura, 48,604 % Acciona), AGAMED (26 % Torrevieja, 74 % Hidraqua), Aguas de Albacete (26 % Ayuntamiento, 74 % Aquona) y Aigües d'Elx (51 % / 49 % Hidraqua) son mixtas, no municipales. EMASESA, EMASA, EMALCSA, AQUAVALL, Aguas de Burgos, EMAYA y Aguas de Cádiz sí son de capital 100 % público según su fuente.
+
+Criterios aplicados:
+- `Municipalizado` solo con una frase que diga que el capital es 100 % público, o que es una entidad pública empresarial, un organismo autónomo o un medio propio unipersonal. Aigües de Mataró: su memoria 2024 dice "empresa privada propietat de l'Ajuntament de Mataró", sin porcentaje; se clasifica como municipalizada y queda señalada para revisión.
+- `Privado` para concesionarias cuando la fuente habla de concesión a la empresa (Hidrobal, Aigües de Vic, Sacyr Guadalagua, Inima).
+- Fuentes antiguas: la participación de Hidrogea en Aguas de Cieza, Jumilla y Sermubeniel sale de su Informe de Responsabilidad Corporativa 2017; Sermubeniel sigue siendo mixta según el BORM de 2020. Tudela: informe de la Cámara de Comptos sobre 2010.
+- Cooperativas (Comunitat Minera Olesana) y comunidades de propietarios: la tabla no tiene ese tipo, quedan sin clasificar. En Catalunya manda ESF de todos modos.
+
+Siguen sin clasificar, de los 60 primeros: Aguas de Alcalá UTE (UTE concesionaria; socios sin fuente primaria), Aguas de Telde, ARCGISA (certificado TLS no válido), Aguas Sierra de Cádiz, Aquaoleiros, Aqua Campiña, COSMA-Narón (certificado caducado; Aqualia tras desafío anti-bots), C.P. La Cizaña, Tagus Servicios Integrales, Aguas de Langreo (desafío anti-bots), ARU Obras y Servicios, UTE Aigües de SVH (el BOP de 2024 nombra a SGAB como gestora, no a la UTE), Aigües de Banyoles, Aigua de Rigat, Comunitat Minera Olesana, Aguas de Narixa (desafío anti-bots) y Augaservi.
+
+La ficha del municipio muestra el grupo junto a cada operador y añade a la lista de fuentes la página que confirma su tipo (constante `OPC`).

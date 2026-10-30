@@ -81,7 +81,7 @@ const esdCache={};
 function esd(id){if(id in esdCache)return esdCache[id];const r=ESD[id];if(!r)return esdCache[id]=null;
   const pairs=(a,n)=>{const o=[];for(let i=0;a&&i<a.length;i+=n)o.push(a.slice(i,i+n));return o;};
   return esdCache[id]={per:r[0],y:r[1],nrep:r[2],nn:r[3],cov:r[4],rnd:r[5],gm:r[6],gs:r[7],eg:r[8],st:r[9],g:pairs(r[10],2),fc:r[11],em:r[12],er:r[13],km:r[14],ry:r[15],
-    ops:pairs(r[16],3).map(([i,p,resp])=>({n:OPN[i],t:OPT[i]==="-"?"":OPT[i],p,resp:!!resp})),nred:r[17],spop:r[18],dot:r[19]};}
+    ops:pairs(r[16],3).map(([i,p,resp])=>({n:OPN[i],t:OPT[i]==="-"?"":OPT[i],p,resp:!!resp,g:OPC[i]?OPC[i][0]:"",u:OPC[i]?OPC[i][1]:""})),nred:r[17],spop:r[18],dot:r[19]};}
 // Provincias sin EIEL en el visor nacional; País Vasco y Navarra quedan fuera de la EIEL por ley
 const EIEL_LAW=new Set(["01","20","48","31"]);
 const eielPhase=id=>{const p=EPROV[id.slice(0,2)];return p&&p[0]?p:null;};
@@ -170,8 +170,8 @@ function gesBlockES(id){const e=esd(id);const k=e?e.gm:"N";
   ${both?`<p class="note warn">Las fuentes discrepan: la EIEL declara gestión ${GCAT[e.eg][0].toLowerCase()} y el operador principal del SINAC es ${OPTYPE[e.st].toLowerCase()}.${e.gs==="s"?" Prevalece el SINAC porque el operador es una empresa mixta.":" Prevalece la EIEL."}</p>`:""}</div>`;}
 function opsBlock(id){const e=esd(id);if(!e||!e.ops.length)return `<div><h3>Operadores (SINAC)</h3><p class="note">Sin redes de distribución de este municipio en el SINAC.</p></div>`;
   const resp=e.ops.some(o=>o.resp);
-  return `<div><h3>Operadores (SINAC)</h3><dl class="ops2">${e.ops.map(o=>`<dt>${esc(o.n)}${o.resp?'<span class="tag">responsable</span>':""}</dt><dd>${o.p<1?"< 1":o.p} % · ${o.resp?"titular de la red":OPTYPE[o.t]}</dd>`).join("")}</dl>
-  <p class="srcline">% de la población abastecida por sus redes. Tipo según data/operadores_clasificacion.csv; un nombre sin patrón queda sin clasificar.${resp?" El SINAC da como gestor un sistema de información o un laboratorio: se muestra el responsable de la red, que no indica quién la gestiona.":""}</p></div>`;}
+  return `<div><h3>Operadores (SINAC)</h3><dl class="ops2">${e.ops.map(o=>`<dt>${esc(o.n)}${o.resp?'<span class="tag">responsable</span>':""}</dt><dd>${o.p<1?"< 1":o.p} % · ${o.resp?"titular de la red":OPTYPE[o.t]}${!o.resp&&o.g?` · ${esc(o.g)}`:""}</dd>`).join("")}</dl>
+  <p class="srcline">% de la población abastecida por sus redes. Tipo y grupo según data/operadores_clasificacion.csv, con la fuente que los confirma en la lista de fuentes; un nombre sin patrón queda sin clasificar.${resp?" El SINAC da como gestor un sistema de información o un laboratorio: se muestra el responsable de la red, que no indica quién la gestiona.":""}</p></div>`;}
 function redBlock(id){const e=esd(id);if(!e)return "";const red=e.km!=null;
   return `<div><h3>Red y suministro</h3><dl>${red?row(`Red de distribución (EIEL ${e.ry})`,es(e.km,1),"km")+row("Fibrocemento",e.fc,"% de la red")+row("Estado malo",e.em,"%")+row("Estado regular",e.er,"%"):row("Red de distribución (EIEL)",null)}
   ${row("Dotación (SINAC)",e.dot==null?null:grp(e.dot),"L/hab/día")}${row("Redes de distribución (SINAC)",e.nred==null?null:grp(e.nred))}${row("Población abastecida (SINAC)",e.spop==null?null:grp(e.spop))}</dl></div>`;}
@@ -483,6 +483,8 @@ function umSources(id,L){const e=esd(id);const out=[];
   else{if(L&&L.kind==="ib")out.push(["Pérdidas (agua no contabilizada)","caib"]);if(L&&L.kind==="eiel")out.push(["Pérdidas declaradas","eiel"]);
     if(e&&e.gm!=="N")out.push(["Modelo de gestión",e.gs==="e"?"eiel":"sinac"]);}
   if(e&&e.ops.length)out.push(["Operadores, dotación y población abastecida","sinac"]);
+  // Fuente que confirma el tipo (y el grupo) de cada operador clasificado
+  if(e)for(const o of e.ops)if(!o.resp&&o.u)out.push([`Tipo de operador: ${o.n}`,{n:`Clasificación de ${o.n}`,u:o.u,d:`${OPTYPE[o.t]}${o.g?", grupo "+o.g:""}, según la fuente citada en data/operadores_clasificacion.csv`}]);
   if(e&&e.km!=null)out.push(["Red: longitud, material, estado y gestión","eiel"]);
   out.push(["Referencia de la comunidad","ine53447"]);out.push(["Población","ine"]);
   return out;}

@@ -23,6 +23,7 @@ const SOURCES={
   ESD:['raw/eiel_nucleos_2026-10-30.csv','raw/eiel_rd_2026-10-30.csv','raw/sinac_redes_2026-10-30.csv','raw/esf_gestio_aigua_cat_2026-07-10.psv','data/operadores_clasificacion.csv'],
   OPN:['raw/sinac_redes_2026-10-30.csv','data/operadores_clasificacion.csv'],
   OPT:['data/operadores_clasificacion.csv'],
+  OPC:['data/operadores_clasificacion.csv','raw/sinac_redes_2026-10-30.csv'],
   EPROV:['raw/eiel_provincias_2026-10-30.csv'],
   FC_BINS:['src/app.js'],
 };

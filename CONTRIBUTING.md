@@ -188,7 +188,10 @@ FCC AQUALIA;Privado;;
 - `patron`: texto que debe aparecer en el nombre del gestor. Se compara sin acentos, en mayúsculas, sin signos y por palabras completas (`SPT` no casa con `ASPTEC`).
 - `tipo`: `Municipalizado`, `Mixto`, `Privado` o `No es operador`. Este último sirve para sistemas de información y laboratorios (EKUIS, ANTICIMEX...): en su lugar se muestra el responsable de la red, que no se usa para deducir el modelo de gestión.
 - Gana el **primer** patrón que casa, así que los más específicos y los mixtos van antes que los genéricos.
-- Solo se añade un patrón cuando el tipo está confirmado en una fuente (web del operador, registro mercantil, pliego). Nunca por intuición: lo que no casa queda "Sin clasificar".
+- Solo se añade un patrón cuando el tipo está confirmado en una fuente (web del operador, portal de transparencia del ayuntamiento, boletín oficial, registro mercantil, pliego). Nunca por intuición: lo que no casa queda "Sin clasificar". Un nombre de empresa con "Municipal" o "Pública" no basta: para `Municipalizado` la fuente tiene que decir que el capital es 100 % público (o que es una entidad pública empresarial, un organismo autónomo o un medio propio unipersonal); si hay socio privado, es `Mixto`.
+- `nota` cita la fuente con este formato, que comprueban las pruebas: `Fuente: <URL> (consulta DD/MM/AAAA): «cita literal que lo confirma»`, y opcionalmente detrás un punto y el tipo de documento o la fecha. Sin `;`, que separa columnas.
+- `grupo`: el socio privado o el grupo empresarial, solo si la fuente lo nombra. La ficha del municipio muestra el grupo y enlaza la fuente.
+- Los patrones de arranque de FWG-1868 (EKUIS, AQUALIA, AYUNTAMIENTO...) no tienen nota; la prueba los lista y cualquier patrón nuevo debe citar su fuente.
 
 `npm run build` regenera `data/operadores_sin_clasificar.csv`, ordenado por población abastecida: es la lista de trabajo para completar la tabla.
 

@@ -58,7 +58,7 @@ const normOp=s=>String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().
 const TIPOS={'Municipalizado':'P','Mixto':'M','Privado':'V','No es operador':'X'};
 function loadClassifier(rows){
   const pats=rows.map((r,i)=>{const t=TIPOS[r.tipo];if(!t)throw new Error(`${F.cls}, fila ${i+2}: tipo desconocido "${r.tipo}"`);
-    return {p:' '+normOp(r.patron)+' ',t,grupo:r.grupo||''};});
+    return {p:' '+normOp(r.patron)+' ',t,grupo:r.grupo||'',nota:r.nota||''};});
   return name=>{const n=' '+normOp(name)+' ';return pats.find(x=>n.includes(x.p))||null;};
 }
 

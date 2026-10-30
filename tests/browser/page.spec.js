@@ -230,7 +230,7 @@ test('el selector de capa cambia leyenda, contador y color; fibrocemento y estad
   const fill=()=>page.locator('#muLayer [data-u="11002"]').evaluate(e=>e.style.fill);
   const lossFill=await fill();
   await layer(page,'ges');
-  await expect(page.locator('#maphead')).toHaveText(/^7\.528 de 8\.131 municipios con modelo de gestión/);
+  await expect(page.locator('#maphead')).toHaveText(/^7\.576 de 8\.131 municipios con modelo de gestión/);
   await expect(page.locator('#legend')).toContainText('Vecinal / cooperativa');
   expect(await fill()).toBe('var(--g-p)');
   await layer(page,'fc');
@@ -256,6 +256,17 @@ test('un municipio EIEL (Alcalá del Valle) muestra pérdidas declaradas, gesti�
   await expect(P.locator('.srcs li')).toHaveCount(4);
   await expect(P.locator('.srcs')).toContainText('fase 2025 de la provincia');
   await expect(P.locator('.srcs')).toContainText('CC BY-NC-SA 4.0');
+});
+
+test('Granada: el operador clasificado con fuente (EMASAGRA, mixta) da el modelo, el grupo y su fuente en la ficha',async({page})=>{
+  await openMu(page);
+  await page.evaluate(()=>pin('18087'));
+  const P=page.locator('#panel');
+  await expect(P.locator('h2')).toHaveText('Granada');
+  await expect(P.locator('.gtag')).toHaveText('Mixta');
+  await expect(P).toContainText('EMASAGRA');
+  await expect(P).toContainText('Mixto · Hidralia (Veolia y Unicaja)');
+  await expect(P.locator('.srcs a[href="https://www.emasagra.es/informacion-corporativa"]')).toHaveCount(1);
 });
 
 test('Madrid: sin pérdidas, gestión municipalizada por el operador del SINAC (Canal de Isabel II)',async({page})=>{

@@ -41,6 +41,8 @@ const ESD={};for(const [k,o] of Object.entries(ES.mun))ESD[k]=[n(o.per),n(o.y),n
 // Tipo de cada operador según data/operadores_clasificacion.csv, una letra por operador ('-' = sin clasificar)
 const {csv,loadClassifier}=require('./build_es_mun.js');const classify=loadClassifier(csv(fs.readFileSync('data/operadores_clasificacion.csv','utf8')));
 const OPT=OPN.map(x=>{const c=classify(x);return c&&c.t!=='X'?c.t:'-';}).join('');
+// Grupo y fuente de la clasificación de cada operador que la tiene (FWG-1870): {índice en OPN: [grupo, URL de la fuente]}
+const OPC={};OPN.forEach((x,i)=>{const c=classify(x);if(!c||c.t==='X')return;const u=(/https:\/\/\S+/.exec(c.nota)||[''])[0];if(c.grupo||u)OPC[i]=[c.grupo,u];});
 const EPROV=Object.fromEntries(Object.entries(ES.meta.prov).map(([p,o])=>[p,[o.fase,o.nu_fase]]));
-const out2=`const GES=${JSON.stringify(GES)};\nconst ESD=${JSON.stringify(ESD)};\nconst OPN=${JSON.stringify(OPN)};\nconst OPT=${JSON.stringify(OPT)};\nconst EPROV=${JSON.stringify(EPROV)};\n`;
+const out2=`const GES=${JSON.stringify(GES)};\nconst ESD=${JSON.stringify(ESD)};\nconst OPN=${JSON.stringify(OPN)};\nconst OPT=${JSON.stringify(OPT)};\nconst OPC=${JSON.stringify(OPC)};\nconst EPROV=${JSON.stringify(EPROV)};\n`;
 fs.mkdirSync('.build',{recursive:true});fs.writeFileSync('.build/data.js',out+out2);console.log('data.js',out.length,'urls',urls.length,'units',units);
