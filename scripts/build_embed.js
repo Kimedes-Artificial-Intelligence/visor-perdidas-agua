@@ -52,6 +52,10 @@ const EPROV=Object.fromEntries(Object.entries(ES.meta.prov).map(([p,o])=>[p,[o.f
 // m: {INE: [[indicador, valor, unidad, año, operador, URL, página, aviso legal, fecha de consulta], ...]}; e: {INE: [estado de la búsqueda, motivo, fecha]}
 const AR=JSON.parse(fs.readFileSync('data/art63.json'));
 const A63={m:Object.fromEntries(Object.entries(AR.mun).map(([k,R])=>[k,R.map(r=>[r.ind,r.v,r.unit,r.y,r.op,r.url,r.page,r.legal,r.date])])),
-  e:Object.fromEntries(Object.entries(AR.estado).filter(([,o])=>o.e!=='publica').map(([k,o])=>[k,[o.e,o.motivo,o.date]]))};
-const out2=`const A63=${JSON.stringify(A63)};\nconst GES=${JSON.stringify(GES)};\nconst ESD=${JSON.stringify(ESD)};\nconst OPN=${JSON.stringify(OPN)};\nconst OPT=${JSON.stringify(OPT)};\nconst OPC=${JSON.stringify(OPC)};\nconst EPROV=${JSON.stringify(EPROV)};\nconst RSI=${JSON.stringify(RSI)};\nconst PVN=${JSON.stringify(PVN)};\n`;
+  e:Object.fromEntries(Object.entries(AR.estado).filter(([,o])=>o.e!=='publica').map(([k,o])=>[k,[o.e,o.motivo,o.date]])),
+  // s: cifras de todo el sistema de un operador, para la ficha de operador: [patrón, operador, ámbito, indicador, valor, unidad, año, URL, página, aviso legal, fecha]
+  s:AR.sys.map(r=>[r.pat,r.op,r.amb,r.ind,r.v,r.unit,r.y,r.url,r.page,r.legal,r.date])};
+// Pesos del índice de prioridad comercial (src/prioridad.js)
+const PRI_W=JSON.parse(fs.readFileSync('data/prioridad_pesos.json'));
+const out2=`const PRI_W=${JSON.stringify(PRI_W)};\nconst A63=${JSON.stringify(A63)};\nconst GES=${JSON.stringify(GES)};\nconst ESD=${JSON.stringify(ESD)};\nconst OPN=${JSON.stringify(OPN)};\nconst OPT=${JSON.stringify(OPT)};\nconst OPC=${JSON.stringify(OPC)};\nconst EPROV=${JSON.stringify(EPROV)};\nconst RSI=${JSON.stringify(RSI)};\nconst PVN=${JSON.stringify(PVN)};\n`;
 fs.mkdirSync('.build',{recursive:true});fs.writeFileSync('.build/data.js',out+out2);console.log('data.js',out.length,'urls',urls.length,'units',units);

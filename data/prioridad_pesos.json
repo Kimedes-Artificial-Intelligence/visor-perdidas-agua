@@ -1,0 +1,9 @@
+{
+  "nota": "Índice Kimedes de prioridad comercial, calculado a partir de fuentes citadas. No es un dato publicado. Valores iniciales aprobados por David el 30/10/2026; se pueden editar aquí.",
+  "formula": "P × L × F × A × G",
+  "anio_referencia": 2026,
+  "perdidas": {"tope_pct": 40, "sin_dato": 0.75},
+  "fibrocemento": {"base": 0.5, "pendiente": 0.5, "sin_dato": 0.75},
+  "antiguedad": {"base": 0.5, "pendiente": 0.5, "anios_tope": 10, "sin_dato": 0.75},
+  "modelo": {"V": 1.0, "M": 1.0, "P": 0.6, "C": 0.3, "O": 0.6, "N": 0.8}
+}

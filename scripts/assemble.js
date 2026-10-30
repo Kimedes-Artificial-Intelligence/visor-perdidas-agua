@@ -33,7 +33,7 @@ ${R('src/styles/v1.css')}${R('src/styles/v2.css')}
 <body>
 `;
 const body=R('src/body.html').replace('__CTX__',R('src/geometry/ctx_path.txt').trim());
-const scr='<script>\n'+geo+R('.build/data.js')+R('src/loss.js')+R('src/app.js')+'</script>\n';
+const scr='<script>\n'+geo+R('.build/data.js')+R('src/loss.js')+R('src/prioridad.js')+R('src/app.js')+'</script>\n';
 const out=head+body+scr+'</body>\n</html>\n';
 fs.mkdirSync('dist',{recursive:true});fs.writeFileSync('dist/index.html',out);
 console.log('dist/index.html',Buffer.byteLength(out),'bytes');

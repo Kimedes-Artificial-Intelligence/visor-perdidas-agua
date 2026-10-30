@@ -61,6 +61,8 @@ Condiciones comprobadas el 21 y el 22 de octubre de 2026 (EurEau, IGN y origen d
 | `data/es_mun.json` | EIEL, SINAC y ESF, agregados por `scripts/build_es_mun.js` | La de cada fuente; **CC BY-NC-SA 4.0** por los datos EIEL | |
 | `data/operadores_clasificacion.csv` | Tabla propia | MIT | |
 | `raw/idem_eiel_rd_2026-10-30.csv` | IDEM, EIEL fase 2023 de la Comunidad de Madrid, extracción de `scripts/extract_idem_eiel.js` (valores literales y longitud geodésica agregada) | CC BY 4.0 Comunidad de Madrid | Extracción 30/10/2026 |
+| `raw/operadores_sistema_2026-10.psv` | Indicadores del art. 63.2 que el operador publica para todo su sistema (ficha de operador) | Derechos de cada operador; dato de hecho citado | Consulta 30/10/2026, año del dato en cada fila |
+| `data/prioridad_pesos.json` | Pesos del índice de prioridad comercial (tabla propia) | MIT | |
 | `raw/gestion_pv_nav_2026-10-30.psv` | País Vasco y Navarra: operador en baja de cada municipio según la web del propio operador (cita literal y URL) | Tabla propia, MIT; las páginas citadas conservan sus condiciones | 30/10/2026 |
 | `raw/operadores_art63_2026-10.psv` | Indicadores del art. 63.2 publicados por cada operador, transcritos | Derechos de cada operador; dato de hecho citado | Consulta 30/10/2026, año del dato en cada fila |
 | `raw/art63_estado_2026-10-30.psv` | Resultado de la búsqueda del indicador en cada ciudad (tabla propia, con las URL revisadas) | MIT | 30/10/2026 |

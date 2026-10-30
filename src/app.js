@@ -135,6 +135,20 @@ const umFc=id=>{const e=esd(id);return e?e.fc:null;};
 const umRed=id=>{const e=esd(id);return e&&e.em!=null?e.em+e.er:null;};
 const LAYER={loss:{has:id=>!!umLatest(id),txt:"con dato de pérdidas publicado"},ges:{has:id=>!!umGes(id),txt:"con modelo de gestión"},
   fc:{has:id=>umFc(id)!=null,txt:"con material de la red (EIEL)"},est:{has:id=>umRed(id)!=null,txt:"con estado de la red (EIEL)"}};
+// Calidad del dato de pérdidas que se pinta (FWG-1870, Parte 6)
+const QUAL={aca:"Auditoría publicada (ACA)",art63:"Publicado por el operador (art. 63.2 RD 3/2023)",eiel5:"EIEL, declarado por el ayuntamiento: todos los valores múltiplos de 5",
+  eielx:"EIEL, declarado por el ayuntamiento: con valores no redondeados",ib:"Estimación del Govern IB"};
+const QSHORT={aca:"ACA",art63:"operador",eiel5:"EIEL ×5",eielx:"EIEL",ib:"Govern IB"};
+const umQual=id=>{const L=umLatest(id);if(!L)return null;return L.kind==="cat"?"aca":L.kind==="art63"?"art63":L.kind==="ib"?"ib":L.rnd===100?"eiel5":"eielx";};
+// Índice Kimedes de prioridad comercial (src/prioridad.js), calculado una vez para todos los municipios
+let PRI=null;
+function priAll(){if(PRI)return PRI;const P=percentiles(UM_IDS.map(id=>MUD[id][1])),m={};
+  UM_IDS.forEach((id,i)=>{const L=umLatest(id),e=esd(id),fase=e?(e.ry??e.y??null):null;
+    m[id]=Object.assign(priFactors({P:P[i],loss:L?L.v:null,fc:umFc(id),fase,gm:umGes(id)},PRI_W),{loss:L?L.v:null,fase,fc:umFc(id),gm:umGes(id)||"N"});});
+  const cuts=quintileCuts(UM_IDS.map(id=>m[id].idx));for(const id of UM_IDS)m[id].q=quintileOf(m[id].idx,cuts);
+  return PRI={m,cuts};}
+const PRI_COLORS=MU_BINS.map(b=>b[1]);
+LAYER.pri={has:()=>true,txt:"con índice de prioridad comercial (calculado)"};
 const umCount=k=>{const ids=UM_IDS.filter(LAYER[k].has);const pop=ids.reduce((a,id)=>a+MUD[id][1],0);
   return `${grp(ids.length)} de ${grp(UM_IDS.length)} municipios ${LAYER[k].txt} · ${es(pop/POP_ES*100,1)} % de la población de España`;};
 const UM_NOTE="Catalunya (auditorías, agua no registrada), Baleares (estimación del Govern, agua no contabilizada), las ciudades con dato del operador (agua no registrada o pérdidas reales, art. 63.2 RD 3/2023) y el resto (pérdidas declaradas por los ayuntamientos en la EIEL, no medidas) son indicadores distintos. Se pintan en la misma escala para leer el orden de magnitud, no para comparar municipio a municipio. El rendimiento y el índice de fugas estructurales (IFE) que publican algunos operadores tampoco son el mismo indicador: se muestran en la ficha, no en el mapa.";
@@ -154,6 +168,7 @@ const FC_BINS=[[10,"#9fd3c0","< 10 %"],[20,"#f1d98a","10–20 %"],[30,"#eba25a",
 const binColor=(v,bins)=>bins.find(b=>v<b[0])[1];
 // Color de un municipio en la vista España según la capa elegida
 function umFill(id){if(colorBy==="ges")return gesColor(umGes(id));
+  if(colorBy==="pri")return PRI_COLORS[priAll().m[id].q-1];
   if(colorBy==="fc"){const v=umFc(id);return v==null?"":binColor(v,FC_BINS);}
   if(colorBy==="est"){const v=umRed(id);return v==null?"":binColor(v,FC_BINS);}
   const L=umLatest(id);return L?muColor(L.v):a63Other(id)?"url(#dotsOt)":"";}
@@ -281,6 +296,9 @@ function legend(){
   else if(level==="mu"&&colorBy==="ges"){
     L.innerHTML=`<span class="t">Modelo de gestión del abastecimiento · ESF, EIEL y SINAC</span>`+GORD.map(k=>`<span><i style="background:${gesColor(k)}"></i>${GCAT[k][0]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin dato</span><span class="srcnote">Catalunya: ESF / Aigua és Vida. Resto: operador principal del SINAC si es una empresa mixta; si no, la gestión declarada en la EIEL (la de más longitud de red); sin EIEL, el tipo del operador principal del SINAC. El tipo de operador se asigna por su nombre con una tabla editable; si no hay patrón, queda sin clasificar.</span>`+gesSummary(UM_IDS,umGes);
     $("#hint").textContent="Rueda, pellizco o doble clic para acercar. Clic en un municipio para ver el origen del modelo, los operadores y todas las fuentes.";}
+  else if(level==="mu"&&colorBy==="pri"){const w=PRI_W;
+    L.innerHTML=`<span class="t">Prioridad comercial · Índice Kimedes, calculado a partir de fuentes citadas</span>`+PRI_COLORS.map((c,i)=>`<span><i style="background:${c}"></i>Q${i+1}${i===0?" (menor)":i===4?" (mayor)":""}</span>`).join("")+
+    `<span class="srcnote">No es un dato publicado. Índice = P × L × F × A × G, en quintiles de todos los municipios. P: percentil de población (INE 2025). L: pérdidas / ${w.perdidas.tope_pct} % (máx. 1); sin dato publicado, ${es(w.perdidas.sin_dato,2)}. F: ${es(w.fibrocemento.base,1)} + ${es(w.fibrocemento.pendiente,1)} × % de fibrocemento; sin dato EIEL, ${es(w.fibrocemento.sin_dato,2)}. A: ${es(w.antiguedad.base,1)} + ${es(w.antiguedad.pendiente,1)} × años desde la fase EIEL / ${w.antiguedad.anios_tope} (máx. 1); sin EIEL, ${es(w.antiguedad.sin_dato,2)}. G: privado ${es(w.modelo.V,1)}, mixto ${es(w.modelo.M,1)}, municipalizado ${es(w.modelo.P,1)}, vecinal ${es(w.modelo.C,1)}, otros ${es(w.modelo.O,1)}, sin dato ${es(w.modelo.N,1)}. Pesos editables en data/prioridad_pesos.json.</span>`;}
   else if(level==="mu"&&(colorBy==="fc"||colorBy==="est")){const fc=colorBy==="fc";
     L.innerHTML=`<span class="t">${fc?"Red de distribución en fibrocemento":"Red de distribución en estado malo o regular"} (% de la longitud) · EIEL</span>`+FC_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin dato de la EIEL</span><span class="srcnote">EIEL: ${fc?"material":"estado"} declarado de cada tramo de la red de distribución, ponderado por su longitud. Comunidad de Madrid: EIEL fase 2023 de la IDEM (CC BY 4.0), sin las ciudades de 50.000 hab. o más. Sin dato en Catalunya, Baleares, País Vasco, Navarra y las provincias que no están en el visor nacional de la EIEL.</span>`;
     $("#hint").textContent="Rueda, pellizco o doble clic para acercar. En gris: la EIEL no cubre el municipio; no se estima nada.";}
@@ -307,8 +325,9 @@ function paintMun(){
   for(const [id,e] of Object.entries(muEls)){let f="";
     if(colorBy==="ges")f=gesColor(gesOf(id));else{const L=muLatest(id);f=L?muColor(L.v):"";}
     e.style.fill=f;}
-  for(const [id,e] of Object.entries(umEls)){e.style.fill=umFill(id);e.classList.toggle("opm",!!opMatch&&opMatch.has(id));}
-  muLayer.classList.toggle("opf",!!opMatch);
+  const F=umFilt();
+  for(const [id,e] of Object.entries(umEls)){e.style.fill=umFill(id);e.classList.toggle("opm",!!F&&F.has(id));}
+  muLayer.classList.toggle("opf",!!F);
   muLayer.querySelectorAll(".umlow,.umdecl,.umop").forEach(e=>e.style.display=colorBy==="loss"?"":"none");}
 function paint(){paintEU();paintES();paintMun();legend();headerCtl();renderRank();renderPanel();marks();}
 
@@ -327,7 +346,10 @@ function marks(){
 }
 
 // ================= filtro por operador, ranking y CSV de la vista España =================
-let rankGm="",opQuery="",opMatch=null;
+let rankGm="",opQuery="",opMatch=null,rankPv="",rankQ="",muQ="";
+// Municipios que pasan los filtros de la vista España (operador, provincia, nombre, calidad); null si no hay ninguno
+function umFilt(){if(!opMatch&&!rankPv&&!rankQ&&!muQ)return null;
+  return new Set(UM_IDS.filter(id=>(!opMatch||opMatch.has(id))&&(!rankPv||id.slice(0,2)===rankPv)&&(!rankQ||umQual(id)===rankQ)&&(!muQ||opNorm(MUD[id][0]).includes(muQ))));}
 const opNorm=s=>String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/[^A-Z0-9]+/g," ").trim();
 const OPN_NORM=OPN.map(opNorm);
 // Municipios con el operador entre sus operadores del SINAC (coincidencia por texto, sin acentos ni signos)
@@ -335,25 +357,30 @@ function opIds(q){q=opNorm(q);if(q.length<2)return null;const hit=new Set(OPN_NO
   return new Set(UM_IDS.filter(id=>{const r=ESD[id];if(!r||!r[16])return false;for(let i=0;i<r[16].length;i+=3)if(hit.has(r[16][i]))return true;return false;}));}
 const GSHORT={P:"Público",M:"Mixta",V:"Privada",C:"Vecinal",O:"Otros"};
 const RANK_LAYER={
-  loss:{title:"Pérdidas por municipio en España (%, último dato publicado)",note:"Línea vertical: España, INE 2024. "+UM_NOTE,v:id=>umLatest(id).v,avg:null,fmt:()=>x=>es(x,1),extra:id=>`<span class="yr">${umLatest(id).y}</span>`},
+  loss:{title:"Pérdidas por municipio en España (%, último dato publicado)",note:"Línea vertical: España, INE 2024. "+UM_NOTE,v:id=>umLatest(id).v,avg:null,fmt:()=>x=>es(x,1),extra:id=>`<span class="yr">${umLatest(id).y} · ${QSHORT[umQual(id)]}</span>`},
+  pri:{title:"Prioridad comercial por municipio (Índice Kimedes, calculado a partir de fuentes citadas)",note:"Índice = población × pérdidas (o ausencia de dato) × fibrocemento × antigüedad de la EIEL × modelo de gestión, con los pesos de data/prioridad_pesos.json. Es un cálculo de Kimedes, no un dato publicado.",
+    v:id=>priAll().m[id].idx,avg:null,fmt:id=>()=>`Q${priAll().m[id].q} · ${es(priAll().m[id].idx,3)}`,extra:()=>""},
   ges:{title:"Municipios por modelo de gestión (ordenados por población)",note:"Barra: población (INE 2025). Color: modelo de gestión.",v:id=>MUD[id][1],avg:null,fmt:id=>()=>GSHORT[umGes(id)],extra:()=>""},
   fc:{title:"Red de distribución en fibrocemento por municipio (% de la longitud, EIEL)",note:"Material declarado de cada tramo en la EIEL.",v:umFc,avg:null,fmt:()=>x=>x+" %",extra:id=>`<span class="yr">${esd(id).ry}</span>`},
   est:{title:"Red de distribución en estado malo o regular por municipio (% de la longitud, EIEL)",note:"Estado declarado de cada tramo en la EIEL.",v:umRed,avg:null,fmt:()=>x=>x+" %",extra:id=>`<span class="yr">${esd(id).ry}</span>`}};
 RANK_LAYER.loss.avg=ccINE("ES");
 function umRankIds(){const Lr=RANK_LAYER[colorBy];
-  return UM_IDS.filter(id=>LAYER[colorBy].has(id)&&(!rankCc||umCC(id)===rankCc)&&(!rankGm||umGes(id)===rankGm)&&(!opMatch||opMatch.has(id)))
+  const F=umFilt();
+  return UM_IDS.filter(id=>LAYER[colorBy].has(id)&&(!rankCc||umCC(id)===rankCc)&&(!rankGm||umGes(id)===rankGm)&&(!F||F.has(id)))
     .sort((a,b)=>Lr.v(b)-Lr.v(a)||MUD[b][1]-MUD[a][1]);}
 function setOp(q){opQuery=q.trim();opMatch=opIds(opQuery);rankAll=false;
+  if(opMatch&&opMatch.size){pinned.mu=null;hovered=null;} // la ficha de operador ocupa el panel hasta que se elija un municipio
   const C=$("#opCount");
   if(!opMatch)C.textContent="";
   else{const pop=[...opMatch].reduce((a,id)=>a+MUD[id][1],0);C.textContent=opMatch.size?`${grp(opMatch.size)} municipios · ${grp(pop)} hab. (padrón 2025)`:"Ningún municipio";}
-  paintMun();renderRank();marks();}
+  paintMun();renderRank();marks();renderPanel();}
 // CSV del ranking filtrado (todas las filas, no solo las visibles), con punto y coma y BOM para Excel
 function exportCsv(){const ids=umRankIds();
   const q=v=>{v=v==null?"":String(v);return /[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
-  const H=["codigo_ine","municipio","provincia","comunidad","poblacion_ine_2025","perdidas_pct","anio_perdidas","fuente_perdidas","modelo_gestion","origen_modelo","operador_principal_sinac","pct_poblacion_operador","tipo_operador","fibrocemento_pct","estado_malo_regular_pct","km_red_eiel","indicadores_operador_art63"];
+  const H=["codigo_ine","municipio","provincia","comunidad","poblacion_ine_2025","perdidas_pct","anio_perdidas","fuente_perdidas","modelo_gestion","origen_modelo","operador_principal_sinac","pct_poblacion_operador","tipo_operador","fibrocemento_pct","estado_malo_regular_pct","km_red_eiel","indicadores_operador_art63","calidad_dato","indice_prioridad_kimedes","quintil_prioridad","factor_poblacion","factor_perdidas","factor_fibrocemento","factor_antiguedad_eiel","factor_modelo","fase_eiel"];
   const rows=ids.map(id=>{const L=umLatest(id),e=esd(id)||{ops:[]},k=umGes(id),o=e.ops&&e.ops[0];
-    return [id,MUD[id][0],PROV[id.slice(0,2)][0],ccName(umCC(id)),MUD[id][1],L?L.v:"",L?L.y:"",L?L.src:"",k?GCAT[k][0]:"",k?(MU[id]?GSRC.f:GSRC[e.gs]):"",o?o.n+(o.resp?" (responsable)":""):"",o?o.p:"",o&&!o.resp?OPTYPE[o.t]:"",e.fc??"",umRed(id)??"",e.km??"",(A63.m[id]||[]).map(r=>`${A63_IND[r[0]]} ${r[1]}${r[2]==="%"?" %":""} (${r[3]})`).join(" · ")].map(q).join(";");});
+    return [id,MUD[id][0],PROV[id.slice(0,2)][0],ccName(umCC(id)),MUD[id][1],L?L.v:"",L?L.y:"",L?L.src:"",k?GCAT[k][0]:"",k?(MU[id]?GSRC.f:GSRC[e.gs]):"",o?o.n+(o.resp?" (responsable)":""):"",o?o.p:"",o&&!o.resp?OPTYPE[o.t]:"",e.fc??"",umRed(id)??"",e.km??"",(A63.m[id]||[]).map(r=>`${A63_IND[r[0]]} ${r[1]}${r[2]==="%"?" %":""} (${r[3]})`).join(" · "),umQual(id)?QUAL[umQual(id)]:"",
+      ...(p=>[p.idx.toFixed(4),"Q"+p.q,p.P.toFixed(4),p.L.toFixed(4),p.F.toFixed(4),p.A.toFixed(4),p.G,p.fase??""])(priAll().m[id])].map(q).join(";");});
   const blob=new Blob(["\ufeff"+[H.join(";"),...rows].join("\r\n")],{type:"text/csv;charset=utf-8"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`municipios_${colorBy}${rankCc?"_"+rankCc:""}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
 
@@ -378,7 +405,7 @@ function renderRank(){
   else if(level==="mu"){
     const ids=umRankIds(),Lr=RANK_LAYER[colorBy];
     $("#rankTitle").textContent=Lr.title;$("#rankNote").textContent=Lr.note;
-    $("#rankCount").textContent=`${grp(ids.length)} municipios ${LAYER[colorBy].txt}${rankCc?" en "+ccName(rankCc):""}${rankGm?" · "+GCAT[rankGm][0].toLowerCase():""}${opMatch?" · operador «"+opQuery+"»":""}`;
+    $("#rankCount").textContent=`${grp(ids.length)} municipios ${LAYER[colorBy].txt}${rankCc?" en "+ccName(rankCc):""}${rankPv?" · provincia de "+PROV[rankPv][0]:""}${rankGm?" · "+GCAT[rankGm][0].toLowerCase():""}${rankQ?" · "+QUAL[rankQ].toLowerCase():""}${opMatch?" · operador «"+opQuery+"»":""}${muQ?" · nombre «"+$("#muq").value.trim()+"»":""}`;
     const LIM=40;const show=rankAll?ids:ids.slice(0,LIM);const max=Math.max(...ids.map(Lr.v));
     R.innerHTML=show.map((id,i)=>rankRow(id,String(i+1).padStart(2,"0"),MUD[id][0],Lr.v(id),max,Lr.avg,umFill(id),Lr.fmt(id),Lr.extra(id))).join("");
     if(ids.length>LIM){$("#rankMore").hidden=false;$("#moreBtn").textContent=rankAll?"Ver menos":`Ver los ${ids.length}`;}}
@@ -398,6 +425,7 @@ function row(label,v,unit="",cls=""){return `<dt>${label}</dt><dd class="${v==nu
 function cmpBars(items){const max=Math.max(...items.map(x=>x[1]||0))*1.15||1;
   return `<div class="cmp">${items.map(([l,v,me])=>`<span>${l}</span><span class="bar"><span class="${me?"me":""}" style="width:${((v||0)/max*100).toFixed(1)}%"></span></span><span class="v">${v==null?"·":es(v,1)}</span>`).join("")}</div>`;}
 function renderPanel(){const P=$("#panel");const k=hovered||pinned[level];
+  if(level==="mu"&&!k&&opMatch&&opMatch.size)return panelOp(P);
   if(!k){P.innerHTML=`<p class="empty">${level==="cat"?"Selecciona un municipio en el mapa o en el ranking.":"Selecciona un elemento en el mapa o en el ranking."}</p>`;return;}
   const chip=`<span class="chip ${k===pinned[level]?"pin":""}">${k===pinned[level]?"Fijado":"Vista previa"}</span>`;
   if(level==="eu")return panelEU(P,k,chip);if(level==="es")return panelES(P,k,chip);if(level==="mu")return panelUM(P,k,chip);return panelMU(P,k,chip);}
@@ -478,11 +506,15 @@ function sparkIB(id){const b=IB[id];const W=320,H=120,L=30,Rr=8,T=10,B=22;const 
 function a63Block(id){const R=A63.m[id];if(!R)return "";
   return `<div><h3>Publicado por el operador (art. 63.2 RD 3/2023)</h3><dl>${R.map(r=>row(`${A63_IND[r[0]]} ${r[3]}`,r[2]==="%"?es(r[1],2).replace(/,?0+$/,""):es(r[1],2),r[2]==="%"?"%":esc(r[2]))).join("")}</dl>
   <p class="srcline">${esc(R[0][4])} · ${R.map(r=>esc(r[6])).filter((x,i,a)=>a.indexOf(x)===i).join(" · ")} · <a href="${esc(R[0][5])}" target="_blank" rel="noopener">documento del operador</a>. Cifras transcritas tal como se publican; no se calcula ninguna.</p></div>`;}
+// Índice de prioridad comercial con sus factores, para que se vea de dónde sale
+function priBlock(id){const p=priAll().m[id];const f=x=>es(x,2);
+  return `<div><h3>Prioridad comercial (Índice Kimedes)</h3><dl>${row("Índice y quintil",`${es(p.idx,3)} · Q${p.q}`)}${row("Población (percentil)",f(p.P))}${row(`Pérdidas${p.loss==null?" (sin dato publicado)":""}`,f(p.L))}${row(`Fibrocemento${p.fc==null?" (sin dato EIEL)":""}`,f(p.F))}${row(`Antigüedad de la EIEL${p.fase==null?" (sin EIEL)":" (fase "+p.fase+")"}`,f(p.A))}${row(`Modelo de gestión (${GCAT[p.gm][0].toLowerCase()})`,f(p.G))}</dl>
+  <p class="srcline">Calculado por Kimedes a partir de las fuentes de esta ficha, con los pesos de data/prioridad_pesos.json. No es un dato publicado.</p></div>`;}
 function panelUM(P,id,chip){const r=MUD[id];if(!r){P.innerHTML="";return;}const c=umCC(id),L=umLatest(id),prov=PROV[id.slice(0,2)][0],ine=ccINE(c);
   const head=`<div class="ph"><div><h2>${esc(r[0])}</h2><span class="code">INE ${id} · ${esc(prov===ccName(c)?prov:prov+" · "+ccName(c))} · ${grp(r[1])} hab. (INE 2025)</span></div>${chip}</div>`;
   const muni=`<div><h3>Municipio</h3><dl>${row("Código INE",id)}${row("Provincia",esc(prov))}${row("Comunidad",esc(ccName(c)))}${row("Población (INE, 1/1/2025)",grp(r[1]))}</dl></div>`;
   // Gestión, operadores y red: en todas las comunidades; en Catalunya, además, la ficha de ESF
-  const rest=muni+(MU[id]?gesBlock(id):gesBlockES(id))+opsBlock(id)+redBlock(id)+srcList(umSources(id,L),id);
+  const rest=muni+(MU[id]?gesBlock(id):gesBlockES(id))+opsBlock(id)+redBlock(id)+priBlock(id)+srcList(umSources(id,L),id);
   if(!L&&A63.m[id]){const r=A63.m[id][0];
     P.innerHTML=head+`<div class="hero"><span class="lbl">Indicador publicado por el operador</span><span class="big">${es(r[1],2).replace(/,?0+$/,"")}<small>${r[2]==="%"?"%":""}</small></span><span class="src">${esc(A63_IND[r[0]])} · ${r[3]} · ${esc(r[4])} · <a href="${esc(r[5])}" target="_blank" rel="noopener">documento</a></span></div>
     <p class="note warn">El indicador «${esc(A63_IND[r[0]])}» no es un porcentaje de pérdidas: no se pinta en la escala de pérdidas ni se convierte (100 menos el rendimiento sería un valor calculado por Kimedes, no publicado).</p>${a63Block(id)}`+rest;return;}
@@ -510,6 +542,25 @@ function panelUM(P,id,chip){const r=MUD[id];if(!r){P.innerHTML="";return;}const 
   <div><h3>Indicadores ${L.y}</h3><dl>${row("Datos reales",L.dr==null?null:es(L.dr,0),"%")}${row("Total suministrado",hm(b[3][i]),"hm³")}${row("Consumo",hm(b[4][i]),"hm³")}${row("Isla",esc(b[0]))}</dl></div>
   <div><h3>Evolución 2000-2024</h3>${sparkIB(id)}<p class="srcline">Font: Govern de les Illes Balears, Servei de Planificació. Dades d'abastiment urbà 2000-2024. Consulta 22/10/2026. CC BY-SA. % d'aigua no comptabilitzada = (total subministrat − consum) / total subministrat. Datos reales sin publicar de 2000 a 2015.</p></div>
   <p class="note">La barra de la comunidad es el agua no registrada del INE, otro indicador: sirve de referencia, no de comparación exacta.</p>${rest}`;}
+// Ficha de operador (FWG-1870, Parte 6): los municipios donde el filtro de operador casa con alguno de sus operadores del SINAC
+function panelOp(P){const ids=[...opMatch],pop=ids.reduce((a,id)=>a+MUD[id][1],0);
+  const q=opNorm(opQuery),names=OPN.map((n,i)=>[n,i]).filter(([,i])=>OPN_NORM[i].includes(q));
+  const grupos=[...new Set(names.map(([,i])=>OPC[i]&&OPC[i][0]).filter(Boolean))],tipos=[...new Set(names.map(([,i])=>OPT[i]).filter(t=>t!=="-"))];
+  const withL=ids.filter(id=>umLatest(id));
+  // Media de pérdidas ponderada por población, por separado para cada fuente: no se mezclan indicadores distintos
+  const by={};for(const id of withL){const k=umQual(id);(by[k]??=[0,0,0]);by[k][0]+=umLatest(id).v*MUD[id][1];by[k][1]+=MUD[id][1];by[k][2]++;}
+  const gm={};for(const id of ids){const k=umGes(id)||"N";gm[k]=(gm[k]||0)+1;}
+  const sys=A63.s.filter(r=>names.some(([n])=>(" "+opNorm(n)+" ").includes(" "+opNorm(r[0])+" ")));
+  P.innerHTML=`<div class="ph"><div><h2>${esc(opQuery)}</h2><span class="code">Ficha de operador · ${grp(names.length)} nombre${names.length===1?"":"s"} del SINAC</span></div></div>
+  <div><h3>Municipios</h3><dl>${row("Municipios donde opera",grp(ids.length))}${row("Población (INE 2025)",grp(pop))}${row("Con dato de pérdidas",`${grp(withL.length)} (${es(100*withL.length/ids.length,0)} %)`)}
+   ${tipos.length?row("Tipo",tipos.map(t=>OPTYPE[t]).join(" · ")):""}${grupos.length?row("Grupo",esc(grupos.join(" · "))):""}
+   ${row("Modelo de gestión de sus municipios",Object.entries(gm).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${GCAT[k][0]} ${grp(n)}`).join(" · "))}</dl></div>
+  <div><h3>Pérdidas medias de sus municipios</h3>${Object.keys(by).length?`<dl>${Object.entries(by).map(([k,[s,p,n]])=>row(`${QUAL[k]} (${grp(n)} mun.)`,es(s/p,1),"%")).join("")}</dl>`:`<p class="note">Ninguno de sus municipios tiene dato de pérdidas publicado.</p>`}
+   <p class="srcline">Media ponderada por población, calculada por Kimedes por separado para cada fuente: son indicadores distintos y no se suman.</p></div>
+  <div><h3>Publicado para todo su sistema (art. 63.2 RD 3/2023)</h3>${sys.length?`<dl>${sys.map(r=>row(`${A63_IND[r[3]]} ${r[6]} · ${esc(r[2])}`,r[5]==="%"?es(r[4],2).replace(/,?0+$/,""):es(r[4],2),r[5]==="%"?"%":esc(r[5]))).join("")}</dl>
+   <p class="srcline">${sys.map(r=>`${esc(r[1])}, ${esc(r[8])}: <a href="${esc(r[7])}" target="_blank" rel="noopener">documento</a>`).filter((x,i,a)=>a.indexOf(x)===i).join(" · ")}. Cifras de todo el sistema: no se asignan a ningún municipio.</p>`:`<p class="note">No se ha encontrado ninguna cifra publicada para todo su sistema.</p>`}</div>
+  <div class="ctas"><button class="cta" id="opCsv" type="button">Exportar sus municipios (CSV)</button></div>`;
+  $("#opCsv").addEventListener("click",exportCsv);}
 // Todas las fuentes que alimentan la ficha, en el orden en que aparecen
 function umSources(id,L){const e=esd(id);const out=[];
   if(MU[id])out.push(...catSources(id,L).filter(x=>x[1]!=="idescat"));
@@ -555,7 +606,7 @@ const hatchMu=$("#hatchMu"),hatchDe=$("#hatchDe"),hatchOp=$("#hatchOp"),dotsOt=$
 function setVB(v){curVB=v;svg.setAttribute("viewBox",v.map(n=>n.toFixed(3)).join(" "));const k=(v[2]/MUN.vb[2]).toFixed(4);hatchMu.setAttribute("patternTransform",`rotate(45) scale(${k})`);hatchOp.setAttribute("patternTransform",`scale(${k})`);dotsOt.setAttribute("patternTransform",`scale(${k})`);hatchDe.setAttribute("patternTransform",`rotate(-45) scale(${k})`);}
 function layerVis(o){for(const [L,v] of [[espLayer,o.es],[muLayer,o.mu||0],[catLayer,o.cat]]){L.toggleAttribute("hidden",v<=0);L.setAttribute("opacity",v.toFixed(3));}}
 function setLevel(l,animate=true,vb=null){
-  if(!VB[l])l="eu";level=l;if(l==="cat"&&(colorBy==="fc"||colorBy==="est"))colorBy="loss";hovered=null;hideTip();rankAll=false;
+  if(!VB[l])l="eu";level=l;if(l==="cat"&&(colorBy==="fc"||colorBy==="est"||colorBy==="pri"))colorBy="loss";hovered=null;hideTip();rankAll=false;
   g.classList.toggle("dim",l!=="eu");dots.classList.toggle("dim",l!=="eu");
   const from=curVB.slice(),to=vb||VB[l],start={es:+espLayer.getAttribute("opacity"),mu:+muLayer.getAttribute("opacity"),cat:+catLayer.getAttribute("opacity")},end={es:l==="es"?1:0,mu:l==="mu"?1:0,cat:l==="cat"?1:0};
   cancelAnimationFrame(anim);const t0=performance.now(),DUR=(animate&&!reduce())?750:0;
@@ -605,6 +656,16 @@ document.querySelectorAll("#zoomCtl button").forEach(b=>b.addEventListener("clic
 {const sel=$("#rankCc");const cs=[...new Set(UM_IDS.map(umCC))].sort((a,b)=>ccName(a).localeCompare(ccName(b),"es"));
   sel.innerHTML=`<option value="">Todas</option>`+cs.map(c=>`<option value="${c}">${esc(ccName(c))}</option>`).join("");
   sel.addEventListener("change",()=>{rankCc=sel.value;rankAll=false;renderRank();marks();});}
+// Provincias de la comunidad elegida (o todas)
+function fillPv(){const sel=$("#rankPv");const ps=Object.keys(PROV).filter(p=>!rankCc||PROV[p][1]===rankCc&&UM_IDS.some(id=>id.startsWith(p))).sort((a,b)=>PROV[a][0].localeCompare(PROV[b][0],"es"));
+  if(!ps.includes(rankPv))rankPv="";sel.innerHTML=`<option value="">Todas</option>`+ps.map(p=>`<option value="${p}"${p===rankPv?" selected":""}>${esc(PROV[p][0])}</option>`).join("");}
+fillPv();$("#rankPv").addEventListener("change",e=>{rankPv=e.target.value;rankAll=false;paintMun();renderRank();marks();});
+$("#rankCc").addEventListener("change",()=>{fillPv();paintMun();});
+{const sel=$("#rankQ");sel.innerHTML=`<option value="">Todas</option>`+Object.entries(QUAL).map(([k,t])=>`<option value="${k}">${esc(t)}</option>`).join("");
+  sel.addEventListener("change",()=>{rankQ=sel.value;rankAll=false;paintMun();renderRank();marks();});}
+// Búsqueda por nombre: filtra el ranking y el mapa; si queda un solo municipio, se fija
+{let t=null;$("#muq").addEventListener("input",e=>{clearTimeout(t);t=setTimeout(()=>{const v=e.target.value.trim();muQ=v.length>=2?opNorm(v):"";rankAll=false;paintMun();renderRank();marks();
+  const F=umFilt();if(muQ&&F&&F.size===1)pin([...F][0]);},200);});}
 {const sel=$("#rankGm");sel.innerHTML=`<option value="">Todos</option>`+GORD.map(k=>`<option value="${k}">${GCAT[k][0]}</option>`).join("");
   sel.addEventListener("change",()=>{rankGm=sel.value;rankAll=false;renderRank();marks();});}
 // Autocompletado: los operadores con más municipios primero (OPN ya viene ordenado así)
