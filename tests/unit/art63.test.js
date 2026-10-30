@@ -55,7 +55,15 @@ test('del art. 63.2 solo se pinta el agua no registrada y, si no hay, las pérdi
   assert.equal(a63Paint([['PERDIDAS_REALES',12],['IFE',2]])[0],'PERDIDAS_REALES');
   assert.equal(a63Paint([['RENDIMIENTO',80],['IFE',2],['ILI',3]]),null);
   assert.equal(a63Paint(undefined),null);
-  assert.equal(paintable([{indicador:'RENDIMIENTO'}]),null);
+  assert.equal(paintable([{ind:'RENDIMIENTO'}]),null);
+  assert.equal(paintable([{ind:'IFE'},{ind:'PERDIDAS_REALES'},{ind:'ANR'}]).ind,'ANR');
+});
+test('la columna se_pinta dice "sí" en las ciudades cuyo operador publica ANR o pérdidas reales (Córdoba, Elx) y "no" en el resto (FWG-1871, A.1)',()=>{
+  const {cities,mun}=build();const pinta=Object.fromEntries(cities.map(c=>[c[0],c[7]]));
+  assert.equal(pinta['14021'],'sí');assert.equal(pinta['03065'],'sí');assert.equal(pinta['15030'],'no');
+  for(const c of cities)assert.equal(c[7],(mun[c[0]]||[]).some(r=>r.ind==='ANR'||r.ind==='PERDIDAS_REALES')?'sí':'no',c[1]);
+  const csv=read('data/ciudades_50k_sin_perdidas.csv').trim().split('\n').slice(1).map(l=>l.split(';'));
+  assert.deepEqual(csv.map(r=>[r[0],r[7]]),cities.map(c=>[c[0],c[7]]));
 });
 
 // ---- Cifras de todo el sistema de un operador (ficha de operador, Parte 6)

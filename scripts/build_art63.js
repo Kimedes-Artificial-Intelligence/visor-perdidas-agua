@@ -76,8 +76,9 @@ function checkEstado(rows,padron,a63){
 
 // Indicador que se pinta con la escala de pérdidas: solo agua no registrada o pérdidas reales en %, por este orden.
 // El rendimiento, el IFE y el ILI no son porcentajes de pérdidas: se muestran en la ficha, no se pintan ni se convierten.
+// rows son las filas ya leídas de data/art63.json (clave ind), no las de raw/ (clave indicador).
 const PAINT=['ANR','PERDIDAS_REALES'];
-function paintable(rows){for(const k of PAINT){const r=rows.find(x=>x.indicador===k);if(r)return r;}return null;}
+function paintable(rows){for(const k of PAINT){const r=rows.find(x=>x.ind===k);if(r)return r;}return null;}
 
 function build(read=f=>fs.readFileSync(path.join(ROOT,f),'utf8')){
   const EM=JSON.parse(read('data/espmun.json')),ES=JSON.parse(read('data/es_mun.json')).mun,M=JSON.parse(read('data/muni.json')).muni;
