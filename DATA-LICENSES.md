@@ -20,6 +20,10 @@ Condiciones comprobadas el 21 y el 22 de octubre de 2026 (EurEau, IGN y origen d
 | Govern de les Illes Balears, Servei de Planificació (Portal de l'Aigua): *Resum anual de dades d'abastiment urbà d'aigua, anys 2000 a 2024* | **Creative Commons Reconeixement-Compartir Igual (by-sa)**, según el aviso legal de la CAIB, que se aplica a caib.es. El aviso no indica la versión: **pendiente de confirmar con la CAIB**; se usará 4.0 solo si la CAIB lo confirma. Compartir igual: los datos de Baleares y sus derivados (`raw/caib_abastiment_2000_2024.psv`, `data/espmun.json` y la constante `IB` de la página) se distribuyen con la misma licencia. | "Font: Govern de les Illes Balears, Servei de Planificació. Dades d'abastiment urbà 2000-2024. Consulta 22/10/2026" | https://www.caib.es/webgoib/aviso-legal · https://www.caib.es/sites/aigua/ca/proveament_distribucia_potabilitzacia/ |
 | INE: cifras oficiales de población, Revisión del Padrón municipal a 1/1/2025 (`pobmun25.xlsx`) | **CC BY 4.0**, como el resto del INE (ver la fila del INE). | "Elaboración propia con datos extraídos del sitio web del INE: www.ine.es" | https://ine.es/dyngs/AYU/es/index.htm?cid=125 |
 | Webs de operadores (`data/operators.json`) | Solo se citan nombres y enlaces; no se reproduce contenido. | No aplica | No aplica |
+| EIEL, Encuesta de Infraestructura y Equipamientos Locales (visor GEO-EIEL): núcleos, tramos de red y fases por provincia | **CC BY-NC-SA 4.0** según el ticket FWG-1868: atribución, **sin uso comercial** y compartir igual. Los archivos derivados (`raw/eiel_*`, `data/es_mun.json`, constantes `ESD` y `EPROV`) se distribuyen con la misma licencia. **Pendiente de verificar** en una página oficial de la EIEL y de valorar el uso comercial del visor (ver `data/sources.md`). | "© Secretaría de Estado de Política Territorial", con la fase de cada provincia | https://eiel.redsara.es/visor/ |
+| SINAC, Ministerio de Sanidad: consulta ciudadana de redes de distribución | Información pública del Ministerio. Condiciones de reutilización: **pendiente de verificar**. Se citan en cada ficha el gestor, el responsable, la población abastecida y la dotación de cada red. | "Ministerio de Sanidad, SINAC", con la fecha de extracción | https://sinac.sanidad.gob.es/CiudadanoWeb/ |
+| Enginyeria Sense Fronteres / Aigua és Vida, *La Gestió de l'Aigua a Catalunya per Municipi* (Datawrapper F298j v45) | **Derechos de sus autores**: sin licencia de reutilización publicada. Se usa con cita en cada ficha de Catalunya, por decisión del ticket FWG-1868. | "Enginyeria Sense Fronteres (ESF) · Aigua és Vida", con la versión y la fecha de actualización (10/07/2026) | https://datawrapper.dwcdn.net/F298j/45/ |
+| Tabla de clasificación de operadores (`data/operadores_clasificacion.csv`) | Tabla propia de Kimedes | MIT | |
 
 ## Por archivo
 
@@ -49,6 +53,12 @@ Condiciones comprobadas el 21 y el 22 de octubre de 2026 (EurEau, IGN y origen d
 | `data/esmun.json` | es-atlas (IGN) y, para 08215, OpenStreetMap | CC BY 4.0; **ODbL 1.0** por la geometría de 08215 | |
 | `data/espmun.json` | INE (padrón) y Govern de les Illes Balears | CC BY 4.0 y **CC BY-SA** (datos de Baleares) | |
 | `data/operators.json` | Webs de operadores | No aplica | |
+| `raw/eiel_nucleos_2026-10-30.csv`, `raw/eiel_rd_2026-10-30.csv`, `raw/eiel_provincias_2026-10-30.csv` | EIEL, extracción de `scripts/extract_eiel.js` | **CC BY-NC-SA 4.0** (pendiente de verificar) | Fase de cada provincia (2016-2025); extracción 29-30/10/2026 |
+| `raw/sinac_redes_2026-10-30.csv` | SINAC, Ministerio de Sanidad | Pendiente de verificar | Extracción 30/10/2026 |
+| `raw/esf_gestio_aigua_cat_2026-07-10.psv` | ESF / Aigua és Vida, transcripción exacta | Derechos de sus autores | Actualización 10/07/2026 |
+| `data/es_mun.json` | EIEL, SINAC y ESF, agregados por `scripts/build_es_mun.js` | La de cada fuente; **CC BY-NC-SA 4.0** por los datos EIEL | |
+| `data/operadores_clasificacion.csv` | Tabla propia | MIT | |
+| `data/operadores_sin_clasificar.csv` | Nombres de gestores del SINAC, generado | La del SINAC | |
 | `src/geometry/cat.json` | es-atlas (IGN) | CC BY 4.0 | |
 | `src/geometry/geo.json` | Geometría de países de la v1, ya proyectada (ETRS89-LAEA) y sin metadatos. Origen: **pendiente de verificar**; la auditoría del 22 de octubre de 2026 no ha podido determinarlo a partir del archivo | Pendiente de verificar | |
 | `src/geometry/ctx_path.txt` | Geometría de contexto de la v1, ya proyectada y sin metadatos. Origen: **pendiente de verificar** (misma situación que `geo.json`) | Pendiente de verificar | |

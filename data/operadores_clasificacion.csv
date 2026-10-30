@@ -1,0 +1,63 @@
+patron;tipo;grupo;nota
+EKUIS;No es operador;;Sistema de información de aguas de consumo del País Vasco, no el gestor: se usa el responsable de la red
+ANTICIMEX;No es operador;;Empresa de control sanitario: se usa el responsable de la red
+LASAOSA;No es operador;;Proveedor de productos químicos: se usa el responsable de la red
+CNTA;No es operador;;Laboratorio: se usa el responsable de la red
+PLUS CONTROL;No es operador;;Empresa de control sanitario: se usa el responsable de la red
+AQM LABORATORIOS;No es operador;;Laboratorio: se usa el responsable de la red
+SPT;No es operador;;Empresa de control y tratamiento: se usa el responsable de la red
+AIGUES DE BARCELONA EMPRESA METROPOLITANA;Mixto;;
+EMMASA;Mixto;;
+SOCIEDAD MIXTA DEL AGUA JAEN;Mixto;;
+EMUASA;Mixto;;
+EMANAGUA;Mixto;;
+EMPRESA MIXTA;Mixto;;
+MIXTA;Mixto;;
+FCC AQUALIA;Privado;;
+AQUALIA;Privado;;
+SGAB;Privado;;
+SOCIEDAD GENERAL DE AGUAS DE BARCELONA;Privado;;
+AQUONA;Privado;;
+HIDRAQUA;Privado;;
+HIDRALIA;Privado;;
+HIDROGEA;Privado;;
+VIAQUA;Privado;;
+ASTURAGUA;Privado;;
+AQUANEX;Privado;;
+CANARAGUA;Privado;;
+SOREA;Privado;;
+GRUP CASSA;Privado;;
+PROVEIMENTS D AIGUA;Privado;;
+COMAIGUA;Privado;;
+GLOBAL OMNIUM;Privado;;
+AQLARA;Privado;;
+FACSA;Privado;;
+GESTAGUA;Privado;;
+ACCIONA AGUA;Privado;;
+SACYR AGUA;Privado;;
+AQUARBE;Privado;;
+ESPINA DELFIN;Privado;;
+TEIDAGUA;Privado;;
+AQUARA;Privado;;
+HIDROGESTION;Privado;;
+COMPANYIA GENERAL D AIGUES DE CATALUNYA;Privado;;
+AYUNTAMIENTO;Municipalizado;;
+AYTO;Municipalizado;;
+CONCELLO;Municipalizado;;
+AJUNTAMENT;Municipalizado;;
+MANCOMUNIDAD;Municipalizado;;
+MANCOMUNITAT;Municipalizado;;
+CONSORCIO;Municipalizado;;
+COMARCA;Municipalizado;;
+CANAL DE ISABEL II;Municipalizado;;
+GIAHSA;Municipalizado;;
+EMPRESA PROVINCIAL;Municipalizado;;
+EMPRESA MUNICIPAL;Municipalizado;;
+AIGUES DE MANRESA;Municipalizado;;
+SERVICIOS DE LA COMARCA DE PAMPLONA;Municipalizado;;
+SERVICIOS DE MONTEJURRA;Municipalizado;;
+AGUAS DEL HUESNA;Municipalizado;;
+ALJARAFESA;Municipalizado;;
+GALASA;Municipalizado;;
+EMASER;Municipalizado;;
+ENTEMANSER;Municipalizado;;

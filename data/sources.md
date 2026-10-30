@@ -122,3 +122,63 @@ Vista nueva `#municipios` con los 8.131 municipios de España. Coloreados donde 
 - Confirmar con la CAIB la versión de la licencia CC BY-SA de su aviso legal.
 - La estructura (índice por código INE, motivo por comunidad) admite cargar la tabla municipal de la evaluación de fugas 2024 de MITECO (RD 3/2023) si se obtiene por solicitud de acceso.
 - No se usan cifras de operadores con derechos reservados (Canal, EMASESA, EMUASA, Aguas de Alicante, Aguas de Huelva, Hidralia, AMVISA) ni de prensa.
+
+## Añadido el 30 oct 2026: pérdidas, red, gestión y operadores en toda España (FWG-1868)
+
+La vista `#municipios` tiene cuatro capas: pérdidas, modelo de gestión, fibrocemento y estado de la red. La ficha de cada municipio cita todas sus fuentes en una lista numerada. Ningún valor lo estima Kimedes: lo que no da ninguna fuente queda en gris con el motivo.
+
+| Capa | Fuente | Año | Cobertura (padrón INE 2025) | Verificación |
+|---|---|---|---|---|
+| Pérdidas, resto de España | EIEL, pérdidas declaradas por núcleo (visor GEO-EIEL) | Fase de cada provincia, 2016-2025 | 4.972 municipios | Agregación portada de `process_es.py`: mismos recuentos (8.015 municipios, 4.972 con pérdidas, 5.653 con gestión, 7.637 con operador); valores iguales salvo el redondeo de 0,5 (Python redondea al par) |
+| Pérdidas, total | ACA + Govern IB + EIEL | | **5.175 de 8.131 municipios, 43,0 % de la población** | Contador de la página |
+| Modelo de gestión | ESF (Catalunya), EIEL y SINAC | | **7.528 municipios, 83,0 % de la población** | Precedencia probada en `tests/unit/es_mun.test.js` |
+| Fibrocemento y estado de la red | EIEL, material y estado de cada tramo | Fase de cada provincia | 5.653 municipios, 27,9 % de la población | 1.793 municipios con 30 % o más de su red en fibrocemento, igual que la referencia del ticket |
+| Operadores | SINAC, gestor y responsable de cada red de distribución | Extracción 30/10/2026 | 7.637 municipios con operador | 18.939 redes |
+
+### Archivos de `raw/` (SHA-256)
+
+| Archivo | Filas | SHA-256 |
+|---|---|---|
+| `eiel_nucleos_2026-10-30.csv` | 33.413 núcleos | 02fea6ef963760774974ff6cfac82387265633e035c66679ae5dd56bb307dd49 |
+| `eiel_rd_2026-10-30.csv` | 46.842 claves de tramo | 1effa2c93a324c713ace616ec355b654bef1b18e772000523bf1b4636f365f73 |
+| `eiel_provincias_2026-10-30.csv` | 48 provincias | 98b4f9ade1c35c39775d7e7bcef5b1f68f3cd02bd762c7f22334773aa4705b28 |
+| `sinac_redes_2026-10-30.csv` | 18.939 redes | fcf43bcda6d64106ea7713c08fe4afcb82a63d334c6d204e4343e8b3a23a5d5e |
+| `esf_gestio_aigua_cat_2026-07-10.psv` | 947 municipios | f47b2144c9aaf421c0825ac8dc4b30ad49cec36f25e9b82facabbc38ab7d9ba4 |
+
+Copias exactas de los archivos de la extracción del 29-30/10/2026 (carpeta VISOR de David); las versiones `sinac_*_parcial.csv` se descartan. `scripts/extract_eiel.js` reproduce la EIEL: la comprobación `--prov=11 --check` del 30/10/2026 dio 0 diferencias en Cádiz (1 provincia, 117 núcleos, 259 tramos).
+
+### Agregación (`scripts/build_es_mun.js`)
+
+1. Pérdidas EIEL: 0, vacío o más del 95 % = sin dato (el 0 es campo sin rellenar: 18.426 de los 33.413 núcleos). Media de los núcleos ponderada por el consumo medio ((invierno + verano) / 2); sin consumo, por padrón. Se guardan el valor, la fase, los núcleos que informan y el total, el % de población cubierta y el % de valores múltiplos de 5. La mediana de los municipios tiene el 100 % de sus valores en múltiplos de 5: en la página se etiquetan como "dato declarado por el ayuntamiento, no medido" y se pintan con trama.
+2. Gestión EIEL: longitud de tramo por código de gestión; reparto en % y código dominante. Códigos (metadatos del visor): MU municipal, EM empresa municipal, EP empresa pública no municipal, MA mancomunidad, CO consorcio, VE vecinal, PV privada, OT otros.
+3. Red EIEL: % de longitud en fibrocemento (FC), % en estado malo (M) y regular (R), km y fase. La longitud es la geodésica de la geometría (radio medio 6.371.008,8 m). Materiales según los metadatos del visor (`getmetadata`, consulta 30/10/2026): FC fibrocemento, FU fundición, PE polietileno, **PC PVC**, **PL plomo**, PV poliéster reforzado con fibra de vidrio, HO hormigón, OT otros. Con esto queda resuelto el pendiente de verificar PC y PL.
+4. Claves de tramo mal formadas (no tienen 11 partes o la segunda no es RD): se ignoran.
+5. SINAC: operadores ponderados por población abastecida (población × % de cada localidad); redes repetidas cuentan una vez; dotación media ponderada.
+
+### Clasificación de operadores y modelo de gestión
+
+- `data/operadores_clasificacion.csv` (editable; ver CONTRIBUTING): coincidencia por palabras completas, sin acentos ni signos; gana el primer patrón. Arranque con los patrones del ticket. EMALSA, AGUAS DE LORCA, ACOSOL y AGUASVIRA quedan sin clasificar, a la espera de revisión una a una. La columna `grupo` se deja vacía: no se ha comprobado el grupo de ningún operador.
+- "No es operador" (EKUIS y laboratorios): se usa el `responsable` de la red y la ficha lo marca como responsable. **Decisión de implementación:** el responsable es el titular (normalmente el ayuntamiento), no el gestor, así que no se usa para deducir el modelo de gestión. Por eso la mayor parte del País Vasco queda sin modelo.
+- 1.272 nombres sin clasificar, en `data/operadores_sin_clasificar.csv`, ordenados por población abastecida (EMASESA, EMASAGRA, AQUAVALL, EMALCSA... en cabeza).
+- Precedencia: Catalunya → ESF. Resto → si el operador principal del SINAC es Mixto, Mixto; si no, la gestión dominante de la EIEL agrupada (MU, EM, EP, MA, CO → Municipalizado; PV → Privado; VE → Vecinal / cooperativa; OT → Otros); sin EIEL, el tipo del operador principal del SINAC. En 1.095 municipios la EIEL y el SINAC no coinciden: la ficha muestra ambas.
+
+### Motivo por municipio sin pérdidas (sustituye a la tabla por comunidad)
+
+| Caso | Texto |
+|---|---|
+| País Vasco y Navarra | País Vasco y Navarra quedan fuera de la EIEL por ley y no publican pérdidas por municipio. |
+| Provincia sin EIEL en el visor nacional (Albacete, Huelva, Huesca, León, Madrid, Santa Cruz de Tenerife; Barcelona, Girona, Lleida, Tarragona e Illes Balears tienen su propia fuente) | Esta provincia no está en el visor nacional de la EIEL (la mantiene su diputación o su comunidad) y no hay otro registro público de pérdidas por municipio. |
+| Municipio sin núcleos en la EIEL | La EIEL no incluye núcleos de este municipio: cubre los municipios de menos de 50.000 habitantes. |
+| Núcleos sin pérdidas | La EIEL no trae pérdidas para este municipio: campo vacío, 0 % (campo sin rellenar) o más del 95 %. |
+| Catalunya, Illes Balears, Ceuta y Melilla | Sin cambios. |
+
+### Incidencias de las fuentes
+
+- 210 nombres de núcleo con la codificación rota en la extracción (por ejemplo "VVA. DE CÃÂRDOBA"). No se usan en la página y no se corrigen a mano en `raw/`.
+- Población abastecida del SINAC en Madrid capital: 70.669 (la tabla de localidades de las redes grandes reparte la ciudad por distritos con % bajos). Se muestra tal cual, como el resto del SINAC; pendiente de revisar.
+- `scripts/extract_sinac.js` **no está incluido**: la consulta ciudadana del SINAC responde 403 a clientes automatizados y no se ha podido ver la petición real. Hace falta la petición que se usó en la extracción del 30/10/2026 (o un HAR de la consulta) para escribirlo sin inventar parámetros.
+
+### Página
+
+- Tamaño: 2,56 MB sin comprimir (756 KB con gzip). El límite de la CI sube de 2,5 a 4 MB (`tests/unit/espmun.test.js`).
+- Regresión: en Europa, España por comunidades y Catalunya (modo Pérdidas) el mapa, la leyenda, el ranking y el contador son idénticos a `main` (DOM del mapa comparado elemento a elemento). Cambian a propósito la cabecera (sin el sello "Uso interno", con el selector de capa), el pie y, en Catalunya, la ficha, que añade el modelo de gestión de ESF y la lista de fuentes.

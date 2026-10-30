@@ -86,8 +86,8 @@ test('#municipios carga los 8.131 municipios y el contador de cobertura',async({
   expect(errors).toEqual([]);
   await expect(page.locator('#muLayer [data-u]')).toHaveCount(8131);
   await expect(page.locator('.lvl button[data-l="mu"]')).toHaveAttribute('aria-pressed','true');
-  await expect(page.locator('#maphead')).toHaveText(/^203 de 8\.131 municipios con dato publicado · \d+,\d % de la población de España$/);
-  await expect(page.locator('#legend')).toContainText('no son el mismo indicador');
+  await expect(page.locator('#maphead')).toHaveText(/^5\.175 de 8\.131 municipios con dato de pérdidas publicado · \d+,\d % de la población de España$/);
+  await expect(page.locator('#legend')).toContainText('son tres indicadores distintos');
 });
 
 test('la rueda, los botones y el doble clic acercan; restablecer vuelve a toda España',async({page})=>{
@@ -156,16 +156,16 @@ test('un municipio sin dato (Madrid) muestra el motivo y el valor INE de su comu
   const P=page.locator('#panel');
   await expect(P.locator('h2')).toHaveText('Madrid');
   await expect(P).toContainText('Sin dato municipal publicado. No se estima ningún valor.');
-  await expect(P).toContainText('Sin registro público de pérdidas por municipio a 22/10/2026');
+  await expect(P).toContainText('Esta provincia no está en el visor nacional de la EIEL');
   await expect(P).toContainText('Agua no registrada, Comunidad de Madrid (INE 2024)');
   await expect(P).toContainText('3.506.730');
 });
 
 test('el ranking nacional se filtra por comunidad y fija el municipio al hacer clic',async({page})=>{
   await openMu(page);
-  await expect(page.locator('#rankCount')).toHaveText('203 municipios con dato publicado');
+  await expect(page.locator('#rankCount')).toHaveText('5.175 municipios con dato de pérdidas publicado');
   await page.selectOption('#rankCc','04');
-  await expect(page.locator('#rankCount')).toHaveText('67 municipios con dato publicado en Illes Balears');
+  await expect(page.locator('#rankCount')).toHaveText('67 municipios con dato de pérdidas publicado en Illes Balears');
   await page.click('#moreBtn');
   await expect(page.locator('#rank button')).toHaveCount(67);
   await page.click('#rank button[data-k="07024"]');
@@ -196,4 +196,86 @@ test('un territorio compartido (53xxx) no se fija y lo explica al pasar el rató
   await expect(page.locator('#tip')).toContainText('Territorio compartido entre municipios');
   await page.mouse.click(pt.x,pt.y);
   await expect(page.locator('#panel h2')).toHaveText(pinned);
+});
+
+// ---- España por municipio: EIEL, SINAC y modelo de gestión (FWG-1868)
+const layer=async(page,g)=>{await page.click(`#segMG button[data-g="${g}"]`);await settle(page);};
+
+test('el selector de capa cambia leyenda, contador y color; fibrocemento y estado solo existen en la vista España',async({page})=>{
+  await openMu(page);
+  const fill=()=>page.locator('#muLayer [data-u="11002"]').evaluate(e=>e.style.fill);
+  const lossFill=await fill();
+  await layer(page,'ges');
+  await expect(page.locator('#maphead')).toHaveText(/^7\.528 de 8\.131 municipios con modelo de gestión/);
+  await expect(page.locator('#legend')).toContainText('Vecinal / cooperativa');
+  expect(await fill()).toBe('var(--g-p)');
+  await layer(page,'fc');
+  await expect(page.locator('#maphead')).toHaveText(/^5\.653 de 8\.131 municipios con material de la red/);
+  expect(await fill()).not.toBe(lossFill); // 46 % de fibrocemento frente a 25 % de pérdidas
+  await layer(page,'est');
+  await expect(page.locator('#legend')).toContainText('estado malo o regular');
+  await page.click('.lvl button[data-l="cat"]');
+  await expect(page.locator('#segMG button[data-g="fc"]')).toBeHidden();
+  await expect(page.locator('#segMG button[data-g="loss"]')).toHaveAttribute('aria-pressed','true');
+});
+
+test('un municipio EIEL (Alcalá del Valle) muestra pérdidas declaradas, gestión, operador, red y sus fuentes',async({page})=>{
+  await openMu(page);
+  await page.evaluate(()=>pin('11002'));
+  const P=page.locator('#panel');
+  await expect(P.locator('h2')).toHaveText('Alcalá del Valle');
+  await expect(P.locator('.hero .big')).toHaveText('25,0%');
+  await expect(P).toContainText('Dato declarado por el ayuntamiento, no medido. 1 de 1 núcleos informan');
+  await expect(P).toContainText('Mancomunidad 100 %');
+  await expect(P).toContainText('AGUAS SIERRA DE CÁDIZ, S.A');
+  await expect(P).toContainText('46 % de la red');
+  await expect(P.locator('.srcs li')).toHaveCount(4);
+  await expect(P.locator('.srcs')).toContainText('fase 2025 de la provincia');
+  await expect(P.locator('.srcs')).toContainText('CC BY-NC-SA 4.0');
+});
+
+test('Madrid: sin pérdidas, gestión municipalizada por el operador del SINAC (Canal de Isabel II)',async({page})=>{
+  await openMu(page);
+  await page.evaluate(()=>pin('28079'));
+  const P=page.locator('#panel');
+  await expect(P).toContainText('Sin dato municipal publicado. No se estima ningún valor.');
+  await expect(P.locator('.gtag')).toHaveText('Municipalizado');
+  await expect(P).toContainText('SINAC, operador principal clasificado por su nombre');
+  await expect(P).toContainText('CANAL DE ISABEL II, S.A.M.P.');
+});
+
+test('País Vasco: se muestra el responsable en lugar de EKUIS y no se infiere el modelo',async({page})=>{
+  await openMu(page);
+  await page.evaluate(()=>pin('48020'));
+  const P=page.locator('#panel');
+  await expect(P).toContainText('AYUNTAMIENTO DE BILBAO');
+  await expect(P).toContainText('responsable');
+  await expect(P).not.toContainText('EKUIS');
+  await expect(P.locator('.gtag')).toHaveText('Sin dato');
+  await expect(P).toContainText('País Vasco y Navarra quedan fuera de la EIEL por ley');
+});
+
+test('el filtro por operador "FCC AQUALIA" resalta sus municipios, da el recuento y filtra el ranking',async({page})=>{
+  await openMu(page);
+  await page.fill('#opq','FCC AQUALIA');
+  await expect(page.locator('#opCount')).toHaveText(/^\d{3} municipios · [\d.]+ hab\. \(padrón 2025\)$/);
+  const n=+(await page.locator('#opCount').innerText()).split(' ')[0];
+  await expect(page.locator('#muLayer .um.opm')).toHaveCount(n);
+  await expect(page.locator('#muLayer')).toHaveClass(/opf/);
+  await expect(page.locator('#rankCount')).toContainText('operador «FCC AQUALIA»');
+  await page.selectOption('#rankGm','V');
+  await expect(page.locator('#rankCount')).toContainText('privada (utility)');
+  await page.fill('#opq','');
+  await expect(page.locator('#muLayer')).not.toHaveClass(/opf/);
+});
+
+test('Exportar CSV descarga el ranking filtrado completo',async({page})=>{
+  await openMu(page);
+  await page.selectOption('#rankCc','04');
+  const [dl]=await Promise.all([page.waitForEvent('download'),page.click('#csvBtn')]);
+  const text=(await (await dl.createReadStream()).toArray()).join('');
+  const lines=text.replace(/^\ufeff/,'').trim().split('\r\n');
+  expect(lines[0].split(';').slice(0,3)).toEqual(['codigo_ine','municipio','provincia']);
+  expect(lines.length-1).toBe(67);
+  expect(lines.find(l=>l.startsWith('07024;'))).toContain('Formentera');
 });

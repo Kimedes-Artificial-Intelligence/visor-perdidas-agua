@@ -7,3 +7,4 @@ raw/*.txt merge=union
 data/*.json linguist-generated=true
 data/m08215.txt linguist-generated=true
 reference/*.html linguist-generated=true
+data/operadores_sin_clasificar.csv linguist-generated=true
