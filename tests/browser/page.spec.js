@@ -267,11 +267,11 @@ test('el selector de capa cambia leyenda, contador y color; fibrocemento y estad
   const fill=()=>page.locator('#muLayer [data-u="11002"]').evaluate(e=>e.style.fill);
   const lossFill=await fill();
   await layer(page,'ges');
-  await expect(page.locator('#maphead')).toHaveText(/^7\.576 de 8\.131 municipios con modelo de gestión/);
+  await expect(page.locator('#maphead')).toHaveText(/^7\.578 de 8\.131 municipios con modelo de gestión/);
   await expect(page.locator('#legend')).toContainText('Vecinal / cooperativa');
   expect(await fill()).toBe('var(--g-p)');
   await layer(page,'fc');
-  await expect(page.locator('#maphead')).toHaveText(/^5\.653 de 8\.131 municipios con material de la red/);
+  await expect(page.locator('#maphead')).toHaveText(/^5\.808 de 8\.131 municipios con material de la red/);
   expect(await fill()).not.toBe(lossFill); // 46 % de fibrocemento frente a 25 % de pérdidas
   await layer(page,'est');
   await expect(page.locator('#legend')).toContainText('estado malo o regular');
@@ -314,6 +314,17 @@ test('Madrid: sin pérdidas, gestión municipalizada por el operador del SINAC (
   await expect(P.locator('.gtag')).toHaveText('Municipalizado');
   await expect(P).toContainText('SINAC, operador principal clasificado por su nombre');
   await expect(P).toContainText('CANAL DE ISABEL II, S.A.M.P.');
+});
+
+test('Comunidad de Madrid: la red sale de la EIEL de la IDEM (CC BY 4.0) y la ficha explica que no publica pérdidas',async({page})=>{
+  await openMu(page);
+  await page.evaluate(()=>pin('28001'));
+  const P=page.locator('#panel');
+  await expect(P.locator('h2')).toHaveText('La Acebeda');
+  await expect(P).toContainText('La EIEL de la Comunidad de Madrid (fase 2023, IDEM) publica la red de distribución pero no las pérdidas por núcleo');
+  await expect(P).toContainText('Red de distribución (EIEL 2023, Comunidad de Madrid)');
+  await expect(P.locator('.srcs')).toContainText('CC BY 4.0 Comunidad de Madrid');
+  await expect(P.locator('.srcs')).not.toContainText('CC BY-NC-SA');
 });
 
 test('País Vasco: se muestra el responsable en lugar de EKUIS y no se infiere el modelo',async({page})=>{

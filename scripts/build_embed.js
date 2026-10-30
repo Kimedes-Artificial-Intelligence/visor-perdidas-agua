@@ -43,11 +43,13 @@ const {csv,loadClassifier}=require('./build_es_mun.js');const classify=loadClass
 const OPT=OPN.map(x=>{const c=classify(x);return c&&c.t!=='X'?c.t:'-';}).join('');
 // Grupo y fuente de la clasificación de cada operador que la tiene (FWG-1870): {índice en OPN: [grupo, URL de la fuente]}
 const OPC={};OPN.forEach((x,i)=>{const c=classify(x);if(!c||c.t==='X')return;const u=(/https:\/\/\S+/.exec(c.nota)||[''])[0];if(c.grupo||u)OPC[i]=[c.grupo,u];});
+// Municipios cuya red sale de la EIEL de la Comunidad de Madrid (IDEM) y no del visor nacional
+const RSI=Object.keys(ES.mun).filter(k=>ES.mun[k].rs==='idem');
 const EPROV=Object.fromEntries(Object.entries(ES.meta.prov).map(([p,o])=>[p,[o.fase,o.nu_fase]]));
 // Indicadores del art. 63.2 RD 3/2023 publicados por el operador (scripts/build_art63.js):
 // m: {INE: [[indicador, valor, unidad, año, operador, URL, página, aviso legal, fecha de consulta], ...]}; e: {INE: [estado de la búsqueda, motivo, fecha]}
 const AR=JSON.parse(fs.readFileSync('data/art63.json'));
 const A63={m:Object.fromEntries(Object.entries(AR.mun).map(([k,R])=>[k,R.map(r=>[r.ind,r.v,r.unit,r.y,r.op,r.url,r.page,r.legal,r.date])])),
   e:Object.fromEntries(Object.entries(AR.estado).filter(([,o])=>o.e!=='publica').map(([k,o])=>[k,[o.e,o.motivo,o.date]]))};
-const out2=`const A63=${JSON.stringify(A63)};\nconst GES=${JSON.stringify(GES)};\nconst ESD=${JSON.stringify(ESD)};\nconst OPN=${JSON.stringify(OPN)};\nconst OPT=${JSON.stringify(OPT)};\nconst OPC=${JSON.stringify(OPC)};\nconst EPROV=${JSON.stringify(EPROV)};\n`;
+const out2=`const A63=${JSON.stringify(A63)};\nconst GES=${JSON.stringify(GES)};\nconst ESD=${JSON.stringify(ESD)};\nconst OPN=${JSON.stringify(OPN)};\nconst OPT=${JSON.stringify(OPT)};\nconst OPC=${JSON.stringify(OPC)};\nconst EPROV=${JSON.stringify(EPROV)};\nconst RSI=${JSON.stringify(RSI)};\n`;
 fs.mkdirSync('.build',{recursive:true});fs.writeFileSync('.build/data.js',out+out2);console.log('data.js',out.length,'urls',urls.length,'units',units);

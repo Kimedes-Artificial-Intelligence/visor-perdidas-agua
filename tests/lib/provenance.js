@@ -20,7 +20,8 @@ const SOURCES={
   IB:['raw/caib_abastiment_2000_2024.psv'],
   // España por municipio (FWG-1868): EIEL, SINAC y ESF; la clasificación de operadores es una tabla escrita a mano
   GES:['raw/esf_gestio_aigua_cat_2026-07-10.psv'],
-  ESD:['raw/eiel_nucleos_2026-10-30.csv','raw/eiel_rd_2026-10-30.csv','raw/sinac_redes_2026-10-30.csv','raw/esf_gestio_aigua_cat_2026-07-10.psv','data/operadores_clasificacion.csv'],
+  RSI:['raw/idem_eiel_rd_2026-10-30.csv'],
+  ESD:['raw/idem_eiel_rd_2026-10-30.csv','raw/eiel_nucleos_2026-10-30.csv','raw/eiel_rd_2026-10-30.csv','raw/sinac_redes_2026-10-30.csv','raw/esf_gestio_aigua_cat_2026-07-10.psv','data/operadores_clasificacion.csv'],
   OPN:['raw/sinac_redes_2026-10-30.csv','data/operadores_clasificacion.csv'],
   OPT:['data/operadores_clasificacion.csv'],
   // Pérdidas publicadas por el operador (art. 63.2 RD 3/2023) y estado de la búsqueda (FWG-1870); precedencia en src/loss.js

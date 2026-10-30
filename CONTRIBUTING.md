@@ -195,6 +195,16 @@ FCC AQUALIA;Privado;;
 
 `npm run build` regenera `data/operadores_sin_clasificar.csv`, ordenado por población abastecida: es la lista de trabajo para completar la tabla.
 
+## Volver a extraer la EIEL de la Comunidad de Madrid
+
+La Comunidad de Madrid no está en el visor nacional de la EIEL: publica su fase 2023 en la IDEM con licencia CC BY 4.0. La red de distribución se extrae del servicio WFS, sin navegador:
+
+```bash
+node scripts/extract_idem_eiel.js --fecha=2026-10-30
+```
+
+Lee primero el esquema de la capa `IDEM_EIEL_RED_DISTRIBUCION_23` (se para si cambia algún campo), descarga los tramos de 10.000 en 10.000 con una pausa de un segundo y escribe `raw/idem_eiel_rd_<fecha>.csv` con los valores literales de la fuente y la longitud geodésica sumada por combinación de atributos. Con `--check` compara con el archivo de `raw/` sin escribir nada. `scripts/build_es_mun.js` traduce las palabras de la IDEM (FIBROCEMENTO, EMPRESA PUBLICA NO MUNICIPAL...) a los códigos del diccionario EIEL; una palabra nueva para la generación hasta que se añada a `IDEM_CODE`.
+
 ## Volver a extraer la EIEL
 
 `eiel.redsara.es` no responde desde la nube; se extrae en local con Playwright:

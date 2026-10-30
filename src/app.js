@@ -85,6 +85,8 @@ function esd(id){if(id in esdCache)return esdCache[id];const r=ESD[id];if(!r)ret
 // Provincias sin EIEL en el visor nacional; País Vasco y Navarra quedan fuera de la EIEL por ley
 const EIEL_LAW=new Set(["01","20","48","31"]);
 const eielPhase=id=>{const p=EPROV[id.slice(0,2)];return p&&p[0]?p:null;};
+// Red de la EIEL de la Comunidad de Madrid (IDEM, fase 2023): otra fuente y otra licencia que el visor nacional
+const RSI_SET=new Set(RSI);const isIdem=id=>RSI_SET.has(id);
 
 // ================= España por municipio =================
 const umCC=id=>PROV[id.slice(0,2)][1];
@@ -122,6 +124,7 @@ const A63_REASON={
 function umReason(id){const c=umCC(id);if(UM_REASON[c])return UM_REASON[c];
   const st=A63.e[id];if(st&&A63_REASON[st[0]])return A63_REASON[st[0]](A63_DATE(st[2]))+(st[1]?" "+st[1]+".":"");
   if(EIEL_LAW.has(id.slice(0,2)))return "País Vasco y Navarra quedan fuera de la EIEL por ley y no publican pérdidas por municipio.";
+  if(isIdem(id))return "La EIEL de la Comunidad de Madrid (fase 2023, IDEM) publica la red de distribución pero no las pérdidas por núcleo, y no hay otro registro público de pérdidas por municipio.";
   const p=eielPhase(id);if(!p)return "Esta provincia no está en el visor nacional de la EIEL (la mantiene su diputación o su comunidad) y no hay otro registro público de pérdidas por municipio.";
   const e=esd(id);if(!e||!e.nn)return `La EIEL (fase ${p[1]||p[0]}) no incluye núcleos de este municipio: cubre los municipios de menos de 50.000 habitantes.`;
   return `La EIEL (fase ${p[1]||p[0]}) no trae pérdidas para este municipio: campo vacío, 0 % (campo sin rellenar) o más del 95 %.`;}
@@ -158,6 +161,7 @@ const SRC={
   esf:{n:"Enginyeria Sense Fronteres (ESF) · Aigua és Vida, «La Gestió de l'Aigua a Catalunya per Municipi»",u:"https://datawrapper.dwcdn.net/F298j/45/",d:"Datawrapper F298j v45, publicado 23/06/2026, actualizado 10/07/2026, consulta 29/10/2026. Tipología de la concesión, empresa, grupo, fechas de contrato y remunicipalización. Derechos de sus autores, citada"},
   aca22:{n:"ACA, Avaluació comparativa de les auditories d'eficiència hidràulica, annex III",u:"https://aca.gencat.cat/web/.content/20_Aigua/02_infraestructures/02_xarxes_abastament/xarxes-municipals-auditories-eficiencia-hidraulica/informe-auditories-hidrauliques.pdf",d:"Versión mayo 2025, datos 2022. Agua no registrada (F9), ILI, F1. Llicència oberta d'ús d'informació - Catalunya"},
   acareg:{n:"ACA, registro de auditorías de eficiencia hidráulica",u:"https://aca.gencat.cat/ca/laigua/infraestructures/xarxes-abastament/xarxes-municipals-auditories-deficiencia-hidraulica/",d:"Obligación: DA 26ª del Decreto Legislativo 3/2003. Llicència oberta d'ús d'informació - Catalunya"},
+  idem:{n:"EIEL de la Comunidad de Madrid, fase 2023. IDEM (Infraestructura de Datos Espaciales de la Comunidad de Madrid)",u:"https://idem.comunidad.madrid/geoidem/ServiciosPublicos/ows?service=WFS&version=2.0.0&request=GetCapabilities",d:"Capa IDEM_EIEL_RED_DISTRIBUCION_23 (WFS), extracción 30/10/2026: material, estado, titular y gestión de cada tramo de la red de distribución. CC BY 4.0 Comunidad de Madrid"},
   idescat:{n:"Idescat, Padró municipal d'habitants 1/1/2025",u:"https://api.idescat.cat/taules/v2/pmh/446/477/mun/data?YEAR=2025&SEX=TOTAL",d:"Población municipal. Condiciones de reutilización de Idescat"},
   ine:{n:"INE, Revisión del Padrón municipal 1/1/2025",u:"https://www.ine.es/pob_xls/pobmun.zip",d:"Población municipal. CC BY 4.0"},
   ine53447:{n:"INE, Estadística sobre el suministro y saneamiento del agua (tabla 53447)",u:"https://ine.es/dyngs/Prensa/es/ESSA2024.htm",d:"Valor de toda la comunidad autónoma, 2024. Solo referencia. CC BY 4.0"},
@@ -190,7 +194,7 @@ function opsBlock(id){const e=esd(id);if(!e||!e.ops.length)return `<div><h3>Oper
   return `<div><h3>Operadores (SINAC)</h3><dl class="ops2">${e.ops.map(o=>`<dt>${esc(o.n)}${o.resp?'<span class="tag">responsable</span>':""}</dt><dd>${o.p<1?"< 1":o.p} % · ${o.resp?"titular de la red":OPTYPE[o.t]}${!o.resp&&o.g?` · ${esc(o.g)}`:""}</dd>`).join("")}</dl>
   <p class="srcline">% de la población abastecida por sus redes. Tipo y grupo según data/operadores_clasificacion.csv, con la fuente que los confirma en la lista de fuentes; un nombre sin patrón queda sin clasificar.${resp?" El SINAC da como gestor un sistema de información o un laboratorio: se muestra el responsable de la red, que no indica quién la gestiona.":""}</p></div>`;}
 function redBlock(id){const e=esd(id);if(!e)return "";const red=e.km!=null;
-  return `<div><h3>Red y suministro</h3><dl>${red?row(`Red de distribución (EIEL ${e.ry})`,es(e.km,1),"km")+row("Fibrocemento",e.fc,"% de la red")+row("Estado malo",e.em,"%")+row("Estado regular",e.er,"%"):row("Red de distribución (EIEL)",null)}
+  return `<div><h3>Red y suministro</h3><dl>${red?row(`Red de distribución (EIEL ${e.ry}${isIdem(id)?", Comunidad de Madrid":""})`,es(e.km,1),"km")+row("Fibrocemento",e.fc,"% de la red")+row("Estado malo",e.em,"%")+row("Estado regular",e.er,"%"):row("Red de distribución (EIEL)",null)}
   ${row("Dotación (SINAC)",e.dot==null?null:grp(e.dot),"L/hab/día")}${row("Redes de distribución (SINAC)",e.nred==null?null:grp(e.nred))}${row("Población abastecida (SINAC)",e.spop==null?null:grp(e.spop))}</dl></div>`;}
 // Resumen por categoría para la leyenda: municipios y % de población
 function gesSummary(ids,of=gesOf){const K=[...GORD,"N"],n={},p={};for(const k of K){n[k]=0;p[k]=0;}let tot=0;
@@ -278,7 +282,7 @@ function legend(){
     L.innerHTML=`<span class="t">Modelo de gestión del abastecimiento · ESF, EIEL y SINAC</span>`+GORD.map(k=>`<span><i style="background:${gesColor(k)}"></i>${GCAT[k][0]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin dato</span><span class="srcnote">Catalunya: ESF / Aigua és Vida. Resto: operador principal del SINAC si es una empresa mixta; si no, la gestión declarada en la EIEL (la de más longitud de red); sin EIEL, el tipo del operador principal del SINAC. El tipo de operador se asigna por su nombre con una tabla editable; si no hay patrón, queda sin clasificar.</span>`+gesSummary(UM_IDS,umGes);
     $("#hint").textContent="Rueda, pellizco o doble clic para acercar. Clic en un municipio para ver el origen del modelo, los operadores y todas las fuentes.";}
   else if(level==="mu"&&(colorBy==="fc"||colorBy==="est")){const fc=colorBy==="fc";
-    L.innerHTML=`<span class="t">${fc?"Red de distribución en fibrocemento":"Red de distribución en estado malo o regular"} (% de la longitud) · EIEL</span>`+FC_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin dato de la EIEL</span><span class="srcnote">EIEL: ${fc?"material":"estado"} declarado de cada tramo de la red de distribución, ponderado por su longitud. Sin dato en Catalunya, Baleares, Madrid, País Vasco, Navarra y las provincias que no están en el visor nacional de la EIEL.</span>`;
+    L.innerHTML=`<span class="t">${fc?"Red de distribución en fibrocemento":"Red de distribución en estado malo o regular"} (% de la longitud) · EIEL</span>`+FC_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin dato de la EIEL</span><span class="srcnote">EIEL: ${fc?"material":"estado"} declarado de cada tramo de la red de distribución, ponderado por su longitud. Comunidad de Madrid: EIEL fase 2023 de la IDEM (CC BY 4.0), sin las ciudades de 50.000 hab. o más. Sin dato en Catalunya, Baleares, País Vasco, Navarra y las provincias que no están en el visor nacional de la EIEL.</span>`;
     $("#hint").textContent="Rueda, pellizco o doble clic para acercar. En gris: la EIEL no cubre el municipio; no se estima nada.";}
   else if(level==="mu"){L.innerHTML=`<span class="t">Pérdidas por municipio (%) · último dato</span>`+MU_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin dato municipal publicado</span><span><i style="background:repeating-linear-gradient(45deg,#eba25a 0 3px,var(--fg) 3px 4px)"></i>estimación con poca o ninguna medición real</span><span><i style="background:repeating-linear-gradient(-45deg,#f1d98a 0 3px,var(--fg) 3px 3.6px)"></i>dato declarado por el ayuntamiento, no medido (EIEL)</span><span><i style="background:repeating-linear-gradient(0deg,#9fd3c0 0 3px,var(--fg) 3px 3.8px)"></i>dato publicado por el operador (art. 63.2 RD 3/2023)</span><span><i style="background:radial-gradient(circle,var(--fg) 0 1.3px,transparent 1.6px) 0 0/4px 4px,var(--nodata)"></i>el operador publica otro indicador (rendimiento, IFE), no comparable</span><span class="srcnote">Catalunya: agua no registrada de las auditorías (ACA, F9). Ciudades con dato del operador: agua no registrada o pérdidas reales que publica en cumplimiento del art. 63.2 del RD 3/2023; si solo publica el rendimiento o el IFE, no se pinta en esta escala ni se convierte. Illes Balears: agua no contabilizada, estimación del Govern IB 2024. Resto: pérdidas que declara el ayuntamiento en la EIEL, media de sus núcleos ponderada por consumo; la mediana de los municipios tiene todos sus valores en múltiplos de 5. ${UM_NOTE}</span>`;
     $("#hint").textContent="Rueda, pellizco o doble clic para acercar; arrastra para desplazar. En gris: sin dato municipal publicado, no se estima nada.";}
@@ -513,11 +517,11 @@ function umSources(id,L){const e=esd(id);const out=[];
       out.push([L&&L.kind==="art63"?"Pérdidas publicadas por el operador":"Indicador publicado por el operador",{n:`${R[0][4]}, indicadores del art. 63.2 del RD 3/2023`,u:R[0][5],
         d:`${R.map(r=>A63_IND[r[0]]+" "+r[3]).join(", ")}. Consulta ${A63_DATE(R[0][8])}. Aviso legal: ${R[0][7]}. Dato de hecho citado; derechos del operador`}]);}
     if(L&&L.kind==="ib")out.push(["Pérdidas (agua no contabilizada)","caib"]);if(L&&L.kind==="eiel")out.push(["Pérdidas declaradas","eiel"]);
-    if(e&&e.gm!=="N")out.push(["Modelo de gestión",e.gs==="e"?"eiel":"sinac"]);}
+    if(e&&e.gm!=="N")out.push(["Modelo de gestión",e.gs==="e"?(isIdem(id)?"idem":"eiel"):"sinac"]);}
   if(e&&e.ops.length)out.push(["Operadores, dotación y población abastecida","sinac"]);
   // Fuente que confirma el tipo (y el grupo) de cada operador clasificado
   if(e)for(const o of e.ops)if(!o.resp&&o.u)out.push([`Tipo de operador: ${o.n}`,{n:`Clasificación de ${o.n}`,u:o.u,d:`${OPTYPE[o.t]}${o.g?", grupo "+o.g:""}, según la fuente citada en data/operadores_clasificacion.csv`}]);
-  if(e&&e.km!=null)out.push(["Red: longitud, material, estado y gestión","eiel"]);
+  if(e&&e.km!=null)out.push(["Red: longitud, material, estado y gestión",isIdem(id)?"idem":"eiel"]);
   out.push(["Referencia de la comunidad","ine53447"]);out.push(["Población","ine"]);
   return out;}
 
