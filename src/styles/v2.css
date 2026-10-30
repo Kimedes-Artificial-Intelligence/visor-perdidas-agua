@@ -10,11 +10,12 @@
 .crumbs button[aria-current="page"]{color:var(--fg);cursor:default;border-bottom:0}
 .crumbs button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
 .crumbs .sep{color:var(--line)}
-.lvl{display:inline-flex;border:1px solid var(--line);border-radius:2px;background:var(--surface)}
+.lvl{display:inline-flex;flex-wrap:wrap;max-width:100%;border:1px solid var(--line);border-radius:2px;background:var(--surface)}
 .lvl button{font:600 11px/14px var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--fg2);background:none;border:0;padding:8px 12px;cursor:pointer;border-right:1px solid var(--hair)}
 .lvl button:last-child{border-right:0}
 .lvl button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
 .lvl button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+@media (max-width:480px){.lvl button{padding:8px 9px}}
 .yearsel{display:flex;align-items:center;gap:8px;font:400 12px/16px var(--mono);color:var(--muted)}
 .yearsel select{font:500 12px/16px var(--mono);color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:6px 8px}
 .seg[hidden],.yearsel[hidden]{display:none!important}
@@ -29,6 +30,11 @@
 #countries.dim path.c.nodata{fill:var(--ctx)!important}
 #dots.dim{display:none}
 .mu{fill:var(--nodata);stroke:var(--mu-line);stroke-width:.35;cursor:pointer}
+/* Vista internacional: regiones de Italia (con huecos) y capitales de provincia */
+#intLayer .ir{fill-rule:evenodd;stroke:var(--mu-line);stroke-width:.25;cursor:pointer}
+#intLayer .ic{stroke:var(--fg);stroke-width:.35;cursor:pointer}
+#intLayer .ir.hov,#intLayer .ir.act{stroke:var(--fg);stroke-width:.6}
+#intLayer .ic.hov,#intLayer .ic.act{stroke:var(--signal);stroke-width:.7}
 .mu.has{stroke-width:.6}
 .mu.hov{stroke:var(--signal);stroke-width:1.6}
 .mu.act{stroke:var(--signal);stroke-width:2.6}

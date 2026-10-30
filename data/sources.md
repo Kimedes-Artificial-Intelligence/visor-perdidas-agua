@@ -370,3 +370,28 @@ Cifras de sistema incorporadas (verificadas en el documento; ninguna se asigna a
 | Mancomunidad de la Comarca de Pamplona | ANR 9,46 % (provisional) | 2025 | 50 municipios |
 
 No incorporadas: Hidralia (83,42 %) e Hidraqua, Aigües de l'Horta y Aigües de Paterna (75,64 %, 72,24 %, 87,47 %). Sus tablas se extraen del PDF sin los encabezados de columna y no se puede atribuir cada cifra con seguridad. EMASESA (86,33 %, IFE 3,24) y Viaqua (80,2 %) no dan el año del dato. CABB solo da "superior al 95%" para su red primaria.
+
+## Añadido el 30 oct 2026: vista internacional (FWG-1870, Parte 7)
+
+Vista nueva `#internacional`. La vista Europa sigue dando el dato por país (EurEau). Aquí solo entran países con una fuente oficial abierta por región, ciudad, servicio o compañía. Misma escala `MU_BINS`, indicador exacto en la leyenda y en la ficha.
+
+**Italia** (consulta 30/10/2026):
+- Pérdidas: ISTAT, Censimento delle acque per uso civile, año 2022, en las tavole de «Le statistiche dell'Istat sull'acqua. Anni 2020-2023» (22/03/2024): https://www.istat.it/wp-content/uploads/2024/03/Istat-GMA2024-Tavole.xlsx. Copia en `raw/italia/` (CC BY 4.0), SHA-256 b67154f72c914b0b324492cfde552a0fe9360670198f2fb7326d0963fb5202b1. Hojas «Tav 3» (20 regiones, Bolzano y Trento, reparticiones e Italia) y «Tav 5» (109 comuni capoluogo y su total). 2022 sigue siendo el último año con pérdidas: las tavole de 2025 y 2026 no las traen.
+- Indicador: "Perdite idriche totali: volume di acqua disperso, calcolato come differenza tra il volume di acqua immesso in rete e il volume di acqua erogato per usi autorizzati", en % del volumen inmesso en red. Cifras de control: Italia 42,4 %, Potenza 71,0 %, Milano 13,4 %, Basilicata 65,5 %. No es el agua no registrada de España.
+- Transcripción: `scripts/extract_istat.js` → `raw/italia_istat_perdite_2022.psv`. Algunas celdas guardan el decimal en coma flotante binaria (33,799999999999997): se escriben con el decimal publicado (33,8).
+- Geometría: ISTAT, «Confini delle unità amministrative a fini statistici al 1° gennaio 2026», versión generalizada (https://www.istat.it/storage/cartografia/confini_amministrativi/generalizzati/2026/Limiti01012026_g.zip, SHA-256 b011a590656c3a3ebc297fba80726a376aa843b6f164641cf6a4a990021a81d6, CC BY 4.0). `scripts/extract_istat_geo.js` lee los shapefile (UTM 32N) sin dependencias y simplifica las regiones a 800 m. Guarda el centroide de los comuni capoluogo en `raw/italia_istat_geo_2026.json` (75 KB). El ZIP (10 MB) no se guarda.
+- Cruce de los 109 capoluoghi con su código ISTAT por nombre exacto: `raw/italia_capoluoghi_cruce.psv`, 109 de 109.
+- Mapa: regiones coloreadas por su dato, capoluoghi en puntos. Proyección del mapa de Europa (`src/geometry/proj.json`), así que Italia encaja sobre el mapa base. Página: 2,70 MB, por debajo del límite de 4 MB: no hace falta cargar la capa aparte.
+
+**Resto de países** (`raw/internacional_paises.psv`; en la ficha sin selección):
+
+| País | Estado | Motivo |
+|---|---|---|
+| Inglaterra y Gales | Sin licencia verificada | Discover Water publica fugas por compañía 2024-25 (Ml/día, l/propiedad/día, m3/km/día) en CSV, pero sin licencia de reutilización; water.org.uk dice "Copyright © 2026 Water UK. All rights reserved.". Ofwat responde 403 a la consulta automatizada. La geometría sí es abierta: zonas de recursos del Environment Agency (OGL v3) y límites de compañías del portal Stream de Water UK (CC BY 4.0) |
+| Portugal | Descarga manual | ERSAR, según el ticket, rechaza los clientes automatizados |
+| Francia | Descarga manual | SISPEA (OFB): licencia por confirmar ("License Not Specified" en data.gouv.fr); la página de descarga redirige |
+| Brasil | Descarga manual | La Série Histórica del SNIS (app4.mdr.gov.br) no resuelve |
+| Chile | Descarga manual | La web de la SISS no responde a la consulta automatizada |
+| Oriente Medio | Sin capa | No hay fuente pública con granularidad subnacional |
+
+No se ha incluido la cifra nacional de Jordania que citaba el ticket (41 %, MWI): no se ha verificado la fuente.

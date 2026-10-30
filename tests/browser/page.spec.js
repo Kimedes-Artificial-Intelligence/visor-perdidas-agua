@@ -57,6 +57,7 @@ for(const [level,hash] of Object.entries(LEVELS)){
 }
 
 test('Balaguer, sin dato, muestra "sin dato publicado" al pasar el ratón y al hacer clic',async({page})=>{
+  await page.setViewportSize({width:1280,height:1000}); // el mapa entero a la vista: el ratón de Playwright no desplaza la página
   await open(page,'dist',LEVELS.catalunya);
   const c=await centerOf(page,'#catLayer [data-m="25040"]');
   await page.mouse.move(c.x,c.y);
@@ -93,6 +94,7 @@ test('Vallirana muestra la auditoría 2024 de la red con más abonados y cita la
 });
 
 test('Sant Hipòlit de Voltregà (08215) está dibujado y responde al ratón',async({page})=>{
+  await page.setViewportSize({width:1280,height:1000}); // el mapa entero a la vista: el ratón de Playwright no desplaza la página
   await open(page,'dist',LEVELS.catalunya);
   const c=await centerOf(page,'#catLayer [data-m="08215"]');
   expect(c.width).toBeGreaterThan(0);expect(c.height).toBeGreaterThan(0);
@@ -433,6 +435,27 @@ test('capa de prioridad comercial: quintiles, leyenda que dice que es un cálcul
   const csv=require('fs').readFileSync(await dl.path(),'utf8');
   expect(csv.split('\r\n')[0]).toContain('indice_prioridad_kimedes;quintil_prioridad;factor_poblacion;factor_perdidas;factor_fibrocemento;factor_antiguedad_eiel;factor_modelo');
   expect(csv.split('\r\n').length).toBe(8132);
+});
+
+// ---- Vista internacional (FWG-1870, Parte 7)
+test('vista internacional: Italia por región y capital, con el indicador exacto de ISTAT y el estado de los demás países',async({page})=>{
+  await page.setViewportSize({width:1360,height:1300});await open(page,'dist','#internacional');
+  await expect(page.locator('#crumbs button')).toHaveText(['Europa','Internacional']);
+  await expect(page.locator('#intLayer .ir')).toHaveCount(20);
+  await expect(page.locator('#intLayer .ic')).toHaveCount(109);
+  await expect(page.locator('#legend')).toContainText('Perdite idriche totali: % del agua inmessa en la red de distribución');
+  await expect(page.locator('#legend')).toContainText('Oriente Medio: no hay fuente pública con granularidad subnacional');
+  await expect(page.locator('#panel')).toContainText('Estado por país (30/10/2026)');
+  await expect(page.locator('#panel')).toContainText('Inglaterra y GalesSin licencia de reutilización verificada');
+  await expect(page.locator('#rank button')).toHaveCount(40);
+  await expect(page.locator('#rank button').first()).toContainText('Potenza');
+  await page.click('#rank button[data-k="c076063"]');await settle(page);
+  const P=page.locator('#panel');
+  await expect(P.locator('h2')).toHaveText('Potenza');
+  await expect(P.locator('.hero .big')).toHaveText('71,0%');
+  await expect(P).toContainText('Capital de provincia · Basilicata · Italia');
+  await expect(P.locator('.srcs')).toContainText('CC BY 4.0');
+  expect(await page.locator('#intLayer [data-it="c015146"]').evaluate(e=>e.style.fill)).toBe('rgb(241, 217, 138)'); // Milano 13,4 %
 });
 
 test('Exportar CSV descarga el ranking filtrado completo',async({page})=>{

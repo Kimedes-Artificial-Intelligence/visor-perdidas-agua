@@ -54,7 +54,7 @@ const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},se
 // ================= estado =================
 let level="eu", metric="nrw", esMetric="anr";
 const YRS=CC.years; let yi=YRS.length-1;
-const pinned={eu:"ES",es:"09",mu:"07040",cat:"08019"}; let hovered=null;
+const pinned={eu:"ES",es:"09",mu:"07040",cat:"08019",int:null}; let hovered=null;
 let rankAll=false, rankCc="";
 
 // ================= España (INE) =================
@@ -272,6 +272,18 @@ const muLayer=$("#muLayer"),umEls={};let umHov,umSel;
   umHov=$("#umHov");umSel=$("#umSel");
 })();
 
+// ================= Internacional: Italia (ISTAT) =================
+// INT.reg: {COD_REG: [trazado, nombre, inmessa hm3, erogata hm3, perdite %]}; INT.cap: {PRO_COM_T: [x, y, nombre, inmessa miles m3, erogata miles m3, perdite %, clase lineal, región]}
+const intLayer=$("#intLayer"),intEls={};
+(function buildInt(){let h="";
+  for(const [k,r] of Object.entries(INT.reg))h+=`<path class="ir" d="${r[0]}" data-it="r${k}" tabindex="0" role="button" aria-label="${esc(r[1])}, ${es(r[4],1)} %"></path>`;
+  for(const [k,c] of Object.entries(INT.cap))h+=`<circle class="ic" cx="${c[0]}" cy="${c[1]}" r="1.6" data-it="c${k}" tabindex="0" role="button" aria-label="${esc(c[2])}, ${es(c[5],1)} %"></circle>`;
+  intLayer.innerHTML=h;intLayer.querySelectorAll("[data-it]").forEach(e=>intEls[e.dataset.it]=e);})();
+const intRow=k=>k[0]==="r"?{kind:"r",r:INT.reg[k.slice(1)]}:{kind:"c",c:INT.cap[k.slice(1)]};
+function paintInt(){for(const [k,e] of Object.entries(intEls)){const o=intRow(k);e.style.fill=muColor(o.kind==="r"?o.r[4]:o.c[5]);}}
+const INT_IND="Perdite idriche totali: % del agua inmessa en la red de distribución (ISTAT, Censimento delle acque per uso civile, 2022)";
+const INT_ST={datos:"Con datos",licencia:"Sin licencia de reutilización verificada",descarga_manual:"Pendiente de descarga manual",sin_capa:"Sin fuente subnacional: no se construye capa"};
+
 // ================= pintar =================
 const val=(c,m=metric)=>D[c][IDX[m]];
 function paintEU(){
@@ -304,6 +316,7 @@ function legend(){
     $("#hint").textContent="Rueda, pellizco o doble clic para acercar. En gris: la EIEL no cubre el municipio; no se estima nada.";}
   else if(level==="mu"){L.innerHTML=`<span class="t">Pérdidas por municipio (%) · último dato</span>`+MU_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin dato municipal publicado</span><span><i style="background:repeating-linear-gradient(45deg,#eba25a 0 3px,var(--fg) 3px 4px)"></i>estimación con poca o ninguna medición real</span><span><i style="background:repeating-linear-gradient(-45deg,#f1d98a 0 3px,var(--fg) 3px 3.6px)"></i>dato declarado por el ayuntamiento, no medido (EIEL)</span><span><i style="background:repeating-linear-gradient(0deg,#9fd3c0 0 3px,var(--fg) 3px 3.8px)"></i>dato publicado por el operador (art. 63.2 RD 3/2023)</span><span><i style="background:radial-gradient(circle,var(--fg) 0 1.3px,transparent 1.6px) 0 0/4px 4px,var(--nodata)"></i>el operador publica otro indicador (rendimiento, IFE), no comparable</span><span class="srcnote">Catalunya: agua no registrada de las auditorías (ACA, F9). Ciudades con dato del operador: agua no registrada o pérdidas reales que publica en cumplimiento del art. 63.2 del RD 3/2023; si solo publica el rendimiento o el IFE, no se pinta en esta escala ni se convierte. Illes Balears: agua no contabilizada, estimación del Govern IB 2024. Resto: pérdidas que declara el ayuntamiento en la EIEL, media de sus núcleos ponderada por consumo; la mediana de los municipios tiene todos sus valores en múltiplos de 5. ${UM_NOTE}</span>`;
     $("#hint").textContent="Rueda, pellizco o doble clic para acercar; arrastra para desplazar. En gris: sin dato municipal publicado, no se estima nada.";}
+  else if(level==="int"){L.innerHTML=`<span class="t">Italia · perdite idriche totali (%) · ISTAT 2022</span>`+MU_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span class="srcnote">${esc(INT_IND)}. Regiones en el mapa; capitales de provincia (comuni capoluogo) en puntos. Misma escala que los municipios de España, pero otro indicador: agua inmessa en red menos agua erogada para usos autorizados. Otros países: ${INT.paises.filter(p=>p.estado!=="datos"&&p.estado!=="sin_capa").map(p=>`${esc(p.pais)} (${INT_ST[p.estado].toLowerCase()})`).join(", ")}. Oriente Medio: no hay fuente pública con granularidad subnacional; no se construye capa. Geometría: ISTAT, límites al 1/1/2026, CC BY 4.0.</span>`;}
   else{L.innerHTML=`<span class="t">Agua no registrada (%) · último dato</span>`+MU_BINS.map(b=>`<span><i style="background:${b[1]}"></i>${b[2]}</span>`).join("")+`<span><i style="background:var(--nodata)"></i>sin auditoría publicada</span><span class="srcnote">Dato 2024 de las auditorías publicadas por cada operador; si no hay, 2022 del anexo de la ACA. Cada valor lleva su año y fuente en el panel.</span>`;
     $("#hint").textContent="Todos los municipios responden al ratón y al clic. En gris: no consta auditoría publicada, no se estima nada.";}
 }
@@ -316,10 +329,11 @@ function headerCtl(){
   if(level==="eu"){const m=M[metric];A.innerHTML=`Media EUR* <b>${m.fmt(m.avg)} ${m.unit}</b> · UE-27 <b>${m.fmt(m.eu)} ${m.unit}</b>`;}
   else if(level==="es"){const v=ccVal("ES");A.innerHTML=`España ${YRS[yi]} <b>${pc(v)}</b> · INE`;}
   else if(level==="mu"){A.innerHTML=`España 2024 <b>${pc(ccINE("ES"))}</b> ANR · INE`;}
+  else if(level==="int"){A.innerHTML=`Italia 2022 <b>${pc(INT.it[2])}</b> perdite totali · ISTAT`;}
   else{A.innerHTML=`Cataluña 2024 <b>${pc(CAT_INE24)}</b> ANR · INE`;}
-  const C=$("#crumbs");const T={eu:"Europa",es:"España",mu:"Municipios",cat:"Catalunya"};const chain={eu:["eu"],es:["eu","es"],mu:["eu","es","mu"],cat:["eu","es","cat"]}[level];
+  const C=$("#crumbs");const T={eu:"Europa",es:"España",mu:"Municipios",cat:"Catalunya",int:"Internacional"};const chain={eu:["eu"],es:["eu","es"],mu:["eu","es","mu"],cat:["eu","es","cat"],int:["eu","int"]}[level];
   C.innerHTML=chain.map(l=>[l,T[l]]).map(([l,t],i)=>`${i?'<span class="sep">/</span>':''}<button data-l="${l}" ${l===level?'aria-current="page"':''}>${t}</button>`).join("");
-  $("#maphead").textContent=level==="eu"?"ETRS89-LAEA · EurEau 2026":level==="es"?`Comunidades autónomas · INE ${YRS[yi]}`:level==="mu"?umCount(colorBy):"947 municipios · auditorías 2022-2024 (ACA y operadores)";
+  $("#maphead").textContent=level==="eu"?"ETRS89-LAEA · EurEau 2026":level==="es"?`Comunidades autónomas · INE ${YRS[yi]}`:level==="mu"?umCount(colorBy):level==="int"?"Italia · 20 regiones y 109 capitales de provincia · ISTAT 2022":"947 municipios · auditorías 2022-2024 (ACA y operadores)";
 }
 function paintMun(){
   for(const [id,e] of Object.entries(muEls)){let f="";
@@ -329,7 +343,7 @@ function paintMun(){
   for(const [id,e] of Object.entries(umEls)){e.style.fill=umFill(id);e.classList.toggle("opm",!!F&&F.has(id));}
   muLayer.classList.toggle("opf",!!F);
   muLayer.querySelectorAll(".umlow,.umdecl,.umop").forEach(e=>e.style.display=colorBy==="loss"?"":"none");}
-function paint(){paintEU();paintES();paintMun();legend();headerCtl();renderRank();renderPanel();marks();}
+function paint(){paintEU();paintES();paintMun();paintInt();legend();headerCtl();renderRank();renderPanel();marks();}
 
 function marks(){
   for(const c in els)for(const e of els[c]){e.classList.toggle("sel",level==="eu"&&c===pinned.eu);e.classList.toggle("hov",level==="eu"&&c===hovered&&c!==pinned.eu);}
@@ -338,6 +352,8 @@ function marks(){
   if(level==="cat"){if(hovered&&muEls[hovered]&&hovered!==pinned.cat){muEls[hovered].classList.add("hov");muEls[hovered].parentNode.appendChild(muEls[hovered]);}
     if(pinned.cat&&muEls[pinned.cat]){muEls[pinned.cat].classList.add("act");muEls[pinned.cat].parentNode.appendChild(muEls[pinned.cat]);}}
   for(const e of muLayer.querySelectorAll("circle.um.act,circle.um.hov"))e.classList.remove("act","hov");
+  for(const [k,e] of Object.entries(intEls)){e.classList.toggle("act",level==="int"&&k===pinned.int);e.classList.toggle("hov",level==="int"&&k===hovered&&k!==pinned.int);}
+  if(level==="int")for(const k of [hovered,pinned.int])if(k&&intEls[k]&&k[0]==="c")intLayer.appendChild(intEls[k]);
   const hl=(p,k,cls)=>{const d=level==="mu"&&k&&MUN.mu[k];p.setAttribute("d",d||"");if(level==="mu"&&k&&!d&&umEls[k])umEls[k].classList.add(cls);};
   hl(umHov,hovered!==pinned.mu?hovered:null,"hov");hl(umSel,pinned.mu,"act");
   if(level==="eu"){if(hovered&&els[hovered])g.appendChild(els[hovered][0]);if(pinned.eu&&els[pinned.eu])g.appendChild(els[pinned.eu][0]);}
@@ -390,7 +406,7 @@ function rankRow(k,n,label,v,max,avg,col,fmt,extra=""){
   <span class="b">${v==null?"":`<span style="width:${(v/max*100).toFixed(1)}%;background:${col}"></span>`}${avg!=null?`<span class="avgline" style="left:${(avg/max*100).toFixed(1)}%"></span>`:""}</span>
   <span class="v ${v==null?"na":""}">${v==null?"sin dato":fmt(v)}${extra}</span></button>`;}
 function renderRank(){
-  const R=$("#rank");R.classList.toggle("mun",level==="cat"||level==="mu");$("#rankCtl").hidden=level!=="cat"&&level!=="mu";$("#rankMore").hidden=true;
+  const R=$("#rank");R.classList.toggle("mun",level==="cat"||level==="mu"||level==="int");$("#rankCtl").hidden=level!=="cat"&&level!=="mu";$("#rankMore").hidden=true;
   $("#onlyWrap").hidden=level!=="cat";$("#rankCcWrap").hidden=level!=="mu";$("#rankEs").hidden=level!=="mu";
   if(level==="eu"){const m=M[metric];
     const rows=Object.keys(D).sort((a,b)=>{const va=val(a),vb=val(b);if(va==null)return 1;if(vb==null)return -1;return vb-va;});
@@ -402,6 +418,11 @@ function renderRank(){
     const max=Math.max(...rows.map(c=>ccVal(c)||0),ccVal("ES")||0);let n=0;
     $("#rankTitle").textContent=`${m.lbl} por comunidad autónoma (% · INE ${YRS[yi]})`;$("#rankNote").textContent="Línea vertical: España";
     R.innerHTML=rows.map(c=>{const v=ccVal(c);if(v!=null)n++;return rankRow(c,v==null?"·":String(n).padStart(2,"0"),CC.r[c].n,v,max,ccVal("ES"),`var(--c${Math.max(binOf(v,m.bins),2)})`,x=>es(x,1));}).join("");}
+  else if(level==="int"){const ids=Object.keys(INT.cap).sort((a,b)=>INT.cap[b][5]-INT.cap[a][5]);const max=Math.max(...ids.map(k=>INT.cap[k][5]));
+    $("#rankTitle").textContent="Italia: perdite idriche totali por capital de provincia (%, ISTAT 2022)";$("#rankNote").textContent=`Línea vertical: Italia, ${es(INT.it[2],1)} %`;
+    const LIM=40;const show=rankAll?ids:ids.slice(0,LIM);
+    R.innerHTML=show.map((k,i)=>rankRow("c"+k,String(i+1).padStart(2,"0"),INT.cap[k][2],INT.cap[k][5],max,INT.it[2],muColor(INT.cap[k][5]),x=>es(x,1))).join("");
+    if(ids.length>LIM){$("#rankMore").hidden=false;$("#moreBtn").textContent=rankAll?"Ver menos":`Ver los ${ids.length}`;}}
   else if(level==="mu"){
     const ids=umRankIds(),Lr=RANK_LAYER[colorBy];
     $("#rankTitle").textContent=Lr.title;$("#rankNote").textContent=Lr.note;
@@ -426,6 +447,7 @@ function cmpBars(items){const max=Math.max(...items.map(x=>x[1]||0))*1.15||1;
   return `<div class="cmp">${items.map(([l,v,me])=>`<span>${l}</span><span class="bar"><span class="${me?"me":""}" style="width:${((v||0)/max*100).toFixed(1)}%"></span></span><span class="v">${v==null?"·":es(v,1)}</span>`).join("")}</div>`;}
 function renderPanel(){const P=$("#panel");const k=hovered||pinned[level];
   if(level==="mu"&&!k&&opMatch&&opMatch.size)return panelOp(P);
+  if(level==="int")return panelInt(P,k);
   if(!k){P.innerHTML=`<p class="empty">${level==="cat"?"Selecciona un municipio en el mapa o en el ranking.":"Selecciona un elemento en el mapa o en el ranking."}</p>`;return;}
   const chip=`<span class="chip ${k===pinned[level]?"pin":""}">${k===pinned[level]?"Fijado":"Vista previa"}</span>`;
   if(level==="eu")return panelEU(P,k,chip);if(level==="es")return panelES(P,k,chip);if(level==="mu")return panelUM(P,k,chip);return panelMU(P,k,chip);}
@@ -542,6 +564,21 @@ function panelUM(P,id,chip){const r=MUD[id];if(!r){P.innerHTML="";return;}const 
   <div><h3>Indicadores ${L.y}</h3><dl>${row("Datos reales",L.dr==null?null:es(L.dr,0),"%")}${row("Total suministrado",hm(b[3][i]),"hm³")}${row("Consumo",hm(b[4][i]),"hm³")}${row("Isla",esc(b[0]))}</dl></div>
   <div><h3>Evolución 2000-2024</h3>${sparkIB(id)}<p class="srcline">Font: Govern de les Illes Balears, Servei de Planificació. Dades d'abastiment urbà 2000-2024. Consulta 22/10/2026. CC BY-SA. % d'aigua no comptabilitzada = (total subministrat − consum) / total subministrat. Datos reales sin publicar de 2000 a 2015.</p></div>
   <p class="note">La barra de la comunidad es el agua no registrada del INE, otro indicador: sirve de referencia, no de comparación exacta.</p>${rest}`;}
+// Ficha de la vista internacional: una región o capital de Italia; sin selección, el estado de cada país
+function panelInt(P,k){
+  const src=`<div><h3>Fuentes</h3><ol class="srcs"><li><span class="what">Pérdidas</span><b>ISTAT, Censimento delle acque per uso civile, anno 2022</b>. Tavole «Le statistiche dell'Istat sull'acqua. Anni 2020-2023» (22/03/2024), Tav 3 (regiones) y Tav 5 (capoluoghi). CC BY 4.0. <a href="https://www.istat.it/comunicato-stampa/le-statistiche-dellistat-sullacqua-anni-2020-2023/" target="_blank" rel="noopener">Abrir fuente</a></li>
+    <li><span class="what">Geometría</span><b>${esc(INT.geo.src)}</b>. ${esc(INT.geo.licencia)}. <a href="${esc(INT.geo.url)}" target="_blank" rel="noopener">Abrir fuente</a></li></ol></div>`;
+  if(!k){P.innerHTML=`<div class="ph"><div><h2>Internacional</h2><span class="code">Fuentes subnacionales con licencia abierta</span></div></div>
+    <p class="note">La vista Europa da el dato por país (EurEau). Aquí solo entran países con una fuente oficial abierta por ciudad, región o compañía. Selecciona una región o una capital de Italia.</p>
+    <div><h3>Estado por país (30/10/2026)</h3><dl>${INT.paises.map(p=>row(esc(p.pais),`${INT_ST[p.estado]}`)).join("")}</dl>
+    <p class="srcline">${INT.paises.filter(p=>p.estado!=="datos").map(p=>`${esc(p.pais)}: ${esc(p.motivo)}.`).join(" ")}</p></div>`+src;return;}
+  const o=intRow(k),chip=`<span class="chip ${k===pinned.int?"pin":""}">${k===pinned.int?"Fijado":"Vista previa"}</span>`;
+  const v=o.kind==="r"?o.r[4]:o.c[5],name=o.kind==="r"?o.r[1]:o.c[2];
+  const items=[[name.length>12?name.slice(0,11)+".":name,v,1],["Italia",INT.it[2],0]];
+  P.innerHTML=`<div class="ph"><div><h2>${esc(name)}</h2><span class="code">${o.kind==="r"?"Región":"Capital de provincia · "+esc(Object.values(INT.reg).find((r,i)=>Object.keys(INT.reg)[i]===o.c[7])[1])} · Italia</span></div>${chip}</div>
+  <div class="hero"><span class="lbl">Perdite idriche totali</span><span class="big">${es(v,1)}<small>%</small></span><span class="src">${es(v,1)} % · 2022 · ISTAT, Censimento delle acque per uso civile</span></div>${cmpBars(items)}
+  <div><h3>Indicadores 2022</h3><dl>${o.kind==="r"?row("Agua inmessa en red",es(o.r[2],1),"millones de m³")+row("Agua erogada para usos autorizados",es(o.r[3],1),"millones de m³"):row("Agua inmessa en red",grp(o.c[3]),"miles de m³")+row("Agua erogada para usos autorizados",grp(o.c[4]),"miles de m³")+row("Pérdidas lineales (clase)",o.c[6]?esc(o.c[6]):null)}</dl>
+  <p class="srcline">${esc(INT_IND)}. ${o.kind==="c"?"Total de los comuni capoluogo: "+es(INT.tc[2],1)+" %. ":""}No es el mismo indicador que el agua no registrada de España: se compara el orden de magnitud.</p></div>`+src;}
 // Ficha de operador (FWG-1870, Parte 6): los municipios donde el filtro de operador casa con alguno de sus operadores del SINAC
 function panelOp(P){const ids=[...opMatch],pop=ids.reduce((a,id)=>a+MUD[id][1],0);
   const q=opNorm(opQuery),names=OPN.map((n,i)=>[n,i]).filter(([,i])=>OPN_NORM[i].includes(q));
@@ -582,6 +619,8 @@ function showTip(html,x,y){tip.innerHTML=html;tip.hidden=false;placeTip(x,y);}
 const hideTip=()=>{tip.hidden=true};
 const rel=e=>{const r=box.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top]};
 function tipFor(k){
+  if(level==="int"){const o=intRow(k);if(o.kind==="r")return `<b>${esc(o.r[1])}</b><span>Perdite totali: ${es(o.r[4],1)} % · ISTAT 2022</span><span class="tn">Región</span>`;
+    return `<b>${esc(o.c[2])}</b><span>Perdite totali: ${es(o.c[5],1)} % · ISTAT 2022</span><span class="tn">Capital de provincia (comune capoluogo)</span>`;}
   if(level==="eu"){const v=val(k),m=M[metric];return `<b>${D[k][0]}</b><span>${m.short}: ${v==null?"sin dato":m.fmt(v)+" "+m.unit} · ${(k==="ES"&&metric==="nrw")?"INE 2024":"EurEau 2026"}</span>`;}
   if(level==="es"){const r=CC.r[k],v=ccVal(k);return `<b>${r.n}</b><span>${ESM[esMetric].short}: ${pc(v)} · INE ${YRS[yi]}</span>`;}
   if(level==="mu"){const r=MUD[k],c=umCC(k),L=umLatest(k),e=esd(k);
@@ -599,27 +638,27 @@ function tipFor(k){
 // ================= zoom y niveles =================
 const FULL=[0,0,760,700];let curVB=FULL.slice(),anim=null;
 const reduce=()=>window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const VB={eu:FULL,es:ESP.vb,mu:MUN.vb,cat:CAT.vb};
+const VB={eu:FULL,es:ESP.vb,mu:MUN.vb,cat:CAT.vb,int:INT.vb};
 function sizeLabels(){const s=svg.getBoundingClientRect().width/curVB[2];const fs=(10/s).toFixed(3);catLayer.querySelectorAll(".mlab").forEach(e=>e.setAttribute("font-size",fs));}
 const hatchMu=$("#hatchMu"),hatchDe=$("#hatchDe"),hatchOp=$("#hatchOp"),dotsOt=$("#dotsOt");
 // El rayado de la vista por municipio mantiene el mismo grosor en pantalla con cualquier zoom
 function setVB(v){curVB=v;svg.setAttribute("viewBox",v.map(n=>n.toFixed(3)).join(" "));const k=(v[2]/MUN.vb[2]).toFixed(4);hatchMu.setAttribute("patternTransform",`rotate(45) scale(${k})`);hatchOp.setAttribute("patternTransform",`scale(${k})`);dotsOt.setAttribute("patternTransform",`scale(${k})`);hatchDe.setAttribute("patternTransform",`rotate(-45) scale(${k})`);}
-function layerVis(o){for(const [L,v] of [[espLayer,o.es],[muLayer,o.mu||0],[catLayer,o.cat]]){L.toggleAttribute("hidden",v<=0);L.setAttribute("opacity",v.toFixed(3));}}
+function layerVis(o){for(const [L,v] of [[espLayer,o.es],[muLayer,o.mu||0],[catLayer,o.cat],[intLayer,o.int||0]]){L.toggleAttribute("hidden",v<=0);L.setAttribute("opacity",v.toFixed(3));}}
 function setLevel(l,animate=true,vb=null){
   if(!VB[l])l="eu";level=l;if(l==="cat"&&(colorBy==="fc"||colorBy==="est"||colorBy==="pri"))colorBy="loss";hovered=null;hideTip();rankAll=false;
   g.classList.toggle("dim",l!=="eu");dots.classList.toggle("dim",l!=="eu");
-  const from=curVB.slice(),to=vb||VB[l],start={es:+espLayer.getAttribute("opacity"),mu:+muLayer.getAttribute("opacity"),cat:+catLayer.getAttribute("opacity")},end={es:l==="es"?1:0,mu:l==="mu"?1:0,cat:l==="cat"?1:0};
+  const from=curVB.slice(),to=vb||VB[l],start={es:+espLayer.getAttribute("opacity"),mu:+muLayer.getAttribute("opacity"),cat:+catLayer.getAttribute("opacity"),int:+intLayer.getAttribute("opacity")},end={es:l==="es"?1:0,mu:l==="mu"?1:0,cat:l==="cat"?1:0,int:l==="int"?1:0};
   cancelAnimationFrame(anim);const t0=performance.now(),DUR=(animate&&!reduce())?750:0;
-  espLayer.removeAttribute("hidden");muLayer.removeAttribute("hidden");catLayer.removeAttribute("hidden");
+  espLayer.removeAttribute("hidden");muLayer.removeAttribute("hidden");catLayer.removeAttribute("hidden");intLayer.removeAttribute("hidden");
   const step=now=>{const k=DUR?Math.min(1,(now-t0)/DUR):1,e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
     setVB(from.map((v,i)=>v+(to[i]-v)*e));
     const fade=x=>Math.min(1,Math.max(0,x));
     const mix=c=>start[c]+(end[c]-start[c])*fade(end[c]?(k-.5)/.5:k/.4);
-    layerVis({es:mix("es"),mu:mix("mu"),cat:mix("cat")});
+    layerVis({es:mix("es"),mu:mix("mu"),cat:mix("cat"),int:mix("int")});
     sizeLabels();if(k<1)anim=requestAnimationFrame(step);};
   anim=requestAnimationFrame(step);
-  svg.setAttribute("aria-label",l==="eu"?"Mapa de Europa por pérdidas de agua":l==="es"?"Mapa de España por comunidades autónomas":l==="mu"?"Mapa de España por municipios":"Mapa de Catalunya por municipios");
-  try{history.replaceState(null,"",l==="eu"?location.pathname+location.search:"#"+({es:"espana",mu:"municipios",cat:"catalunya"})[l])}catch(e){}
+  svg.setAttribute("aria-label",l==="eu"?"Mapa de Europa por pérdidas de agua":l==="es"?"Mapa de España por comunidades autónomas":l==="mu"?"Mapa de España por municipios":l==="int"?"Mapa de Italia por regiones y capitales de provincia":"Mapa de Catalunya por municipios");
+  try{history.replaceState(null,"",l==="eu"?location.pathname+location.search:"#"+({es:"espana",mu:"municipios",cat:"catalunya",int:"internacional"})[l])}catch(e){}
   store.set("lv",l);paint();
 }
 window.addEventListener("resize",sizeLabels);
@@ -674,7 +713,7 @@ $("#opl").innerHTML=OPN.slice(0,400).map(n=>`<option value="${esc(n)}"></option>
 $("#csvBtn").addEventListener("click",exportCsv);
 
 // ================= eventos =================
-const keyOf=t=>{if(level==="mu"){const e=t.closest("[data-u]");return e?e.dataset.u:null;}if(level==="eu"){const e=t.closest("[data-c]");return e?e.dataset.c:null;}if(level==="es"){const e=t.closest("[data-r]");return e?ccCode(e.dataset.r):null;}const e=t.closest("[data-m]");return e?e.dataset.m:null;};
+const keyOf=t=>{if(level==="int"){const e=t.closest("[data-it]");return e?e.dataset.it:null;}if(level==="mu"){const e=t.closest("[data-u]");return e?e.dataset.u:null;}if(level==="eu"){const e=t.closest("[data-c]");return e?e.dataset.c:null;}if(level==="es"){const e=t.closest("[data-r]");return e?ccCode(e.dataset.r):null;}const e=t.closest("[data-m]");return e?e.dataset.m:null;};
 function setHover(k){if(hovered===k)return;hovered=k;marks();renderPanel();}
 function pin(k){pinned[level]=k;hovered=null;marks();renderPanel();
   if(window.matchMedia("(max-width:900px)").matches)$("#panel").scrollIntoView({behavior:reduce()?"auto":"smooth",block:"start"});}
@@ -699,9 +738,9 @@ document.querySelectorAll("#segMG button").forEach(b=>b.addEventListener("click"
 document.querySelectorAll("#segES button").forEach(b=>b.addEventListener("click",()=>{esMetric=b.dataset.m;store.set("em",esMetric);paint();}));
 const ysel=$("#year");ysel.innerHTML=YRS.map((y,i)=>`<option value="${i}" ${i===yi?"selected":""}>${y}</option>`).join("");
 ysel.addEventListener("change",()=>{yi=+ysel.value;paint();});
-window.addEventListener("hashchange",()=>{const h=location.hash;const l=h==="#espana"?"es":h==="#municipios"?"mu":h==="#catalunya"?"cat":"eu";if(l!==level)setLevel(l);});
+window.addEventListener("hashchange",()=>{const h=location.hash;const l=h==="#espana"?"es":h==="#municipios"?"mu":h==="#catalunya"?"cat":h==="#internacional"?"int":"eu";if(l!==level)setLevel(l);});
 
 // ================= inicio =================
 {const s=store.get("m");if(s&&M[s])metric=s;const t=store.get("em");if(t&&ESM[t])esMetric=t;}
-const h0=location.hash;let l0=h0==="#espana"?"es":h0==="#municipios"?"mu":h0==="#catalunya"?"cat":h0==="#europa"?"eu":"eu";
-setVB(VB[l0]||FULL);layerVis({es:l0==="es"?1:0,mu:l0==="mu"?1:0,cat:l0==="cat"?1:0});setLevel(l0,false);
+const h0=location.hash;let l0=h0==="#espana"?"es":h0==="#municipios"?"mu":h0==="#catalunya"?"cat":h0==="#internacional"?"int":h0==="#europa"?"eu":"eu";
+setVB(VB[l0]||FULL);layerVis({es:l0==="es"?1:0,mu:l0==="mu"?1:0,cat:l0==="cat"?1:0,int:l0==="int"?1:0});setLevel(l0,false);

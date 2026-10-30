@@ -1,7 +1,7 @@
 const {pathToFileURL}=require('url');
 const {DIST,REFERENCE_DOC}=require('../lib/page.js');
 const URLS={dist:pathToFileURL(DIST).href,reference:pathToFileURL(REFERENCE_DOC).href};
-const LEVELS={europa:'',espana:'#espana',municipios:'#municipios',catalunya:'#catalunya'};
+const LEVELS={europa:'',espana:'#espana',municipios:'#municipios',catalunya:'#catalunya',internacional:'#internacional'};
 
 // Abre la página sin red (las fuentes de Google no se cargan, igual en ambas versiones) y recoge los errores de JavaScript
 async function open(page,which,hash=''){

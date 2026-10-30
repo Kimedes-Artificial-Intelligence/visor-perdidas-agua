@@ -57,5 +57,7 @@ const A63={m:Object.fromEntries(Object.entries(AR.mun).map(([k,R])=>[k,R.map(r=>
   s:AR.sys.map(r=>[r.pat,r.op,r.amb,r.ind,r.v,r.unit,r.y,r.url,r.page,r.legal,r.date])};
 // Pesos del índice de prioridad comercial (src/prioridad.js)
 const PRI_W=JSON.parse(fs.readFileSync('data/prioridad_pesos.json'));
-const out2=`const PRI_W=${JSON.stringify(PRI_W)};\nconst A63=${JSON.stringify(A63)};\nconst GES=${JSON.stringify(GES)};\nconst ESD=${JSON.stringify(ESD)};\nconst OPN=${JSON.stringify(OPN)};\nconst OPT=${JSON.stringify(OPT)};\nconst OPC=${JSON.stringify(OPC)};\nconst EPROV=${JSON.stringify(EPROV)};\nconst RSI=${JSON.stringify(RSI)};\nconst PVN=${JSON.stringify(PVN)};\n`;
+// Capa internacional (scripts/build_int.js): Italia por regiones y comuni capoluogo, y estado de los demás países
+const INT=JSON.parse(fs.readFileSync('data/internacional.json'));
+const out2=`const INT=${JSON.stringify(INT)};\nconst PRI_W=${JSON.stringify(PRI_W)};\nconst A63=${JSON.stringify(A63)};\nconst GES=${JSON.stringify(GES)};\nconst ESD=${JSON.stringify(ESD)};\nconst OPN=${JSON.stringify(OPN)};\nconst OPT=${JSON.stringify(OPT)};\nconst OPC=${JSON.stringify(OPC)};\nconst EPROV=${JSON.stringify(EPROV)};\nconst RSI=${JSON.stringify(RSI)};\nconst PVN=${JSON.stringify(PVN)};\n`;
 fs.mkdirSync('.build',{recursive:true});fs.writeFileSync('.build/data.js',out+out2);console.log('data.js',out.length,'urls',urls.length,'units',units);

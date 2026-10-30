@@ -28,6 +28,7 @@ const SOURCES={
   // Pérdidas publicadas por el operador (art. 63.2 RD 3/2023) y estado de la búsqueda (FWG-1870); precedencia en src/loss.js
   A63:['raw/operadores_art63_2026-10.psv','raw/art63_estado_2026-10-30.psv','raw/operadores_sistema_2026-10.psv'],
   PRI_W:['data/prioridad_pesos.json'],
+  INT:['raw/italia_istat_perdite_2022.psv','raw/italia_istat_geo_2026.json','raw/italia_capoluoghi_cruce.psv','raw/internacional_paises.psv','src/geometry/proj.json'],
   LOSS_ORDER:['src/loss.js'],A63_PAINT:['src/loss.js'],
   OPC:['data/operadores_clasificacion.csv','raw/sinac_redes_2026-10-30.csv'],
   EPROV:['raw/eiel_provincias_2026-10-30.csv'],
