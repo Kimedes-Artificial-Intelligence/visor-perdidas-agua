@@ -49,14 +49,14 @@ const PVN=Object.fromEntries(Object.entries(ES.mun).filter(([,o])=>o.pv).map(([k
 const RSI=Object.keys(ES.mun).filter(k=>ES.mun[k].rs==='idem');
 const EPROV=Object.fromEntries(Object.entries(ES.meta.prov).map(([p,o])=>[p,[o.fase,o.nu_fase]]));
 // Indicadores del art. 63.2 RD 3/2023 publicados por el operador (scripts/build_art63.js):
-// m: {INE: [[indicador, valor, unidad, año, operador, URL, página, aviso legal, fecha de consulta], ...]}; e: {INE: [estado de la búsqueda, motivo, fecha]}
+// m: {INE: [[indicador, valor, unidad, año, operador, URL, página, aviso legal, fecha de consulta, decimales publicados], ...]}; e: {INE: [estado de la búsqueda, motivo, fecha]}
 const AR=JSON.parse(fs.readFileSync('data/art63.json'));
-const A63={m:Object.fromEntries(Object.entries(AR.mun).map(([k,R])=>[k,R.map(r=>[r.ind,r.v,r.unit,r.y,r.op,r.url,r.page,r.legal,r.date])])),
+const A63={m:Object.fromEntries(Object.entries(AR.mun).map(([k,R])=>[k,R.map(r=>[r.ind,r.v,r.unit,r.y,r.op,r.url,r.page,r.legal,r.date,r.d])])),
   e:Object.fromEntries(Object.entries(AR.estado).filter(([,o])=>o.e!=='publica').map(([k,o])=>[k,[o.e,o.motivo,o.date]])),
   // s: cifras de todo el sistema de un operador, para la ficha de operador: [patrón, operador, ámbito, indicador, valor, unidad, año, URL, página, aviso legal, fecha]
   // mt: tabla de MITECO por municipio (vacía hasta la respuesta a la solicitud) y fecha de la solicitud
   mt:{sol:AR.miteco.sol,m:Object.fromEntries(Object.entries(AR.miteco.mun).map(([k,o])=>[k,[o.anr,o.ife,o.rend,o.tipo,o.y,o.doc,o.rec]]))},
-  s:AR.sys.map(r=>[r.pat,r.op,r.amb,r.ind,r.v,r.unit,r.y,r.url,r.page,r.legal,r.date]),
+  s:AR.sys.map(r=>[r.pat,r.op,r.amb,r.ind,r.v,r.unit,r.y,r.url,r.page,r.legal,r.date,r.d]),
   // sm: municipios que la fuente de cada sistema lista como servidos (D2): {INE: [patrón, servicio, URL de la lista, página, fecha de consulta, nombre en la fuente]}
   sm:Object.fromEntries(Object.entries(AR.smun).map(([k,o])=>[k,[o.pat,o.srv,o.url,o.page,o.date,o.name]]))};
 // Pesos del índice de prioridad comercial (src/prioridad.js)

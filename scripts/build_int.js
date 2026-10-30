@@ -10,6 +10,8 @@ const pr=require('../src/geometry/proj.json');const P=d3.geoAzimuthalEqualArea()
 const rows=t=>t.trim().split('\n').filter(l=>!l.startsWith('#'));
 const r2=v=>Math.round(v*100)/100;
 
+// Tabla de estado por país: columnas fijas y estados que conoce la leyenda (INT_ST en src/app.js)
+const PAISES_COLS=['pais','fuente','granularidad','anio','licencia','estado','motivo','url'],PAISES_ESTADO=['datos','licencia','descarga_manual','sin_capa'];
 function build(read=f=>fs.readFileSync(path.join(ROOT,f),'utf8')){
   const [ph,...pl]=rows(read(F.perd));if(ph!=='tipo|nombre|immessa|erogata|perdite_pct|clase_lineal')throw new Error(F.perd+': cabecera');
   const perd=pl.map(l=>{const [t,n,im,er,p,cl]=l.split('|');return {t,n,im:+im,er:+er,p:+p,cl};});
@@ -25,10 +27,11 @@ function build(read=f=>fs.readFileSync(path.join(ROOT,f),'utf8')){
   if(Object.keys(cap).length!==perd.filter(r=>r.t==='C').length)throw new Error('Faltan capoluoghi en el cruce');
   const pad=8,vb=[r2(x0-pad),r2(y0-pad),r2(x1-x0+2*pad),r2(y1-y0+2*pad)];
   const it=perd.find(r=>r.t==='N'),tc=perd.find(r=>r.t==='T');
-  const [hh,...pp]=rows(read(F.paises));const H=hh.split('|');
-  const paises=pp.map(l=>Object.fromEntries(l.split('|').map((v,i)=>[H[i],v])));
+  const {psv}=require('./build_art63.js');
+  const paises=psv(read(F.paises),PAISES_COLS,F.paises).map(({_line,...r})=>r);
+  for(const p of paises)if(!PAISES_ESTADO.includes(p.estado))throw new Error(`${F.paises}: estado "${p.estado}" de ${p.pais}`);
   return {vb,reg,cap,it:[it.im,it.er,it.p],tc:[tc.im,tc.er,tc.p],geo:{src:G.meta.src,url:G.meta.url,sha256:G.meta.sha256,licencia:G.meta.licencia},paises};
 }
-module.exports={build,F};
+module.exports={build,F,PAISES_COLS,PAISES_ESTADO};
 if(require.main===module){const o=build();fs.writeFileSync(path.join(ROOT,'data/internacional.json'),JSON.stringify(o));
   console.log('internacional: Italia',Object.keys(o.reg).length,'regiones,',Object.keys(o.cap).length,'capoluoghi;',o.paises.length,'países en la tabla de estado');}
