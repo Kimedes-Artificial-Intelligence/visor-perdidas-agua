@@ -1,0 +1,4 @@
+# Municipios que la fuente de cada sistema lista como servidos (FWG-1871, decisión D2). Transcripción literal de la lista publicada por el operador.
+# patron: el de raw/operadores_sistema_2026-10.psv. servicio: distribucion (la fuente dice que el operador distribuye en el municipio, en baja o ciclo integral),
+# alta (solo venta en alta: no se pinta) o sin_especificar (la fuente lo lista como servido sin distinguir). Nunca se deduce del SINAC ni de la pertenencia a un consorcio.
+patron|nombre_en_fuente|ine|servicio|url|fecha_consulta|pagina_o_seccion|nota

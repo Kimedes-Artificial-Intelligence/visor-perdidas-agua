@@ -37,17 +37,17 @@ test('las 126 ciudades de 50.000 hab. o más sin pérdidas previas tienen dato p
   assert.deepEqual(cities.map(c=>c[0]).filter(id=>!est.has(id)),[]);
 });
 test('data/art63.json y data/ciudades_50k_sin_perdidas.csv coinciden con lo que se genera desde raw/',()=>{
-  const {mun,estado,cities}=build();
-  const {sys,miteco}=build();
-  assert.deepEqual(JSON.parse(read('data/art63.json')),{meta:{src:F.a63,estado:F.estado,sys:F.sys,miteco:F.miteco},mun,estado,sys,miteco});
+  const {mun,estado,cities,sys,miteco,smun}=build();
+  assert.deepEqual(JSON.parse(read('data/art63.json')),{meta:{src:F.a63,estado:F.estado,sys:F.sys,miteco:F.miteco,smun:F.smun},mun,estado,sys,miteco,smun});
   assert.equal(read('data/ciudades_50k_sin_perdidas.csv').trim().split('\n').length,cities.length+1);
 });
 
 // ---- Precedencia y qué se pinta
-test('la precedencia es auditoría ACA, operador (art. 63.2), EIEL y Govern IB',()=>{
-  assert.deepEqual(LOSS_ORDER,['aca','art63','eiel','ib']);
-  const c={aca:{v:1},art63:{v:2},eiel:{v:3},ib:{v:4}};
-  assert.equal(pickLoss(c).v,1);delete c.aca;assert.equal(pickLoss(c).v,2);delete c.art63;assert.equal(pickLoss(c).v,3);delete c.eiel;assert.equal(pickLoss(c).v,4);
+test('la precedencia es auditoría ACA, operador (art. 63.2), EIEL, cifra de sistema (D2) y Govern IB: un dato municipal siempre gana al del sistema',()=>{
+  assert.deepEqual(LOSS_ORDER,['aca','art63','eiel','sistema','ib']);
+  const c={aca:{v:1},art63:{v:2},eiel:{v:3},sistema:{v:5},ib:{v:4}};
+  assert.equal(pickLoss(c).v,1);delete c.aca;assert.equal(pickLoss(c).v,2);delete c.art63;assert.equal(pickLoss(c).v,3);delete c.eiel;assert.equal(pickLoss(c).v,5);
+  delete c.sistema;assert.equal(pickLoss(c).v,4);
   assert.equal(pickLoss({}),null);
 });
 test('del art. 63.2 solo se pinta el agua no registrada y, si no hay, las pérdidas reales; nunca el rendimiento ni el IFE',()=>{
@@ -97,4 +97,33 @@ test('una tabla de MITECO bien formada se acepta y una mal formada se rechaza',(
 test('el motivo en gris dice si la solicitud a MITECO está pendiente o presentada y cuándo',()=>{
   assert.match(mitecoReason(''),/pendiente de presentar\.$/);
   assert.match(mitecoReason('2026-11-05'),/presentada el 05\/11\/2026\.$/);
+});
+
+// ---- Cifras de sistema pintadas en los municipios que la fuente lista (FWG-1871, decisión D2)
+const {checkSmun,SMUN_COLS}=require('../../scripts/build_art63.js');
+const {sysPaint,SYS_PAINT_SERVICIO}=require('../../src/loss.js');
+const SMUN=psv(read(F.smun),SMUN_COLS,F.smun);
+const smrow=o=>Object.assign({patron:'CANAL DE ISABEL II',nombre_en_fuente:'Madrid',ine:'28079',servicio:'distribucion',url:'https://a.es/l.pdf',fecha_consulta:'2026-10-30',pagina_o_seccion:'p.1 «Madrid»',nota:'',_line:1},o);
+test('cada municipio de un sistema tiene patrón con cifra, código INE del padrón, servicio, URL, fecha y página, y no se repite',()=>{
+  assert.deepEqual(checkSmun(SMUN,PADRON,SYS),[]);
+});
+test('el control de la lista de municipios de un sistema rechaza filas mal formadas',()=>{
+  const bad=e=>checkSmun([smrow(e)],PADRON,SYS).length;
+  assert.equal(bad({}),0);
+  assert.ok(bad({patron:'NO EXISTE'}));assert.ok(bad({ine:'99999'}));assert.ok(bad({servicio:'baja'}));
+  assert.ok(bad({url:'http://a.es'}));assert.ok(bad({fecha_consulta:'30/10/2026'}));assert.ok(bad({pagina_o_seccion:''}));
+  assert.ok(checkSmun([smrow({}),smrow({_line:2})],PADRON,SYS).length,'un municipio no puede estar en dos filas');
+});
+test('de un sistema solo se pinta el agua no registrada y, si no hay, las pérdidas reales, sin modificar; nunca el rendimiento ni el IFE',()=>{
+  assert.equal(sysPaint([['X','x','a','RENDIMIENTO',80],['X','x','a','PERDIDAS_REALES',4],['X','x','a','ANR',13.44]])[4],13.44);
+  assert.equal(sysPaint([['X','x','a','PERDIDAS_REALES',4],['X','x','a','IFE',3]])[3],'PERDIDAS_REALES');
+  assert.equal(sysPaint([['X','x','a','RENDIMIENTO',80],['X','x','a','IFE',3]]),null);
+  assert.equal(sysPaint(undefined),null);
+  assert.deepEqual(SYS_PAINT_SERVICIO,['distribucion','sin_especificar'],'donde el operador solo vende en alta no se pinta');
+});
+test('la columna se_pinta marca "sistema" solo en ciudades listadas por la fuente con servicio pintable y cifra de ANR o pérdidas reales',()=>{
+  const {cities}=build();const sm=Object.fromEntries(SMUN.map(r=>[r.ine,r]));
+  for(const c of cities.filter(c=>c[7]==='sistema')){const r=sm[c[0]];
+    assert.ok(r&&SYS_PAINT_SERVICIO.includes(r.servicio),c[1]);
+    assert.ok(sysPaint(SYS.filter(x=>x.patron===r.patron).map(x=>[x.patron,x.operador,x.ambito,x.indicador,+x.valor])),c[1]);}
 });
