@@ -4,7 +4,7 @@ Mapa interactivo de las pérdidas de agua en las redes de abastecimiento, en cua
 
 - **Europa:** agua no registrada, pérdidas reales e índice lineal por país (EurEau; España con INE 2024).
 - **España:** serie 2008-2024 por comunidad autónoma (INE, tabla 53447).
-- **España por municipio:** los 8.131 municipios en cuatro capas: pérdidas (Catalunya, auditorías; Illes Balears, estimación del Govern IB; resto, pérdidas declaradas por los ayuntamientos en la EIEL), modelo de gestión (ESF en Catalunya; EIEL y SINAC en el resto), red en fibrocemento y red en mal estado (EIEL). Ficha por municipio con operadores (SINAC) y todas las fuentes numeradas, filtro por operador y exportación del ranking a CSV. Lo que ninguna fuente da, en gris con el motivo. Con zoom y selector de comunidad.
+- **España por municipio:** los 8.131 municipios en cuatro capas: pérdidas (Catalunya, auditorías; ciudades cuyo operador publica el indicador del art. 63.2 del RD 3/2023; Illes Balears, estimación del Govern IB; resto, pérdidas declaradas por los ayuntamientos en la EIEL), modelo de gestión (ESF en Catalunya; EIEL y SINAC en el resto), red en fibrocemento y red en mal estado (EIEL). Ficha por municipio con operadores (SINAC) y todas las fuentes numeradas, filtro por operador y exportación del ranking a CSV. Lo que ninguna fuente da, en gris con el motivo. Con zoom y selector de comunidad.
 - **Catalunya:** agua no registrada por municipio, a partir de las auditorías de eficiencia hidráulica publicadas (ACA y operadores, 2024 y 2022).
 
 Cada dato visible lleva su año y su fuente. Donde no hay dato publicado, el municipio aparece en gris con el texto "sin dato publicado". No hay valores estimados.
