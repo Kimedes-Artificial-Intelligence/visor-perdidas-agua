@@ -294,7 +294,8 @@ test('el selector de capa cambia leyenda, contador y color; fibrocemento y estad
   const fill=()=>page.locator('#muLayer [data-u="11002"]').evaluate(e=>e.style.fill);
   const lossFill=await fill();
   await layer(page,'ges');
-  await expect(page.locator('#maphead')).toHaveText(/^7\.581 de 8\.131 municipios con modelo de gestión/);
+  const nGes=await page.evaluate(()=>grp(UM_IDS.filter(LAYER.ges.has).length)); // crece con cada operador clasificado
+  await expect(page.locator('#maphead')).toHaveText(new RegExp(`^${nGes.replace('.','\\.')} de 8\\.131 municipios con modelo de gestión`));
   await expect(page.locator('#legend')).toContainText('Vecinal / cooperativa');
   expect(await fill()).toBe('var(--g-p)');
   await layer(page,'fc');

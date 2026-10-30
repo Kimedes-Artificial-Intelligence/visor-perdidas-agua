@@ -68,7 +68,9 @@ function idemToRd(rows){
 // ---------- Clasificación de operadores ----------
 // Coincidencia por palabras completas, sin acentos, en mayúsculas y sin signos. Gana el primer patrón del archivo.
 const normOp=s=>String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/[^A-Z0-9]+/g,' ').trim();
-const TIPOS={'Municipalizado':'P','Mixto':'M','Privado':'V','No es operador':'X'};
+// Cooperativa (FWG-1871, decisión D4): comunidades de regantes, cooperativas y comunidades de propietarios que suministran agua potable;
+// mismo grupo C (vecinal / cooperativa) que la gestión vecinal de la EIEL
+const TIPOS={'Municipalizado':'P','Mixto':'M','Privado':'V','Cooperativa':'C','No es operador':'X'};
 function loadClassifier(rows){
   const pats=rows.map((r,i)=>{const t=TIPOS[r.tipo];if(!t)throw new Error(`${F.cls}, fila ${i+2}: tipo desconocido "${r.tipo}"`);
     return {p:' '+normOp(r.patron)+' ',t,grupo:r.grupo||'',nota:r.nota||''};});
@@ -112,7 +114,7 @@ function model(ine,o,esfTipus,classify,pvOp){
   if(CAT_PROV.has(ine.slice(0,2))&&ESF_GROUP[esfTipus])return {gm:ESF_GROUP[esfTipus],gs:'esf'};
   if(st==='M')return {gm:'M',gs:'sinac'};
   if(eg)return {gm:eg,gs:'eiel'};
-  if(st==='P'||st==='V')return {gm:st,gs:'sinac'};
+  if(st==='P'||st==='V'||st==='C')return {gm:st,gs:'sinac'};
   const pc=pvOp&&classify(pvOp);if(pc&&pc.t!=='X')return {gm:pc.t,gs:'pv'};
   return {gm:'N',gs:null};
 }
